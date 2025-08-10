@@ -8,7 +8,7 @@ class CustomUser(AbstractUser):
     email = models.EmailField(blank=True, null=True)
     groups = models.ManyToManyField(
         Group,
-        related_name="customuser_set",    # غيّر related_name
+        related_name="customuser_set",    
         related_query_name="customuser",
         blank=True,
         help_text="The groups this user belongs to.",
@@ -16,7 +16,7 @@ class CustomUser(AbstractUser):
     )
     user_permissions = models.ManyToManyField(
         Permission,
-        related_name="customuser_set",    # غيّر related_name
+        related_name="customuser_set",   
         related_query_name="customuser",
         blank=True,
         help_text="Specific permissions for this user.",
