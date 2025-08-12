@@ -47,13 +47,7 @@ class School(models.Model):
     nationalite =   models.CharField(max_length=50,null=True)
     niveau = models.CharField(max_length=50,default="N/A")
     dateAjout= models.DateField()
-    # name = models.CharField(max_length=100)
-    # address = models.CharField(max_length=200, blank=True, null=True)
-    # wilaya = models.CharField(max_length=50, blank=True, null=True)
-    # moughatta = models.CharField(max_length=50, blank=True, null=True)
-    # phone = models.CharField(max_length=20, blank=True, null=True)
-    # email = models.EmailField(blank=True, null=True)
-    # created_at = models.DateTimeField(auto_now_add=True)
+
 
     def __str__(self):
         return self.nom
@@ -86,14 +80,6 @@ class DirectorAuthorization(models.Model):
     dateAjout = models.DateField()
     dateDebut = models.DateField()
     dateFin = models.DateField()
-    # school = models.ForeignKey(School, on_delete=models.CASCADE)
-    # diploma = models.CharField(max_length=100, blank=True, null=True)
-    # authorization_number = models.CharField(max_length=50)
-    # start_date = models.DateField()
-    # end_date = models.DateField()
-    # qr_code = models.CharField(max_length=255, blank=True, null=True)
-    # is_active = models.BooleanField(default=True)
-
     def __str__(self):
         return f"{self.user.get_full_name()} - {self.school.nomEcole}"
 
@@ -113,10 +99,6 @@ class TeacherAuthorization(models.Model):
     nom=models.CharField(max_length=50,blank=True,null=True)
     code=models.CharField(max_length=50,blank=True,null=True)
     codeAE =models.CharField(max_length=50,blank=True,null=True)
-    # school = models.ForeignKey(School, on_delete=models.CASCADE)
-    # specialty = models.CharField(max_length=50)
-    # diploma = models.CharField(max_length=100, blank=True, null=True)
-    # authorization_number = models.CharField(max_length=50)
     qr_code = models.CharField(max_length=50, blank=True, null=True)
     dateAjout = models.DateField()
     dateDebut = models.DateField()
@@ -126,3 +108,5 @@ class TeacherAuthorization(models.Model):
 
     def __str__(self):
         return f"{self.user.get_full_name()} - {self.specialiteDiplome}"
+    
+
