@@ -18,7 +18,7 @@ class CustomUser(AbstractUser):
         Permission,
         related_name="customuser_set",   
         related_query_name="customuser",
-        blank=True,
+        blank=False,
         help_text="Specific permissions for this user.",
         verbose_name="user permissions",
     )
@@ -33,7 +33,6 @@ class School(models.Model):
     dateLettreWaly = models.DateField()
     numLettreWaly = models.CharField(max_length=50,null= True)
     numTel =models.CharField(max_length=50,null=True)
-
     nomMoughatta = models.CharField(max_length=50,default="N/A")
     idMoughatta = models.IntegerField(null= True)
     wilaya =  models.CharField(max_length=50,null=True)
@@ -41,12 +40,12 @@ class School(models.Model):
     code = models.CharField(max_length=20,null=True)
     nni = models.CharField(max_length=50,null=True)
     nom =  models.CharField(max_length=50,null=True)
-
     codeLR =   models.CharField(max_length=50,null=True)
     lienQR =   models.CharField(max_length=200,null=True)
     nationalite =   models.CharField(max_length=50,null=True)
     niveau = models.CharField(max_length=50,default="N/A")
     dateAjout= models.DateField()
+
 
 
     def __str__(self):
@@ -103,7 +102,6 @@ class TeacherAuthorization(models.Model):
     dateAjout = models.DateField()
     dateDebut = models.DateField()
     dateFin = models.DateField()
-    
     is_active = models.BooleanField(default=True)
 
     def __str__(self):
