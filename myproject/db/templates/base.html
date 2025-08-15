@@ -1,25 +1,156 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}My Site{% endblock %}</title>
-    {% comment %} <link rel="stylesheet" href="{% static 'css/styles.css' %}" /> {% endcomment %}
-</head>
-<body>
-    <header>
-        <h1>Welcome to My Site</h1>
-        <nav>
-            <a href="{% url 'home' %}">Home</a> |
-        </nav>
-    </header>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <main>
+
+    {% comment %} <style>
+        /* Custom styles for mobile menu toggle */
+        .mobile-menu {
+            display: none;
+        }
+        .mobile-menu.active {
+            display: flex;
+        }
+        
+        /* Smooth transitions */
+        .nav-item {
+            transition: all 0.3s ease;
+        }
+        .nav-item:hover {
+            transform: translateX(5px);
+        }
+        
+        /* Custom scrollbar for mobile menu */
+        @media (max-width: 768px) {
+            .mobile-menu {
+                max-height: calc(100vh - 80px);
+                overflow-y: auto;
+            }
+            .mobile-menu::-webkit-scrollbar {
+                width: 5px;
+            }
+            .mobile-menu::-webkit-scrollbar-track {
+                background: #f1f1f1;
+            }
+            .mobile-menu::-webkit-scrollbar-thumb {
+                background: #888;
+                border-radius: 5px;
+            }
+        }
+    </style> {% endcomment %}
+</head>
+<body class="bg-gray-100">
+    <!-- Navigation Bar -->
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo and main menu items -->
+                <div class="flex items-center space-x-4">
+                    <!-- Logo -->
+                    <div class="flex-shrink-0">
+                        <img class="h-8 w-8 rounded-full" src="https://via.placeholder.com/50" alt="Logo">
+                    </div>
+                    
+                    <!-- Desktop Menu -->
+                    <div class="hidden md:flex items-center space-x-1">
+                        <a href="" class="nav-item px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900">Dashboard</a>
+                        <a href="#" class="nav-item px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900">Projects</a>
+                        <a href="#" class="nav-item px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900">Team</a>
+                        <a href="#" class="nav-item px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900">Settings</a>
+                    </div>
+                </div>
+                
+                <!-- Right side - Welcome message and logout -->
+                <div class="flex items-center">
+                    <span class="hidden md:block text-sm font-medium text-gray-500 mr-4">Welcome: <span id="username" class="text-gray-800">{{ user.username }}     </span></span>
+                    {%if user.is_authenticated %}
+                    
+                    <a href="{% url 'logout' %}" class="flex items-center text-sm font-medium text-red-600 hover:text-red-800">
+                        <i class="fas fa-sign-out-alt mr-1"></i>
+                        <span class="hidden md:inline">Logout</span>
+                    </a>
+                    {%else%}
+                    <a href="{% url 'login' %}" class="flex items-center text-sm font-medium text-green-600 hover:text-green-800">
+                     <!-- SVG Login Icon -->
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M15 12H3m12 0l-4-4m4 4l-4 4m6 4V4a2 2 0 00-2-2H5a2 2 0 00-2 2v16a2 2 0 002 2h10a2 2 0 002-2z"/>
+                        </svg>
+                        <span class="hidden md:inline">Login</span>
+                    </a>
+                        {%endif%}
+                    <!-- Mobile menu button -->
+                    <div class="md:hidden ml-4">
+                        <button onclick="toggleMenu()" class="inline-flex items-center justify-center p-2 rounded-md text-gray-700 hover:text-gray-900 hover:bg-gray-100 focus:outline-none">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mobile Menu -->
+        <div class="mobile-menu md:hidden flex-col bg-white border-t border-gray-200">
+            <div class="px-4 py-3 border-b border-gray-200">
+                <span class="text-sm font-medium text-gray-500">Welcome: <span class="text-gray-800">JohnDoe</span></span>
+            </div>
+            <a href="#" class="nav-item px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-100 border-b border-gray-200">
+                <i class="fas fa-tachometer-alt mr-2"></i> Dashboard
+            </a>
+            <a href="#" class="nav-item px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-100 border-b border-gray-200">
+                <i class="fas fa-project-diagram mr-2"></i> Projects
+            </a>
+            <a href="#" class="nav-item px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-100 border-b border-gray-200">
+                <i class="fas fa-users mr-2"></i> Team
+            </a>
+            <a href="#" class="nav-item px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-100 border-b border-gray-200">
+                <i class="fas fa-cog mr-2"></i> Settings
+            </a>
+            
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 py-8">
+
         {% block content %}
         {% endblock %}
+
     </main>
 
-    <footer>
-        <p>© 2025 My Site</p>
-    </footer>
+    {% comment %} <script>
+        // Toggle mobile menu
+        function toggleMenu() {
+            const mobileMenu = document.querySelector('.mobile-menu');
+            mobileMenu.classList.toggle('active');
+        }
+
+        // Logout function
+        function logout() {
+            alert('Logout functionality would go here');
+            // In a real app, you would redirect to logout endpoint or clear session
+        }
+
+        // In a real app, you would get the username from your authentication system
+        // For demo purposes, we'll simulate getting it from localStorage
+        document.addEventListener('DOMContentLoaded', function() {
+            const username = localStorage.getItem('username') || 'JohnDoe';
+            document.getElementById('username').textContent = username;
+            document.querySelector('.mobile-menu .text-gray-800').textContent = username;
+            
+            // Close mobile menu when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.mobile-menu') && !e.target.closest('[onclick="toggleMenu()"]')) {
+                    document.querySelector('.mobile-menu').classList.remove('active');
+                }
+            });
+        });
+    </script> {% endcomment %}
 </body>
 </html>

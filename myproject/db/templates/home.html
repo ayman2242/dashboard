@@ -3,15 +3,14 @@
 {% block title %}Home Page{% endblock %}
 
 {% block content %}
+
     {% if user.is_authenticated %}
     <p>Welcome, {{ user.username }}!</p>
-
     {% if user.is_superuser %}
         <p>You are an <b>Admin</b>. You have all permissions.</p>
+        <p>You are not logged in. <a href="{% url 'school' %}"> school</a>.</p>
     {% elif user.is_staff %}
         <p>You are a <b>Staff</b> member. You can manage data.</p>
-    {% else %}
-        <p>You are a <b>Normal User</b>. You have limited access.</p>
     {% endif %}
 
     <p><a href="{% url 'logout' %}">Logout</a></p>
@@ -19,6 +18,8 @@
     {% else %}
     
     <p>You are not logged in. <a href="{% url 'login' %}">Login here</a>.</p>
+
+    
 
     {% endif %}
 

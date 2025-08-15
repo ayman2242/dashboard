@@ -1,6 +1,72 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.utils.translation import gettext_lazy as _
+MOUGHATAA_CHOICES = [
+    ('adel_bagrou', 'Adel Bagrou'),
+    ('aïoun', 'Aïoun'),
+    ('akjoujt', 'Akjoujt'),
+    ('aleg', 'Aleg'),
+    ('amourj', 'Amourj'),
+    ('aoujeft', 'Aoujeft'),
+    ('arafat', 'Arafat'),
+    ('atar', 'Atar'),
+    ('bababé', 'Bababé'),
+    ('barkéol', 'Barkéol'),
+    ('bassiknou', 'Bassiknou'),
+    ('bénichab', 'Bénichab'),
+    ('bir_moghreïn', 'Bir Moghreïn'),
+    ('bogué', 'Bogué'),
+    ('boumdeid', 'Boumdeid'),
+    ('boutilimit', 'Boutilimit'),
+    ('chami', 'Chami'),
+    ('chinguetti', 'Chinguetti'),
+    ('dar_naïm', 'Dar Naïm'),
+    ('djigueni', 'Djigueni'),
+    ('el_mina', 'El Mina'),
+    ('f_deírick', "F'Déirick"),
+    ('ghabou', 'Ghabou'),
+    ('guérou', 'Guérou'),
+    ('kaédi', 'Kaédi'),
+    ('kankossa', 'Kankossa'),
+    ('keur_macène', 'Keur Macène'),
+    ('kiffa', 'Kiffa'),
+    ('koubenni', 'Koubenni'),
+    ('ksar', 'Ksar'),
+    ('lexeiba', 'Lexeiba'),
+    ('m_bagne', "M'Bagne"),
+    ('m_bout', "M'Bout"),
+    ('maghama', 'Maghama'),
+    ('magta_lahjar', 'Magta Lahjar'),
+    ('male', 'Male'),
+    ('méderdra', 'Méderdra'),
+    ('monguel', 'Monguel'),
+    ('moudjéria', 'Moudjéria'),
+    ('n_beiket_lehwach', "N'Beiket Lehwach"),
+    ('néma', 'Néma'),
+    ('nouadhibou', 'Nouadhibou'),
+    ('ouad_naga', 'Ouad Naga'),
+    ('ouadane', 'Ouadane'),
+    ('oualata', 'Oualata'),
+    ('ould_yengé', "Ould Yengé"),
+    ('r_kiz', "R'Kiz"),
+    ('riyad', 'Riyad'),
+    ('rosso', 'Rosso'),
+    ('sebkha', 'Sebkha'),
+    ('sélibaby', 'Sélibaby'),
+    ('tamchekett', 'Tamchekett'),
+    ('tékane', 'Tékane'),
+    ('tevragh_zeina', 'Tevragh Zeina'),
+    ('teyarett', 'Teyarett'),
+    ('tichitt', 'Tichitt'),
+    ('tidjikja', 'Tidjikja'),
+    ('timbédra', 'Timbédra'),
+    ('tintane', 'Tintane'),
+    ('touil', 'Touil'),
+    ('toujounine', 'Toujounine'),
+    ('wompou', 'Wompou'),
+    ('zouérate', 'Zouérate'),
+]
+
 
 class CustomUser(AbstractUser):
     nni = models.CharField(max_length=20, blank=True, null=True, verbose_name="National ID")
@@ -33,7 +99,7 @@ class School(models.Model):
     dateLettreWaly = models.DateField()
     numLettreWaly = models.CharField(max_length=50,null= True)
     numTel =models.CharField(max_length=50,null=True)
-    nomMoughatta = models.CharField(max_length=50,default="N/A")
+    nomMoughatta = models.CharField(max_length=50,choices=MOUGHATAA_CHOICES,default="N/A")
     idMoughatta = models.IntegerField(null= True)
     wilaya =  models.CharField(max_length=50,null=True)
     nomEcole =models.CharField(max_length=50,null=True)
@@ -44,7 +110,8 @@ class School(models.Model):
     lienQR =   models.CharField(max_length=200,null=True)
     nationalite =   models.CharField(max_length=50,null=True)
     niveau = models.CharField(max_length=50,default="N/A")
-    dateAjout= models.DateField()
+    pdf_file = models.FileField(upload_to='generated_pdfs/', null=True, blank=True)
+    dateAjout = models.DateField()
 
 
 
@@ -59,8 +126,8 @@ class DirectorAuthorization(models.Model):
     dateAutorisationNoter = models.DateField()
     numAutorisationNoter = models.CharField(max_length=50,default="N/A")
     numTel = models.CharField(max_length=50,default="N/A")
-    nomMoughatta = models.CharField(max_length=50,default="N/A")
-    idMoughatta =models.IntegerField(null=True)
+    nomMoughatta = models.CharField(max_length=50,choices=MOUGHATAA_CHOICES,default="N/A")
+    idMoughatta = models.IntegerField(null= True)
     wilaya =models.CharField(max_length=50,default="N/A")
     dateAutorisation=models.DateField()
     autorisationNum = models.CharField(max_length=50,default="N/A")
@@ -74,7 +141,8 @@ class DirectorAuthorization(models.Model):
     nni =  models.CharField(max_length=50,default="N/A")
     nom =  models.CharField(max_length=50,default="N/A")
     codeAD = models.CharField(max_length=50,default="N/A")
-    lienQR = models.CharField(max_length=200,default="N/A")
+    lienQR = models.URLField(blank=True, null=True)
+    pdf_file = models.ImageField(upload_to='pdfs/', blank=True, null=True)  
     typeAutorisationDirige = models.CharField(max_length=200,default="N/A", null=False)
     dateAjout = models.DateField()
     dateDebut = models.DateField()
@@ -99,6 +167,7 @@ class TeacherAuthorization(models.Model):
     code=models.CharField(max_length=50,blank=True,null=True)
     codeAE =models.CharField(max_length=50,blank=True,null=True)
     qr_code = models.CharField(max_length=50, blank=True, null=True)
+    pdf_file = models.FileField(upload_to='pdfs/', blank=True, null=True)  
     dateAjout = models.DateField()
     dateDebut = models.DateField()
     dateFin = models.DateField()

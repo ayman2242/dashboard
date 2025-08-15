@@ -15,22 +15,19 @@ class LoginForm(forms.Form):
 class SchoolForm(forms.ModelForm):
     class Meta:
         model = School
-        exclude = ['id','codeLR','lienQR']
+        exclude = ['id','codeLR','lienQR' ,'dateAjout','code','pdf_file','qr_file']
     widgets = {
         'diplome' : forms.TextInput(attrs={'class':'form-control'}),    
-        'dateLettreWaly': forms.TextInput(attrs={'class':'form-control'}),
         'dateLettreWaly': forms.TextInput(attrs={'class':'form-control'}),
         'numLettreWaly': forms.TextInput(attrs={'class':'form-control'}),
         'numTel': forms.TextInput(attrs={'class':'form-control'}),
         'nomMoughatta': forms.TextInput(attrs={'class':'form-control'}),
         'idMoughatta': forms.TextInput(attrs={'class':'form-control'}),
         'wilaya': forms.TextInput(attrs={'class':'form-control'}),
-        'code': forms.TextInput(attrs={'class':'form-control'}),
         'nni': forms.TextInput(attrs={'class':'form-control'}),
         'nom': forms.TextInput(attrs={'class':'form-control'}),
         'nationalite': forms.TextInput(attrs={'class':'form-control'}),
         'niveau': forms.TextInput(attrs={'class':'form-control'}),
-        'dateAjout': forms.TextInput(attrs={'class':'form-control'}),     
     }
 
 
@@ -64,7 +61,7 @@ class DirectorAuthorizationForm(forms.ModelForm):
 
     class Meta:
         model = DirectorAuthorization
-        exclude = ['id','user','lienQR']
+        exclude = ['id','user','lienQR','pdf_file']
 
     widgets = {
         'school' : forms.TextInput(attrs={'class':'form-control'}),
