@@ -35,7 +35,7 @@ class TeacherAuthorizationForm(forms.ModelForm):
     
     class Meta:
         model = TeacherAuthorization
-        exclude = ['id','user','qr_code','is_active']
+        exclude = ['id','user','qr_code','is_active','dateAjout','codeAE','pdf_file']
 
     widgets = {
         'school' : forms.TextInput(attrs={'class':'form-control'}),
@@ -50,8 +50,6 @@ class TeacherAuthorizationForm(forms.ModelForm):
         'nni' : forms.TextInput(attrs={'class':'form-control'}),
         'nom' : forms.TextInput(attrs={'class':'form-control'}),
         'code' : forms.TextInput(attrs={'class':'form-control'}),
-        'codeAE' : forms.TextInput(attrs={'class':'form-control'}),
-        'dateAjout' : forms.TextInput(attrs={'class':'form-control'}),
         'dateDebut' : forms.TextInput(attrs={'class':'form-control'}),
         'dateFin' : forms.TextInput(attrs={'class':'form-control'}),
 
@@ -61,7 +59,7 @@ class DirectorAuthorizationForm(forms.ModelForm):
 
     class Meta:
         model = DirectorAuthorization
-        exclude = ['id','user','lienQR','pdf_file']
+        exclude = ['id','user','lienQR','dateAjout','pdf_file','codeAD']
 
     widgets = {
         'school' : forms.TextInput(attrs={'class':'form-control'}),
@@ -83,8 +81,6 @@ class DirectorAuthorizationForm(forms.ModelForm):
         'dateNais' : forms.TextInput(attrs={'class':'form-control'}),
         'nni' : forms.TextInput(attrs={'class':'form-control'}),
         'nom' : forms.TextInput(attrs={'class':'form-control'}),
-        'codeAD' : forms.TextInput(attrs={'class':'form-control'}),
-        'dateAjout' : forms.TextInput(attrs={'class':'form-control'}),
         'dateDebut' : forms.TextInput(attrs={'class':'form-control'}),
         'dateFin' : forms.TextInput(attrs={'class':'form-control'}),
         

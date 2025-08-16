@@ -171,8 +171,6 @@ class TeacherAuthorization(models.Model):
     dateAjout = models.DateField()
     dateDebut = models.DateField()
     dateFin = models.DateField()
-    is_active = models.BooleanField(default=True)
-
     def __str__(self):
         return f"{self.user.get_full_name()} - {self.specialiteDiplome}"
     

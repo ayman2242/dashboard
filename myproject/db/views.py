@@ -10,7 +10,7 @@ from .forms import LoginForm ,DirectorAuthorizationForm,SchoolForm,TeacherAuthor
 from fpdf import FPDF
 from django.core.files.base import ContentFile
 from django.contrib.auth.decorators import login_required
-from .models import DirectorAuthorization,School
+from .models import DirectorAuthorization,School,TeacherAuthorization
 from django.utils.timezone import now
 from .utils.pdf_utils import fill_pdf
 from datetime import date
@@ -56,7 +56,7 @@ def school(request):
             instance.save()
 
             # 4️⃣ Generate final QR link
-            qr_link = f"http://127.0.0.1:8000/director/{instance.id}/"
+            qr_link = f"http://127.0.0.1:8000/lettre/{instance.id}/"
             instance.lienQR = qr_link
 
             # 5️⃣ Generate QR code PNG
@@ -109,65 +109,130 @@ def director_autor(request):
     if request.method == "POST":
         form = DirectorAuthorizationForm(request.POST)
         if form.is_valid():
-            # ===== 1️⃣ حفظ مؤقت للسجل لتجنب IntegrityError =====
-            instance = form.save(commit=False)
+            instance = form.save(commit=False) 
             instance.user = request.user
-            instance.lienQR = "temp"  # قيمة مؤقتة
-            instance.save()  # الآن لدينا instance.id
+            instance.dateAjout= date.today()
+            year = str(now().year)[-2:]
+            last_director = DirectorAuthorization.objects.filter(
+             codeAD__startswith=f'DEPAD{year}'
+            ).order_by('id').last()
+            number = int(last_director.codeAD[-6:]) + 1 if last_director else 1
+            instance.codeAD = f'DEPAD{year}{number:06d}'
 
-            # ===== 2️⃣ إنشاء الرابط النهائي للـ QR =====
+            instance.lienQR = "temp"
+            instance.save()
             qr_link = f"http://127.0.0.1:8000/director/{instance.id}/"
             instance.lienQR = qr_link
 
-            # ===== 3️⃣ إنشاء QR Code =====
+            # 5️⃣ Generate QR code PNG
             qr_img = qrcode.make(qr_link)
 
-            # ===== 4️⃣ تجهيز المجلد المؤقت وحفظ QR =====
-            temp_dir = os.path.join(settings.MEDIA_ROOT, "temp_qr")
+            # 6️⃣ Save QR to a temporary file
+            temp_dir = os.path.join(settings.MEDIA_ROOT, "temp_qr1")
             os.makedirs(temp_dir, exist_ok=True)
-
-            # تنظيف اسم الملف لتجنب الأحرف غير الصالحة
-            safe_autorisationNum = re.sub(r'[^0-9a-zA-Z]+', '_', instance.autorisationNum)
-            qr_filename = f"{safe_autorisationNum}_qr.png"
+            safe_name = re.sub(r'[^0-9a-zA-Z]+', '_', instance.codeAD)
+            qr_filename = f"{safe_name}_qr.png"
             qr_path = os.path.join(temp_dir, qr_filename)
             qr_img.save(qr_path)
 
-            # ===== 5️⃣ إنشاء PDF وإدراج QR =====
-            pdf = FPDF()
-            pdf.add_page()
-            pdf.set_font("Arial", size=16)
-            pdf.cell(200, 10, txt="Director Authorization", ln=True, align="C")
-            pdf.ln(10)
-            pdf.set_font("Arial", size=12)
-            pdf.cell(200, 10, txt=f"Authorization Number: {instance.autorisationNum}", ln=True)
-            pdf.cell(200, 10, txt=f"School: {instance.school}", ln=True)
-            pdf.cell(200, 10, txt=f"Start Date: {instance.dateDebut}", ln=True)
-            pdf.cell(200, 10, txt=f"End Date: {instance.dateFin}", ln=True)
-            pdf.cell(200, 10, txt=f"User: {instance.user.username}", ln=True)
 
-            # إدراج صورة QR داخل PDF
-            pdf.image(qr_path, x=80, y=80, w=50, h=50)
 
-            # حفظ PDF في FileField
-            pdf_io = BytesIO()
-            pdf_io.write(pdf.output(dest="S").encode("latin-1"))
-            pdf_filename = f"{safe_autorisationNum}.pdf"
-            instance.pdf_file.save(pdf_filename, ContentFile(pdf_io.getvalue()), save=False)
+            # 8️⃣ Generate PDF with QR inserted
+            pdf_replacements = {
+                "[nom]": instance.nom,
+                "[codeLR]": instance.codeAD,
+                "[date]": instance.dateAutorisationNoter,
+                "[QR]": "[QR]"  # Placeholder in PDF template
+            }
 
-            # ===== 6️⃣ الحفظ النهائي =====
+            pdf_path = fill_pdf(
+                "template.pdf",
+                f"{instance.codeAD}.pdf",
+                pdf_replacements,
+                qr_image_path=qr_path  # ✅ pass the actual QR PNG path
+            )
+
+            # 9️⃣ Save PDF to model
+            with open(pdf_path, 'rb') as f:
+                instance.pdf_file.save(f"{instance.codeAD}.pdf", File(f), save=False)
+
+            #  🔟 Final save
             instance.save()
 
-            # ===== 7️⃣ (اختياري) حذف الملف المؤقت =====
-            # os.remove(qr_path)
+            return redirect("home")
+        else:
+            return render(request, 'home.html', {'form': form})
 
-            return redirect("home")  # عدّل لصفحة النجاح
 
     else:   
         form = DirectorAuthorizationForm()
     return  render(request,"directeur.html", {'form':form})
 
+@login_required(login_url='/login/')    
+def teacher_autor(request):
+    if request.method == "POST":
+        form = TeacherAuthorizationForm(request.POST)
+        if form.is_valid():
+            instance = form.save(commit=False) 
+            instance.user = request.user
+            instance.dateAjout = date.today()
 
+            # 1️⃣ Generate unique codeAE
+            year = str(now().year)[-2:]
+            last_teacher = TeacherAuthorization.objects.filter(
+                codeAE__startswith=f'DEPAE{year}'
+            ).order_by('id').last()
+            number = int(last_teacher.codeAE[-6:]) + 1 if last_teacher else 1
+            instance.codeAE = f'DEPAE{year}{number:06d}'
 
+            # 2️⃣ Temporary save
+            instance.lienQR = "temp"
+            instance.save()
+
+            # 3️⃣ Generate QR link
+            qr_link = f"http://127.0.0.1:8000/teacher/{instance.id}/"
+            instance.lienQR = qr_link
+
+            # 4️⃣ Generate QR code PNG
+            qr_img = qrcode.make(qr_link)
+
+            # 5️⃣ Save QR to a temporary file
+            temp_dir = os.path.join(settings.MEDIA_ROOT, "temp_qr2")
+            os.makedirs(temp_dir, exist_ok=True)
+            safe_name = re.sub(r'[^0-9a-zA-Z]+', '_', instance.codeAE)
+            qr_filename = f"{safe_name}_qr.png"
+            qr_path = os.path.join(temp_dir, qr_filename)
+            qr_img.save(qr_path)
+
+            # 6️⃣ Generate PDF with QR inserted
+            pdf_replacements = {
+                "[nom]": instance.nom,
+                "[codeAE]": instance.codeAE,
+                "[date]": instance.dateDebut.strftime("%d/%m/%Y") if instance.dateDebut else "",
+                "[QR]": "[QR]"  # Placeholder in PDF template
+            }
+
+            pdf_path = fill_pdf(
+                "template.pdf",
+                f"{instance.codeAE}.pdf",
+                pdf_replacements,
+                qr_image_path=qr_path
+            )
+
+            # 7️⃣ Save PDF to model
+            with open(pdf_path, 'rb') as f:
+                instance.pdf_file.save(f"{instance.codeAE}.pdf", File(f), save=False)
+
+            # 8️⃣ Final save
+            instance.save()
+
+            return redirect("home")
+        else:
+            return render(request, 'home.html', {'form': form})
+
+    else:   
+        form = TeacherAuthorizationForm()
+    return render(request, "teacher.html", {'form': form})
 
 
 
