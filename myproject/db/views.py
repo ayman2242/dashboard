@@ -6,7 +6,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.core.files import File
 from io import BytesIO
 import qrcode
-from .forms import LoginForm ,DirectorAuthorizationForm,SchoolForm,TeacherAuthorizationForm
+from .forms import LoginForm ,DirectorAuthorizationForm,SchoolForm,TeacherAuthorizationForm,UserForm
 from fpdf import FPDF
 from django.core.files.base import ContentFile
 from django.contrib.auth.decorators import login_required
@@ -14,6 +14,8 @@ from .models import DirectorAuthorization,School,TeacherAuthorization
 from django.utils.timezone import now
 from .utils.pdf_utils import fill_pdf
 from datetime import date
+from django.contrib.auth.hashers import make_password
+
 
 
 
@@ -234,6 +236,24 @@ def teacher_autor(request):
         form = TeacherAuthorizationForm()
     return render(request, "teacher.html", {'form': form})
 
+
+
+@login_required(login_url='/login/')
+def add_user(request):
+    if request.method == 'POST':
+        form = UserForm(request.POST)
+        if form.is_valid():
+            user = form.save(commit=False)  # password is already hashed by UserCreationForm
+            user.save()
+
+            # Assign selected group
+            group = form.cleaned_data['group']
+            user.groups.add(group)
+
+            return redirect('home')
+    else:
+        form = UserForm()
+    return render(request, 'add_user.html', {'form': form})
 
 
 def logout_page(request):

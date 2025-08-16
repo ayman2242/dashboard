@@ -1,6 +1,7 @@
 from django import forms
-from .models import School, TeacherAuthorization, DirectorAuthorization
-
+from .models import School, TeacherAuthorization, DirectorAuthorization,CustomUser
+from django.contrib.auth.models import User, Group
+from django.contrib.auth.forms import UserCreationForm
 
 class LoginForm(forms.Form):
     username = forms.CharField(
@@ -11,6 +12,28 @@ class LoginForm(forms.Form):
         widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Password'})
     )
 
+
+class UserForm(UserCreationForm):
+    group = forms.ModelChoiceField(
+        queryset=Group.objects.all(),
+        required=True,
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+
+    class Meta:
+        model = CustomUser
+        fields = ['username', 'email', 'password1', 'password2', 'nni', 'phone', 'group']
+        help_texts = {  # remove all default help_text
+            'username': None,
+            'password1': None,
+            'password2': None,
+        }
+        widgets = {
+            'username': forms.TextInput(attrs={'class': 'form-control'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control'}),
+            'nni': forms.TextInput(attrs={'class': 'form-control'}),
+            'phone': forms.TextInput(attrs={'class': 'form-control'}),
+        }
 
 class SchoolForm(forms.ModelForm):
     class Meta:
