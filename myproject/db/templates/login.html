@@ -10,7 +10,29 @@
     <h2>Login</h2>
     <form method="post">
         {% csrf_token %}
-        {{ form.as_p }}
+
+        <!-- Show global (non-field) errors -->
+        {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+                {% for error in form.non_field_errors %}
+                    {{ error }}
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <!-- Show field errors -->
+        {% for field in form %}
+            <div class="form-group mb-3">
+                {{ field.label_tag }}
+                {{ field }}
+                {% if field.errors %}
+                    <div class="text-danger">
+                        {{ field.errors|striptags }}
+                    </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+
         <button type="submit" class="btn btn-primary">Login</button>
     </form>
 </div>

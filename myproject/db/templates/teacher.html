@@ -1,14 +1,24 @@
 {% extends "base.html" %}
 
-{% block title %}directeur Page{% endblock %}
+{% block title %}Teacher Page{% endblock %}
 
 {% block content %}
-    <div class="container mt-5" style="max-width:400px;">
-        <h1>Director Authorizatio</h1>
-        <form method="post">
-            {% csrf_token %}
-            {% for field in form %}
-            <div class="form-group">
+<div class="container mt-5" style="max-width:400px;">
+    <h1>Teacher Authorization</h1>
+
+    <!-- Show global form errors -->
+    {% if form.non_field_errors %}
+        <div class="alert alert-danger">
+            {% for error in form.non_field_errors %}
+                {{ error }}
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+        {% for field in form %}
+            <div class="form-group mb-3">
                 {{ field.label_tag }}
                 {{ field }}
                 {% if field.errors %}
@@ -18,7 +28,7 @@
                 {% endif %}
             </div>
         {% endfor %}
-            <button type="submit" class="btn btn-primary">ajoute</button>
-        </form>
-    </div>
+        <button type="submit" class="btn btn-primary">Ajoute</button>
+    </form>
+</div>
 {% endblock content %}

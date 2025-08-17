@@ -5,6 +5,7 @@
 {% block content %}
     <div class="container mt-5" style="max-width:400px;">
         <h2>Add User</h2>
+        {% if request.user.is_superuser %}
         <form method="post">
         {% csrf_token %}
         
@@ -19,9 +20,13 @@
                 {% endif %}
             </div>
         {% endfor %}
+
         
         <button type="submit" class="btn btn-primary">Add User</button>
         </form>
-
+        {% else %}
+        <p class="text-danger">You are not allowed to access this page.</p>
+    {% endif %}
     </div>
 {% endblock content %}
+

@@ -1,0 +1,44 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Success</title>
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+</head>
+<body>
+<div class="container mt-5">
+    <div class="alert alert-success text-center">
+        <h2>✅ Operation completed successfully!</h2>
+    </div>
+
+    {% if school %}
+        <h4>School PDF</h4>
+        {% if school.pdf_file %}
+            <a href="{{ school.pdf_file.url }}" class="btn btn-primary" download>Download PDF</a>
+        {% else %}
+            <p>No PDF available</p>
+        {% endif %}
+    {% endif %}
+
+    {% if director %}
+        <h4>Director Authorization PDF</h4>
+        {% if director.pdf_file %}
+            <a href="{{ director.pdf_file.url }}" class="btn btn-success" download>Download PDF</a>
+        {% else %}
+            <p>No PDF available</p>
+        {% endif %}
+    {% endif %}
+
+    {% if teacher %}
+        <h4>Teacher Authorization PDF</h4>
+        {% if teacher.pdf_file %}
+            <a href="{{ teacher.pdf_file.url }}" class="btn btn-warning" download>Download PDF</a>
+        {% else %}
+            <p>No PDF available</p>
+        {% endif %}
+    {% endif %}
+
+    <p class="mt-3"><a href="{% url 'home' %}">Return to Home</a></p>
+</div>
+</body>
+</html>

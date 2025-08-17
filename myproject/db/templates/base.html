@@ -1,3 +1,5 @@
+{% load group_tags %}  <!-- If you use the custom filter -->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -59,10 +61,30 @@
                     
                     <!-- Desktop Menu -->
                     <div class="hidden md:flex items-center space-x-1">
-                        <a href="" class="nav-item px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900">Dashboard</a>
-                        <a href="#" class="nav-item px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900">Projects</a>
-                        <a href="#" class="nav-item px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900">Team</a>
-                        <a href="#" class="nav-item px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900">Settings</a>
+    {% if user.is_superuser %}
+        <a href="{% url 'add_user' %}" class="nav-item px-4 py-3 ...">
+            <i class="fas fa-cog mr-2"></i> Add User
+        </a>
+    {% endif %}
+
+    {% if request.user|has_group:"Director" %}
+        <a href="{% url 'director' %}" class="nav-item px-4 py-3 ...">
+            <i class="fas fa-project-diagram mr-2"></i> Director Authorization
+        </a>
+    {% endif %}
+
+    {% if request.user|has_group:"Teacher" %}
+        <a href="{% url 'teacher_autor' %}" class="nav-item px-4 py-3 ...">
+            <i class="fas fa-users mr-2"></i> Teacher Authorization
+        </a>
+    {% endif %}
+
+    {% if request.user|has_group:"Schools" %}
+    <a href="{% url 'school' %}" class="nav-item px-4 py-3 ...">
+        <i class="fas fa-tachometer-alt mr-2"></i> Lettre Reception
+    </a>
+    {% endif %}  
+        </div>
                     </div>
                 </div>
                 
@@ -100,27 +122,23 @@
             <div class="px-4 py-3 border-b border-gray-200">
                 <span class="text-sm font-medium text-gray-500">Welcome: <span class="text-gray-800">JohnDoe</span></span>
             </div>
-            <a href="#" class="nav-item px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-100 border-b border-gray-200">
-                <i class="fas fa-tachometer-alt mr-2"></i> Dashboard
-            </a>
-            <a href="#" class="nav-item px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-100 border-b border-gray-200">
-                <i class="fas fa-project-diagram mr-2"></i> Projects
-            </a>
-            <a href="#" class="nav-item px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-100 border-b border-gray-200">
-                <i class="fas fa-users mr-2"></i> Team
-            </a>
-            <a href="#" class="nav-item px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-100 border-b border-gray-200">
-                <i class="fas fa-cog mr-2"></i> Settings
-            </a>
             
-        </div>
+
     </nav>
 
     <!-- Main Content -->
     <main class="max-w-7xl mx-auto px-4 py-8">
+        {% if messages %}
+            <div class="text-danger">
+               {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+             {{ message }}
+           </div>
+        {% endfor %}
+                </div>
+        {% endif %}
 
-        {% block content %}
-        {% endblock %}
+  {% block content %}{% endblock %}
 
     </main>
 

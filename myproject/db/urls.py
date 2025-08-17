@@ -1,5 +1,5 @@
 from django.urls import path, include
-from .views import home,login_page,logout_page,director_autor, school,teacher_autor,add_user
+from .views import home,login_page,logout_page,director_autor, school,teacher_autor,add_user,success
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -11,7 +11,10 @@ urlpatterns = [
     path('school/',school,name= "school"),
     path('teacher/',teacher_autor,name= "teacher_autor"),
     path('add_user/',add_user,name= "add_user"),
-
+    path('success/school/<int:school_id>/', success, name='success_school'),
+    path('success/director/<int:director_id>/',success, name='success_director'),
+    path('success/teacher/<int:teacher_id>/', success, name='success_teacher'),
+    
 
     # path("qr/", generate_qr, name="generate_qr"),
 

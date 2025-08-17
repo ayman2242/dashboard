@@ -14,7 +14,10 @@ from .models import DirectorAuthorization,School,TeacherAuthorization
 from django.utils.timezone import now
 from .utils.pdf_utils import fill_pdf
 from datetime import date
-from django.contrib.auth.hashers import make_password
+from django.contrib import messages
+
+from django.shortcuts import get_object_or_404, redirect
+
 
 
 
@@ -40,6 +43,9 @@ def login_page(request):
 
 @login_required(login_url='/login/')
 def school(request):
+    if not request.user.groups.filter(name="Schools").exists():
+        messages.error(request, "You do not have permission to access this page.")
+        return redirect("home")  
     if request.method == 'POST':
         form = SchoolForm(request.POST)
         if form.is_valid():
@@ -96,7 +102,7 @@ def school(request):
             #  🔟 Final save
             instance.save()
 
-            return redirect("home")
+            return redirect('success_school', school_id=instance.id)
         else:
             return render(request, 'lettre.html', {'form': form})
 
@@ -108,6 +114,9 @@ def school(request):
 
 @login_required(login_url='/login/')    
 def director_autor(request):
+    if not request.user.groups.filter(name="Director").exists():
+        messages.error(request, "You do not have permission to access this page.")
+        return redirect("home")  
     if request.method == "POST":
         form = DirectorAuthorizationForm(request.POST)
         if form.is_valid():
@@ -161,9 +170,9 @@ def director_autor(request):
             #  🔟 Final save
             instance.save()
 
-            return redirect("home")
+            return redirect('success_director', director_id=instance.id)
         else:
-            return render(request, 'home.html', {'form': form})
+            return render(request, 'succes.html', {'form': form})
 
 
     else:   
@@ -172,6 +181,9 @@ def director_autor(request):
 
 @login_required(login_url='/login/')    
 def teacher_autor(request):
+    if not request.user.groups.filter(name="Teacher").exists():
+        messages.error(request, "You do not have permission to access this page.")
+        return redirect("home") 
     if request.method == "POST":
         form = TeacherAuthorizationForm(request.POST)
         if form.is_valid():
@@ -228,9 +240,9 @@ def teacher_autor(request):
             # 8️⃣ Final save
             instance.save()
 
-            return redirect("home")
+            return redirect('success_teacher', teacher_id=instance.id)
         else:
-            return render(request, 'home.html', {'form': form})
+            return render(request, 'succes.html', {'form': form})
 
     else:   
         form = TeacherAuthorizationForm()
@@ -250,7 +262,7 @@ def add_user(request):
             group = form.cleaned_data['group']
             user.groups.add(group)
 
-            return redirect('home')
+            return redirect('success')
     else:
         form = UserForm()
     return render(request, 'add_user.html', {'form': form})
@@ -262,3 +274,33 @@ def logout_page(request):
 
 def home(request):
     return render(request,"home.html")
+
+
+
+@login_required
+def success(request, school_id=None, director_id=None, teacher_id=None):
+    context = {}
+
+    if school_id:
+        school = get_object_or_404(School, id=school_id)
+        if school.user != request.user:  # redirect if not the owner
+            return redirect('home')
+        context['school'] = school
+
+    elif director_id:
+        director = get_object_or_404(DirectorAuthorization, id=director_id)
+        if director.user != request.user:
+            return redirect('home')
+        context['director'] = director
+
+    elif teacher_id:
+        teacher = get_object_or_404(TeacherAuthorization, id=teacher_id)
+        if teacher.user != request.user:
+            return redirect('home')
+        context['teacher'] = teacher
+
+    else:
+        # No valid ID provided
+        return redirect('home')
+
+    return render(request, 'succes.html', context)
