@@ -1,13 +1,12 @@
+import tempfile
 import os
 from django.conf import settings
 import re
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.core.files import File
-from io import BytesIO
 import qrcode
 from .forms import LoginForm ,DirectorAuthorizationForm,SchoolForm,TeacherAuthorizationForm,UserForm
-from fpdf import FPDF
 from django.core.files.base import ContentFile
 from django.contrib.auth.decorators import login_required
 from .models import DirectorAuthorization,School,TeacherAuthorization
@@ -15,14 +14,9 @@ from django.utils.timezone import now
 from .utils.pdf_utils import fill_pdf
 from datetime import date
 from django.contrib import messages
-
 from django.shortcuts import get_object_or_404, redirect
 
-
-
-
-
-# Create your views here.
+                    
 def login_page(request):
     if request.method == 'POST':
         form = LoginForm(request.POST)
@@ -83,8 +77,8 @@ def school(request):
             # 8️⃣ Generate PDF with QR inserted
             pdf_replacements = {
                 "[nom]": instance.nom,
-                "[codeLR]": instance.codeLR,
-                "[date]": instance.dateLettreWaly.strftime("%d/%m/%Y"),
+                "[codeAE]": instance.codeLR,
+                "[date]": instance.dateAjout.strftime("%d/%m/%Y"),
                 "[QR]": "[QR]"  # Placeholder in PDF template
             }
 
@@ -101,8 +95,21 @@ def school(request):
 
             #  🔟 Final save
             instance.save()
+            try:
+             # Remove temporary QR code
+                if os.path.exists(qr_path):
+                    os.remove(qr_path)
+                # Remove temporary PDF
+                if os.path.exists(pdf_path):
+                    os.remove(pdf_path)
+                # Remove temp directory if empty
+                if os.path.exists(temp_dir) and not os.listdir(temp_dir):
+                    os.rmdir(temp_dir)
+            except Exception as e:
+                print(f"Error cleaning up files: {e}")
 
             return redirect('success_school', school_id=instance.id)
+        
         else:
             return render(request, 'lettre.html', {'form': form})
 
@@ -117,73 +124,94 @@ def director_autor(request):
     if not request.user.groups.filter(name="Director").exists():
         messages.error(request, "You do not have permission to access this page.")
         return redirect("home")  
+    
     if request.method == "POST":
         form = DirectorAuthorizationForm(request.POST)
         if form.is_valid():
-            instance = form.save(commit=False) 
-            instance.user = request.user
-            instance.dateAjout= date.today()
-            year = str(now().year)[-2:]
-            last_director = DirectorAuthorization.objects.filter(
-             codeAD__startswith=f'DEPAD{year}'
-            ).order_by('id').last()
-            number = int(last_director.codeAD[-6:]) + 1 if last_director else 1
-            instance.codeAD = f'DEPAD{year}{number:06d}'
+            try:
+                instance = form.save(commit=False) 
+                instance.user = request.user
+                instance.dateAjout = date.today()
+                
+                # Generate codeAD
+                year = str(now().year)[-2:]
+                last_director = DirectorAuthorization.objects.filter(
+                    codeAD__startswith=f'DEPAD{year}'
+                ).order_by('id').last()
+                number = int(last_director.codeAD[-6:]) + 1 if last_director else 1
+                instance.codeAD = f'DEPAD{year}{number:06d}'
 
-            instance.lienQR = "temp"
-            instance.save()
-            qr_link = f"http://127.0.0.1:8000/director/{instance.id}/"
-            instance.lienQR = qr_link
+                # Temporary save to get ID
+                instance.lienQR = "temp"
+                instance.save()
+                
+                # Generate QR link
+                qr_link = f"http://127.0.0.1:8000/director/{instance.id}/"
+                instance.lienQR = qr_link
 
-            # 5️⃣ Generate QR code PNG
-            qr_img = qrcode.make(qr_link)
+                # Generate QR code PNG
+                qr_img = qrcode.make(qr_link)
 
-            # 6️⃣ Save QR to a temporary file
-            temp_dir = os.path.join(settings.MEDIA_ROOT, "temp_qr1")
-            os.makedirs(temp_dir, exist_ok=True)
-            safe_name = re.sub(r'[^0-9a-zA-Z]+', '_', instance.codeAD)
-            qr_filename = f"{safe_name}_qr.png"
-            qr_path = os.path.join(temp_dir, qr_filename)
-            qr_img.save(qr_path)
+                # Save QR to a temporary file
+                temp_dir = os.path.join(settings.MEDIA_ROOT, "temp_qr1")
+                os.makedirs(temp_dir, exist_ok=True)
+                safe_name = re.sub(r'[^0-9a-zA-Z]+', '_', instance.codeAD)
+                qr_filename = f"{safe_name}_qr.png"
+                qr_path = os.path.join(temp_dir, qr_filename)
+                qr_img.save(qr_path)
 
+                # Generate PDF with QR inserted
+                pdf_replacements = {
+                    "[nom]": instance.nom,
+                    "[codeAE]": instance.codeAD,
+                    "[date]": instance.dateAjout.strftime("%d/%m/%Y"),
+                    "[QR]": "[QR]"
+                }
 
+                pdf_path = fill_pdf(
+                    "template.pdf",
+                    f"{instance.codeAD}.pdf",
+                    pdf_replacements,
+                    qr_image_path=qr_path
+                )
 
-            # 8️⃣ Generate PDF with QR inserted
-            pdf_replacements = {
-                "[nom]": instance.nom,
-                "[codeLR]": instance.codeAD,
-                "[date]": instance.dateAutorisationNoter,
-                "[QR]": "[QR]"  # Placeholder in PDF template
-            }
+                # Save PDF to model
+                with open(pdf_path, 'rb') as f:
+                    instance.pdf_file.save(f"{instance.codeAD}.pdf", File(f), save=False)
 
-            pdf_path = fill_pdf(
-                "template.pdf",
-                f"{instance.codeAD}.pdf",
-                pdf_replacements,
-                qr_image_path=qr_path  # ✅ pass the actual QR PNG path
-            )
+                # Final save
+                instance.save()
 
-            # 9️⃣ Save PDF to model
-            with open(pdf_path, 'rb') as f:
-                instance.pdf_file.save(f"{instance.codeAD}.pdf", File(f), save=False)
-
-            #  🔟 Final save
-            instance.save()
-
-            return redirect('success_director', director_id=instance.id)
+                try:
+                    # Clean up temporary files
+                    if os.path.exists(qr_path):
+                        os.remove(qr_path)
+                    if os.path.exists(pdf_path):
+                        os.remove(pdf_path)
+                    if os.path.exists(temp_dir) and not os.listdir(temp_dir):
+                        os.rmdir(temp_dir)
+                except Exception as e:
+                    print(f"Error cleaning up director files: {e}")
+                
+                return redirect('success_director', director_id=instance.id)
+            
+            except Exception as e:
+                print(f"Error in director_autor view: {str(e)}")
+                messages.error(request, f"An error occurred: {str(e)}")
+                return render(request, 'directeur.html', {'form': form})
         else:
-            return render(request, 'succes.html', {'form': form})
-
-
+            return render(request, 'directeur.html', {'form': form})
     else:   
         form = DirectorAuthorizationForm()
-    return  render(request,"directeur.html", {'form':form})
+    return render(request, "directeur.html", {'form': form})
+
 
 @login_required(login_url='/login/')    
 def teacher_autor(request):
     if not request.user.groups.filter(name="Teacher").exists():
         messages.error(request, "You do not have permission to access this page.")
         return redirect("home") 
+    
     if request.method == "POST":
         form = TeacherAuthorizationForm(request.POST)
         if form.is_valid():
@@ -192,11 +220,19 @@ def teacher_autor(request):
             instance.dateAjout = date.today()
 
             # 1️⃣ Generate unique codeAE
-            year = str(now().year)[-2:]
+            year = str(date.today().year)[-2:]
             last_teacher = TeacherAuthorization.objects.filter(
                 codeAE__startswith=f'DEPAE{year}'
             ).order_by('id').last()
-            number = int(last_teacher.codeAE[-6:]) + 1 if last_teacher else 1
+            
+            if last_teacher and last_teacher.codeAE:
+                try:
+                    number = int(last_teacher.codeAE[-6:]) + 1
+                except ValueError:
+                    number = 1
+            else:
+                number = 1
+                
             instance.codeAE = f'DEPAE{year}{number:06d}'
 
             # 2️⃣ Temporary save
@@ -204,48 +240,71 @@ def teacher_autor(request):
             instance.save()
 
             # 3️⃣ Generate QR link
-            qr_link = f"http://127.0.0.1:8000/teacher/{instance.id}/"
+            qr_link = f"{request.scheme}://{request.get_host()}/teacher/{instance.id}/"
             instance.lienQR = qr_link
 
             # 4️⃣ Generate QR code PNG
             qr_img = qrcode.make(qr_link)
 
             # 5️⃣ Save QR to a temporary file
-            temp_dir = os.path.join(settings.MEDIA_ROOT, "temp_qr2")
-            os.makedirs(temp_dir, exist_ok=True)
+            temp_dir = tempfile.mkdtemp()
             safe_name = re.sub(r'[^0-9a-zA-Z]+', '_', instance.codeAE)
             qr_filename = f"{safe_name}_qr.png"
             qr_path = os.path.join(temp_dir, qr_filename)
             qr_img.save(qr_path)
 
             # 6️⃣ Generate PDF with QR inserted
+            code = instance.codeAE
             pdf_replacements = {
                 "[nom]": instance.nom,
-                "[codeAE]": instance.codeAE,
-                "[date]": instance.dateDebut.strftime("%d/%m/%Y") if instance.dateDebut else "",
-                "[QR]": "[QR]"  # Placeholder in PDF template
+                "[codeAE]": code,  # Just use the code directly
+                "[date]": instance.dateAjout.strftime("%d/%m/%Y"),
+                "[QR]": "[QR]"
             }
+            print("PDF replacements:", pdf_replacements)
 
-            pdf_path = fill_pdf(
-                "template.pdf",
-                f"{instance.codeAE}.pdf",
-                pdf_replacements,
-                qr_image_path=qr_path
-            )
+            try:
+                pdf_path = fill_pdf(
+                    "template.pdf",
+                    f"{instance.id}.pdf",
+                    pdf_replacements,
+                    qr_image_path=qr_path
+                )
+    
+                # 7️⃣ Save PDF to model
+                with open(pdf_path, 'rb') as f:
+                    instance.pdf_file.save(f"{instance.id}.pdf", File(f), save=False)
 
-            # 7️⃣ Save PDF to model
-            with open(pdf_path, 'rb') as f:
-                instance.pdf_file.save(f"{instance.codeAE}.pdf", File(f), save=False)
-
-            # 8️⃣ Final save
-            instance.save()
-
-            return redirect('success_teacher', teacher_id=instance.id)
+                # 8️⃣ Final save
+                instance.save()
+                
+                # Clean up temporary files
+                try:
+                    if os.path.exists(qr_path):
+                        os.remove(qr_path)
+                    if os.path.exists(pdf_path):
+                        os.remove(pdf_path)
+                    if os.path.exists(temp_dir) and not os.listdir(temp_dir):
+                        os.rmdir(temp_dir)
+                except Exception as e:
+                    print(f"Error cleaning up teacher files: {e}")
+                    
+                return redirect('success_teacher', teacher_id=instance.id)
+                
+            except Exception as e:
+                # Handle PDF generation errors
+                messages.error(request, f"Error generating PDF: {str(e)}")
+                # Clean up instance if PDF generation fails
+                instance.delete()
+                return render(request, 'teacher.html', {'form': form})
+                
         else:
-            return render(request, 'succes.html', {'form': form})
+            # Form is not valid
+            return render(request, 'teacher.html', {'form': form})
 
     else:   
         form = TeacherAuthorizationForm()
+    
     return render(request, "teacher.html", {'form': form})
 
 
@@ -262,7 +321,7 @@ def add_user(request):
             group = form.cleaned_data['group']
             user.groups.add(group)
 
-            return redirect('success')
+            return redirect('home')
     else:
         form = UserForm()
     return render(request, 'add_user.html', {'form': form})
@@ -281,26 +340,49 @@ def home(request):
 def success(request, school_id=None, director_id=None, teacher_id=None):
     context = {}
 
+    obj = None
+    obj_type = None
+
+    # Get the object based on which ID is provided
     if school_id:
-        school = get_object_or_404(School, id=school_id)
-        if school.user != request.user:  # redirect if not the owner
-            return redirect('home')
-        context['school'] = school
+        obj = get_object_or_404(School, id=school_id)
+        obj_type = 'school'
 
     elif director_id:
-        director = get_object_or_404(DirectorAuthorization, id=director_id)
-        if director.user != request.user:
-            return redirect('home')
-        context['director'] = director
+        obj = get_object_or_404(DirectorAuthorization, id=director_id)
+        obj_type = 'director'
 
     elif teacher_id:
-        teacher = get_object_or_404(TeacherAuthorization, id=teacher_id)
-        if teacher.user != request.user:
-            return redirect('home')
-        context['teacher'] = teacher
+        obj = get_object_or_404(TeacherAuthorization, id=teacher_id)
+        obj_type = 'teacher'
 
-    else:
-        # No valid ID provided
+    # Redirect if no object
+    if not obj:
         return redirect('home')
 
+    # Only check user ownership if the model has a user field
+    if hasattr(obj, 'user') and obj.user != request.user:
+        return redirect('home')
+
+    # Add object to context
+    context['object'] = obj
+    context['object_type'] = obj_type
+
+    # Add PDF URL if available
+    if hasattr(obj, 'pdf_file') and obj.pdf_file:
+        context['pdf_url'] = obj.pdf_file.url
+
     return render(request, 'succes.html', context)
+
+
+def teacher_detail(request, teacher_id):
+    teacher = get_object_or_404(TeacherAuthorization, id=teacher_id)
+    return render(request, 'teacher_detail.html', {'teacher': teacher})
+
+def school_detail(request, school_id):
+    school = get_object_or_404(School, id=school_id)
+    return render(request, 'school_detail.html', {'school': school})
+
+def director_detail(request, director_id):
+    director = get_object_or_404(DirectorAuthorization, id=director_id)
+    return render(request, 'director_detail.html', {'director': director})

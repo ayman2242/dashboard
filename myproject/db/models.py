@@ -95,6 +95,7 @@ class CustomUser(AbstractUser):
 
 class School(models.Model):
     id = models.AutoField(primary_key=True)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE,null=True)
     diplome = models.CharField(max_length=50,null=True)
     dateLettreWaly = models.DateField()
     numLettreWaly = models.CharField(max_length=50,null= True)
@@ -125,7 +126,7 @@ class DirectorAuthorization(models.Model):
     noter = models.CharField(max_length=50,default="N/A")
     dateAutorisationNoter = models.DateField()
     numAutorisationNoter = models.CharField(max_length=50,default="N/A")
-    numTel = models.CharField(max_length=50,default="N/A")
+    numTel = models.CharField(max_length=50,default="N/A")  
     nomMoughatta = models.CharField(max_length=50,choices=MOUGHATAA_CHOICES,default="N/A")
     idMoughatta = models.IntegerField(null= True)
     wilaya =models.CharField(max_length=50,default="N/A")
@@ -147,6 +148,7 @@ class DirectorAuthorization(models.Model):
     dateAjout = models.DateField()
     dateDebut = models.DateField()
     dateFin = models.DateField()
+    
     def __str__(self):
         return f"{self.user.get_full_name()} - {self.school.nomEcole}"
 
@@ -166,12 +168,12 @@ class TeacherAuthorization(models.Model):
     nom=models.CharField(max_length=50,blank=True,null=True)
     code=models.CharField(max_length=50,blank=True,null=True)
     codeAE =models.CharField(max_length=50,blank=True,null=True)
-    qr_code = models.CharField(max_length=50, blank=True, null=True)
+    qr_code = models.CharField(max_length=50, blank=True, null=True) #remove
     pdf_file = models.FileField(upload_to='pdfs/', blank=True, null=True)  
     dateAjout = models.DateField()
     dateDebut = models.DateField()
     dateFin = models.DateField()
-    is_active = models.BooleanField(default=True)
+    is_active = models.BooleanField(default=True) #and this also
 
     def __str__(self):
         return f"{self.user.get_full_name()} - {self.specialiteDiplome}"

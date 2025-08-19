@@ -1,26 +1,268 @@
 {% extends 'base.html' %}
 
-{% block title %}Home Page{% endblock %}
+{% block title %}Ministère de l'Éducation - Mauritanie{% endblock %}
 
 {% block content %}
+<div class="home-container">
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-content">
+            <div class="national-header">
+                <img src="/static/images.png" alt="Emblème de la Mauritanie" class="emblem">
+                <span class="motto">Honneur - Fraternité - Justice</span>
+            </div>
+            <h1 class="hero-title">Bienvenue au <span class="highlight">Ministère de l'Éducation Nationale</span></h1>
+            <p class="hero-subtitle">République Islamique de Mauritanie</p>
+            <div class="hero-actions">
 
-    {% if user.is_authenticated %}
-    <p>Welcome, {{ user.username }}!</p>
-    {% if user.is_superuser %}
-        <p>You are an <b>Admin</b>. You have all permissions.</p>
-        <p>You are not logged in. <a href="{% url 'school' %}"> school</a>.</p>
-    {% elif user.is_staff %}
-        <p>You are a <b>Staff</b> member. You can manage data.</p>
-    {% endif %}
+            </div>
+        </div>
+        <div class="hero-image">
+              <img src="/static/mauritania_emblem.png" alt="Hero Image" width="300" height="300">
+        </div>
+    </section>
 
-    <p><a href="{% url 'logout' %}">Logout</a></p>
+    <!-- Features Section -->
 
-    {% else %}
+</div>
+
+<style>
+.home-container {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    color: #1F2937;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* National Header */
+.national-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.emblem {
+    height: 40px;
+    width: auto;
+}
+
+.motto {
+    font-weight: 600;
+    color: #006233; /* Mauritanian green */
+    font-size: 0.9rem;
+}
+
+/* Hero Section */
+.hero-section {
+    display: flex;
+    align-items: center;
+    min-height: 70vh;
+    gap: 40px;
+    padding: 40px 0;
+    border-bottom: 1px solid #E5E7EB;
+}
+
+.hero-content {
+    flex: 1;
+    text-align: left;
+}
+
+.hero-image {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+
+.hero-image svg {
+    width: 100%;
+    max-width: 400px;
+    height: auto;
+}
+
+.hero-title {
+    font-size: 2.8rem;
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: 20px;
+    color: #111827;
+}
+
+.highlight {
+    color: #006233; /* Mauritanian green */
+}
+
+.hero-subtitle {
+    font-size: 1.25rem;
+    color: #6B7280;
+    margin-bottom: 40px;
+    max-width: 500px;
+}
+
+.hero-actions {
+    display: flex;
+    gap: 16px;
+}
+
+.btn {
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    display: inline-block;
+}
+
+.btn.primary {
+    background-color: #006233; /* Mauritanian green */
+    color: white;
+    box-shadow: 0 4px 6px -1px rgba(0, 98, 51, 0.3);
+}
+
+.btn.primary:hover {
+    background-color: #004620;
+    transform: translateY(-2px);
+}
+
+.btn.secondary {
+    background-color: white;
+    color: #006233;
+    border: 1px solid #E5E7EB;
+}
+
+.btn.secondary:hover {
+    background-color: #F9FAFB;
+    border-color: #D1D5DB;
+}
+
+/* Features Section */
+.features-section {
+    padding: 80px 0;
+    border-bottom: 1px solid #E5E7EB;
+}
+
+.section-title {
+    font-size: 2rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 50px;
+    color: #111827;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+}
+
+.feature-card {
+    background: white;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border-top: 4px solid #D4AF37; /* Mauritanian gold */
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.feature-icon {
+    font-size: 2rem;
+    margin-bottom: 20px;
+}
+
+.feature-card h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: #111827;
+}
+
+.feature-card p {
+    color: #6B7280;
+    line-height: 1.6;
+}
+
+/* News Section */
+.news-section {
+    padding: 80px 0;
+}
+
+.news-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 30px;
+}
+
+.news-card {
+    background: white;
+    border-radius: 8px;
+    padding: 25px;
+    border-left: 4px solid #006233;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.news-date {
+    color: #D4AF37;
+    font-weight: 600;
+    margin-bottom: 10px;
+    font-size: 0.9rem;
+}
+
+.news-card h3 {
+    margin-top: 0;
+    color: #111827;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .hero-section {
+        flex-direction: column;
+        text-align: center;
+    }
     
-    <p>You are not logged in. <a href="{% url 'login' %}">Login here</a>.</p>
-
+    .hero-content {
+        text-align: center;
+    }
     
+    .national-header {
+        justify-content: center;
+    }
+    
+    .hero-actions {
+        justify-content: center;
+    }
+    
+    .hero-subtitle {
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    .hero-title {
+        font-size: 2rem;
+    }
+}
+</style>
 
-    {% endif %}
-
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Simple animation for feature cards
+    const featureCards = document.querySelectorAll('.feature-card');
+    const newsCards = document.querySelectorAll('.news-card');
+    
+    featureCards.forEach((card, index) => {
+        card.style.transitionDelay = `${index * 0.1}s`;
+        card.classList.add('animate-on-load');
+    });
+    
+    newsCards.forEach((card, index) => {
+        card.style.transitionDelay = `${index * 0.15 + 0.3}s`;
+        card.classList.add('animate-on-load');
+    });
+});
+</script>
 {% endblock %}

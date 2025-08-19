@@ -1,34 +1,663 @@
 {% extends "base.html" %}
 
-{% block title %}Teacher Page{% endblock %}
+{% block title %}letter Page{% endblock %}
 
 {% block content %}
-<div class="container mt-5" style="max-width:400px;">
-    <h1>Teacher Authorization</h1>
-
-    <!-- Show global form errors -->
-    {% if form.non_field_errors %}
-        <div class="alert alert-danger">
-            {% for error in form.non_field_errors %}
-                {{ error }}
-            {% endfor %}
-        </div>
-    {% endif %}
-
-    <form method="post">
-        {% csrf_token %}
-        {% for field in form %}
-            <div class="form-group mb-3">
-                {{ field.label_tag }}
-                {{ field }}
-                {% if field.errors %}
-                    <div class="text-danger">
-                        {{ field.errors|striptags }}
-                    </div>
-                {% endif %}
+<div class="director-container">
+    <div class="director-card">
+        <div class="card-header">
+            <div class="header-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                </svg>
             </div>
-        {% endfor %}
-        <button type="submit" class="btn btn-primary">Ajoute</button>
-    </form>
+<h1 class="card-title">Autorisation des enseignants</h1>
+<p class="card-subtitle">Gérer les autorisations et le contrôle d’accès des enseignants</p>
+
+
+        </div>
+
+        <div class="card-body">
+            {% if form.non_field_errors %}
+                <div class="error-container">
+                    {% for error in form.non_field_errors %}
+                        <div class="error-message">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            {{ error }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <form method="post" class="director-form" id="directorForm">
+                {% csrf_token %}
+                <div class="form-grid">
+                    {% for field in form %}
+                        <div class="form-group">
+                            <label for="{{ field.id_for_label }}" class="form-label">
+                                {{ field.label }}
+                                {% if field.field.required %}
+                                    <span class="required-indicator">*</span>
+                                {% endif %}
+                            </label>
+                            
+                            <div class="input-wrapper">
+                                {{ field }}
+                                <div class="input-focus-border"></div>
+                            </div>
+                            
+                            {% if field.errors %}
+                                <div class="field-errors">
+                                    {% for error in field.errors %}
+                                        <div class="field-error">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+                                            {{ error|striptags }}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary" id="submitBtn">
+                        <span class="btn-text">Add Authorization</span>
+                        <span class="btn-loading" style="display: none;">
+                            <svg class="loading-spinner" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            Processing...
+                        </span>
+                        <svg class="btn-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                        </svg>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
+
+<style>
+/* Director Page Specific Styles */
+.director-container {
+    min-height: calc(100vh - 120px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    position: relative;
+}
+
+.director-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat;
+    pointer-events: none;
+}
+
+.director-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border-radius: 24px;
+    box-shadow: 
+        0 25px 50px -12px rgba(0, 0, 0, 0.25),
+        0 0 0 1px rgba(255, 255, 255, 0.2);
+    width: 100%;
+    max-width: 800px; /* Increased width for two columns */
+    overflow: hidden;
+    position: relative;
+    animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(40px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.card-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 2.5rem 2rem 2rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.card-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+    animation: shimmer 3s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+    0%, 100% { transform: rotate(0deg); }
+    50% { transform: rotate(180deg); }
+}
+
+.header-icon {
+    width: 4rem;
+    height: 4rem;
+    margin: 0 auto 1.5rem;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 1;
+}
+
+.header-icon svg {
+    width: 2rem;
+    height: 2rem;
+    stroke-width: 2;
+}
+
+.card-title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0 0 0.5rem;
+    position: relative;
+    z-index: 1;
+}
+
+.card-subtitle {
+    font-size: 1rem;
+    opacity: 0.9;
+    margin: 0;
+    font-weight: 400;
+    position: relative;
+    z-index: 1;
+}
+
+.card-body {
+    padding: 2.5rem 2rem;
+}
+
+.error-container {
+    margin-bottom: 2rem;
+}
+
+.error-message {
+    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+    color: #dc2626;
+    padding: 1rem 1.25rem;
+    border-radius: 12px;
+    border: 1px solid #fca5a5;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+    animation: errorSlide 0.4s ease-out;
+}
+
+@keyframes errorSlide {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.error-message svg {
+    width: 1.25rem;
+    height: 1.25rem;
+    flex-shrink: 0;
+}
+
+.director-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-label {
+    font-weight: 600;
+    color: #374151;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.required-indicator {
+    color: #ef4444;
+    font-weight: 700;
+}
+
+.input-wrapper {
+    position: relative;
+}
+
+.input-wrapper input,
+.input-wrapper select,
+.input-wrapper textarea {
+    width: 100%;
+    padding: 1rem 1.25rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    font-size: 1rem;
+    background: #ffffff;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    outline: none;
+    position: relative;
+    z-index: 1;
+}
+
+.input-wrapper input:focus,
+.input-wrapper select:focus,
+.input-wrapper textarea:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    transform: translateY(-2px);
+}
+
+.input-focus-border {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border: 2px solid transparent;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #667eea, #764ba2) border-box;
+    -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: exclude;
+    mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.input-wrapper input:focus + .input-focus-border,
+.input-wrapper select:focus + .input-focus-border,
+.input-wrapper textarea:focus + .input-focus-border {
+    opacity: 1;
+}
+
+.field-errors {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.field-error {
+    background: #fef2f2;
+    color: #dc2626;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    border-left: 4px solid #ef4444;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    animation: fieldErrorSlide 0.3s ease-out;
+}
+
+@keyframes fieldErrorSlide {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.field-error svg {
+    width: 1rem;
+    height: 1rem;
+    flex-shrink: 0;
+}
+
+.form-actions {
+    margin-top: 1rem;
+    grid-column: span 2;
+}
+
+.btn-primary {
+    width: 100%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.btn-primary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.6s ease;
+}
+
+.btn-primary:hover::before {
+    left: 100%;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px -5px rgba(102, 126, 234, 0.4);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+}
+
+.btn-primary:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.btn-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+    transition: transform 0.3s ease;
+}
+
+.btn-primary:hover .btn-icon {
+    transform: rotate(90deg);
+}
+
+.loading-spinner {
+    width: 1.25rem;
+    height: 1.25rem;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .form-actions {
+        grid-column: span 1;
+    }
+}
+
+@media (max-width: 640px) {
+    .director-container {
+        padding: 1rem;
+        align-items: flex-start;
+        padding-top: 2rem;
+    }
+    
+    .director-card {
+        max-width: 100%;
+        border-radius: 16px;
+    }
+    
+    .card-header {
+        padding: 2rem 1.5rem 1.5rem;
+    }
+    
+    .card-title {
+        font-size: 1.75rem;
+    }
+    
+    .card-body {
+        padding: 2rem 1.5rem;
+    }
+    
+    .header-icon {
+        width: 3rem;
+        height: 3rem;
+        margin-bottom: 1rem;
+    }
+    
+    .header-icon svg {
+        width: 1.5rem;
+        height: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .card-header {
+        padding: 1.5rem 1rem;
+    }
+    
+    .card-body {
+        padding: 1.5rem 1rem;
+    }
+    
+    .card-title {
+        font-size: 1.5rem;
+    }
+    
+    .card-subtitle {
+        font-size: 0.875rem;
+    }
+}
+
+/* Focus states for accessibility */
+.btn-primary:focus {
+    outline: 2px solid #667eea;
+    outline-offset: 2px;
+}
+
+/* Print styles */
+@media print {
+    .director-container {
+        background: white;
+        min-height: auto;
+    }
+    
+    .director-card {
+        box-shadow: none;
+        border: 1px solid #e5e7eb;
+    }
+    
+    .card-header {
+        background: #f9fafb;
+        color: #374151;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('directorForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const btnText = submitBtn.querySelector('.btn-text');
+    const btnLoading = submitBtn.querySelector('.btn-loading');
+    const btnIcon = submitBtn.querySelector('.btn-icon');
+
+    // Form submission handling
+    form.addEventListener('submit', function(e) {
+        // Show loading state
+        submitBtn.disabled = true;
+        btnText.style.display = 'none';
+        btnLoading.style.display = 'flex';
+        btnIcon.style.display = 'none';
+        
+        // Re-enable after 10 seconds as fallback
+        setTimeout(() => {
+            if (submitBtn.disabled) {
+                submitBtn.disabled = false;
+                btnText.style.display = 'inline';
+                btnLoading.style.display = 'none';
+                btnIcon.style.display = 'inline';
+            }
+        }, 10000);
+    });
+
+    // Enhanced form validation
+    const inputs = form.querySelectorAll('input, select, textarea');
+    inputs.forEach(input => {
+        input.addEventListener('blur', function() {
+            validateField(this);
+        });
+
+        input.addEventListener('input', function() {
+            clearFieldError(this);
+        });
+    });
+
+    function validateField(field) {
+        const value = field.value.trim();
+        const isRequired = field.hasAttribute('required');
+        
+        if (isRequired && !value) {
+            showFieldError(field, 'This field is required.');
+            return false;
+        }
+        
+        // Email validation
+        if (field.type === 'email' && value) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(value)) {
+                showFieldError(field, 'Please enter a valid email address.');
+                return false;
+            }
+        }
+        
+        clearFieldError(field);
+        return true;
+    }
+
+    function showFieldError(field, message) {
+        clearFieldError(field);
+        
+        const formGroup = field.closest('.form-group');
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'field-errors';
+        errorDiv.innerHTML = `
+            <div class="field-error">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                ${message}
+            </div>
+        `;
+        
+        formGroup.appendChild(errorDiv);
+        field.style.borderColor = '#ef4444';
+    }
+
+    function clearFieldError(field) {
+        const formGroup = field.closest('.form-group');
+        const existingError = formGroup.querySelector('.field-errors');
+        if (existingError) {
+            existingError.remove();
+        }
+        field.style.borderColor = '';
+    }
+
+    // Auto-dismiss error messages after 8 seconds
+    const errorMessages = document.querySelectorAll('.error-message');
+    errorMessages.forEach(error => {
+        setTimeout(() => {
+            error.style.animation = 'errorSlide 0.4s ease-out reverse';
+            setTimeout(() => {
+                error.remove();
+            }, 400);
+        }, 8000);
+    });
+
+    // Add ripple effect to button
+    submitBtn.addEventListener('click', function(e) {
+        const ripple = document.createElement('span');
+        const rect = this.getBoundingClientRect();
+        const size = Math.max(rect.width, rect.height);
+        const x = e.clientX - rect.left - size / 2;
+        const y = e.clientY - rect.top - size / 2;
+        
+        ripple.style.cssText = `
+            position: absolute;
+            width: ${size}px;
+            height: ${size}px;
+            left: ${x}px;
+            top: ${y}px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transform: scale(0);
+            animation: ripple 0.6s ease-out;
+            pointer-events: none;
+        `;
+        
+        this.appendChild(ripple);
+        
+        setTimeout(() => {
+            ripple.remove();
+        }, 600);
+    });
+
+    // Add ripple animation
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes ripple {
+            to {
+                transform: scale(2);
+                opacity: 0;
+            }
+        }
+    `;
+    document.head.appendChild(style);
+});
+</script>
 {% endblock content %}

@@ -1,7 +1,10 @@
 from django.urls import path, include
-from .views import home,login_page,logout_page,director_autor, school,teacher_autor,add_user,success
+from .views import home,login_page,logout_page,director_autor, school,teacher_autor,add_user,success,teacher_detail,director_detail,school_detail
 from django.conf import settings
 from django.conf.urls.static import static
+from django.conf.urls import handler404
+
+handler404 = 'yourapp.views.custom_page_not_found_view'
 
 urlpatterns = [
     path('', home ,name="home"),
@@ -14,9 +17,9 @@ urlpatterns = [
     path('success/school/<int:school_id>/', success, name='success_school'),
     path('success/director/<int:director_id>/',success, name='success_director'),
     path('success/teacher/<int:teacher_id>/', success, name='success_teacher'),
-    
-
-    # path("qr/", generate_qr, name="generate_qr"),
+    path('teacher/<int:teacher_id>/',teacher_detail, name='teacher_detail'),
+    path('school/<int:school_id>/',school_detail, name='school_detail'),
+    path('director/<int:director_id>/',director_detail, name='director_detail'),
 
 ]
 

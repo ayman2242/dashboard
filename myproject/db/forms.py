@@ -38,10 +38,10 @@ class UserForm(UserCreationForm):
 class SchoolForm(forms.ModelForm):
     class Meta:
         model = School
-        exclude = ['id','codeLR','lienQR' ,'dateAjout','code','pdf_file','qr_file']
+        exclude = ['id','user','codeLR','lienQR' ,'dateAjout','code','pdf_file','qr_file']
     widgets = {
         'diplome' : forms.TextInput(attrs={'class':'form-control'}),    
-        'dateLettreWaly': forms.TextInput(attrs={'class':'form-control'}),
+        'dateLettreWaly': forms.DateInput(attrs={'class':'form-control', 'type':'date'}),
         'numLettreWaly': forms.TextInput(attrs={'class':'form-control'}),
         'numTel': forms.TextInput(attrs={'class':'form-control'}),
         'nomMoughatta': forms.TextInput(attrs={'class':'form-control'}),
@@ -69,14 +69,15 @@ class TeacherAuthorizationForm(forms.ModelForm):
         'specialiteDiplome' : forms.TextInput(attrs={'class':'form-control'}),
         'niveauDiplom' : forms.TextInput(attrs={'class':'form-control'}),
         'lieuNai' : forms.TextInput(attrs={'class':'form-control'}),
-        'dateNais' : forms.TextInput(attrs={'class':'form-control'}),
+        'dateNais' :forms.DateInput(attrs={'class':'form-control', 'type':'date'}),
         'nni' : forms.TextInput(attrs={'class':'form-control'}),
         'nom' : forms.TextInput(attrs={'class':'form-control'}),
         'code' : forms.TextInput(attrs={'class':'form-control'}),
-        'dateDebut' : forms.TextInput(attrs={'class':'form-control'}),
-        'dateFin' : forms.TextInput(attrs={'class':'form-control'}),
+        'dateDebut' :forms.DateInput(attrs={'class':'form-control', 'type':'date'}),
+        'dateFin' : forms.DateInput(attrs={'class':'form-control', 'type':'date'}),
 
     }
+
 
 class DirectorAuthorizationForm(forms.ModelForm):
 
@@ -84,28 +85,28 @@ class DirectorAuthorizationForm(forms.ModelForm):
         model = DirectorAuthorization
         exclude = ['id','user','lienQR','dateAjout','pdf_file','codeAD']
 
-    widgets = {
-        'school' : forms.TextInput(attrs={'class':'form-control'}),
-        'noter' : forms.TextInput(attrs={'class':'form-control'}),
-        'dateAutorisationNoter' : forms.TextInput(attrs={'class':'form-control'}),
-        'numAutorisationNoter' : forms.TextInput(attrs={'class':'form-control'}),
-        'numTel' : forms.TextInput(attrs={'class':'form-control'}),
-        'nomMoughatta' : forms.TextInput(attrs={'class':'form-control'}),
-        'idMoughatta' : forms.TextInput(attrs={'class':'form-control'}),
-        'wilaya' : forms.TextInput(attrs={'class':'form-control'}),
-        'dateAutorisation' : forms.TextInput(attrs={'class':'form-control'}),
-        'autorisationNum' : forms.TextInput(attrs={'class':'form-control'}),
-        'nomEcole' : forms.TextInput(attrs={'class':'form-control'}),
-        'sourceDiplome' : forms.TextInput(attrs={'class':'form-control'}),
-        'numDiplome' : forms.TextInput(attrs={'class':'form-control'}),
-        'specialiteDiplome' : forms.TextInput(attrs={'class':'form-control'}),
-        'niveauDiplom' : forms.TextInput(attrs={'class':'form-control'}),
-        'lieuNai' : forms.TextInput(attrs={'class':'form-control'}),
-        'dateNais' : forms.TextInput(attrs={'class':'form-control'}),
-        'nni' : forms.TextInput(attrs={'class':'form-control'}),
-        'nom' : forms.TextInput(attrs={'class':'form-control'}),
-        'dateDebut' : forms.TextInput(attrs={'class':'form-control'}),
-        'dateFin' : forms.TextInput(attrs={'class':'form-control'}),
-        
-    }
+        widgets = {
+            'noter' : forms.TextInput(attrs={'class':'form-control'}),
+            'dateAutorisationNoter' : forms.DateInput(attrs={'class':'form-control', 'type':'date'}),
+            'numAutorisationNoter' : forms.TextInput(attrs={'class':'form-control'}),
+            'numTel' : forms.TextInput(attrs={'class':'form-control'}),
+            'idMoughatta' : forms.TextInput(attrs={'class':'form-control'}),
+            'wilaya' : forms.TextInput(attrs={'class':'form-control'}),
+            'dateAutorisation' : forms.TextInput(attrs={'class':'form-control'}),
+            'autorisationNum' : forms.TextInput(attrs={'class':'form-control'}),
+            'nomEcole' : forms.TextInput(attrs={'class':'form-control'}),
+            'sourceDiplome' : forms.TextInput(attrs={'class':'form-control'}),
+            'numDiplome' : forms.TextInput(attrs={'class':'form-control'}),
+            'specialiteDiplome' : forms.TextInput(attrs={'class':'form-control'}),
+            'niveauDiplom' : forms.TextInput(attrs={'class':'form-control'}),
+            'lieuNai' : forms.TextInput(attrs={'class':'form-control'}), 
+
+            'dateNais' : forms.DateInput(attrs={'class':'form-control', 'type':'date'}),
+            'dateDebut' : forms.DateInput(attrs={'class':'form-control', 'type':'date'}),
+            'dateFin' : forms.DateInput(attrs={'class':'form-control', 'type':'date'}),
+
+            'nni' : forms.TextInput(attrs={'class':'form-control'}),
+            'nom' : forms.TextInput(attrs={'class':'form-control'}),
+        }
+    
 
