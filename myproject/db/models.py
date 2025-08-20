@@ -67,6 +67,24 @@ MOUGHATAA_CHOICES = [
     ('zouérate', 'Zouérate'),
 ]
 
+WILAYA_CHOICES = [
+    ('adrar', 'Adrar'),
+    ('assaba', 'Assaba'),
+    ('brakna', 'Brakna'),
+    ('dakhlet_nouadhibou', 'Dakhlet Nouadhibou'),
+    ('gorgol', 'Gorgol'),
+    ('guidimakha', 'Guidimakha'),
+    ('hodh_charghi', 'Hodh Charghi'),
+    ('hodh_gharb', 'Hodh Gharbi'),
+    ('inchiri', 'Inchiri'),
+    ('nouakchott_nord', 'Nouakchott Nord'),
+    ('nouakchott_ouest', 'Nouakchott Ouest'),
+    ('nouakchott_sud', 'Nouakchott Sud'),
+    ('tagant', 'Tagant'),
+    ('tiris_zemmour', 'Tiris Zemmour'),
+    ('trarza', 'Trarza'),
+]
+
 
 class CustomUser(AbstractUser):
     nni = models.CharField(max_length=20, blank=True, null=True, verbose_name="National ID")
@@ -102,7 +120,7 @@ class School(models.Model):
     numTel =models.CharField(max_length=50,null=True)
     nomMoughatta = models.CharField(max_length=50,choices=MOUGHATAA_CHOICES,default="N/A")
     idMoughatta = models.IntegerField(null= True)
-    wilaya =  models.CharField(max_length=50,null=True)
+    wilaya =  models.CharField(max_length=50,choices=WILAYA_CHOICES,null=True)
     nomEcole =models.CharField(max_length=50,null=True)
     code = models.CharField(max_length=20,null=True)
     nni = models.CharField(max_length=50,null=True)
@@ -121,7 +139,10 @@ class School(models.Model):
 
 class DirectorAuthorization(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    school = models.ForeignKey(School, on_delete=models.CASCADE, related_name='director_authorizations')
+    school = models.ForeignKey(
+    School,
+    on_delete=models.CASCADE,
+    related_name='director_authorizations')   
     id = models.AutoField(primary_key=True)
     noter = models.CharField(max_length=50,default="N/A")
     dateAutorisationNoter = models.DateField()
@@ -129,10 +150,9 @@ class DirectorAuthorization(models.Model):
     numTel = models.CharField(max_length=50,default="N/A")  
     nomMoughatta = models.CharField(max_length=50,choices=MOUGHATAA_CHOICES,default="N/A")
     idMoughatta = models.IntegerField(null= True)
-    wilaya =models.CharField(max_length=50,default="N/A")
+    wilaya =models.CharField(max_length=50,choices=WILAYA_CHOICES,default="N/A")
     dateAutorisation=models.DateField()
     autorisationNum = models.CharField(max_length=50,default="N/A")
-    nomEcole =  models.CharField(max_length=50,default="N/A")
     sourceDiplome =  models.CharField(max_length=50,default="N/A")
     numDiplome =  models.CharField(max_length=50,default="N/A")
     specialiteDiplome =  models.CharField(max_length=50,default="N/A")

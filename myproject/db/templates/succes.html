@@ -259,16 +259,22 @@
         <h1 class="success-title">Operation Completed Successfully!</h1>
 
         <div class="pdf-section">
-            <h4>Document PDF</h4>
-            <a href="#" class="download-btn" download id="downloadBtn">
-                <svg class="download-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-4-4m4 4l4-4M12 2v8" />
-                </svg>
-                <span class="download-text">Download PDF</span>
-            </a>
+        
+                <h4>{{ object_type|capfirst }} PDF</h4>
+                 {% if object.pdf_file %}
+                <a href="{{ object.pdf_file.url }}" class="download-btn" download id="downloadBtn">
+                    <svg class="download-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-4-4m4 4l4-4M12 2v8" />
+                    </svg>
+                    <span class="download-text">Download PDF</span>
+                </a>
+            {% else %}
+                <p class="no-pdf-message">📄 No PDF available at this time</p>
+            {% endif %}
+
         </div>
 
-        <a href="#" class="home-link">
+        <a href="{% url 'home' %}" class="home-link">
             <svg class="home-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>

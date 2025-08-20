@@ -45,10 +45,10 @@ class SchoolAdmin(admin.ModelAdmin):
 
 @admin.register(DirectorAuthorization)
 class DirectorAuthorizationAdmin(admin.ModelAdmin):
-    list_display = ('user', 'school', 'nomEcole', 'autorisationNum', 'dateDebut', 'dateFin', 'typeAutorisationDirige')
-    search_fields = ('user__username', 'school__nomEcole', 'autorisationNum', 'nni', 'nom')
-    list_filter = ('school', 'wilaya', 'nomMoughatta', 'dateDebut', 'dateFin', 'typeAutorisationDirige')
-
+    list_display = ('nom', 'nni', 'get_school_name', 'codeAD', 'dateAutorisation', 'dateDebut', 'dateFin')
+    def get_school_name(self, obj):
+        return obj.school.nomEcole
+    get_school_name.short_description = "School Name"
 
 
 # Teacher Authorization Admin

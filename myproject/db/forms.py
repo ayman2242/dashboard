@@ -86,6 +86,7 @@ class DirectorAuthorizationForm(forms.ModelForm):
         exclude = ['id','user','lienQR','dateAjout','pdf_file','codeAD']
 
         widgets = {
+            'school': forms.Select(attrs={'class': 'form-control'}),
             'noter' : forms.TextInput(attrs={'class':'form-control'}),
             'dateAutorisationNoter' : forms.DateInput(attrs={'class':'form-control', 'type':'date'}),
             'numAutorisationNoter' : forms.TextInput(attrs={'class':'form-control'}),
@@ -94,7 +95,6 @@ class DirectorAuthorizationForm(forms.ModelForm):
             'wilaya' : forms.TextInput(attrs={'class':'form-control'}),
             'dateAutorisation' : forms.TextInput(attrs={'class':'form-control'}),
             'autorisationNum' : forms.TextInput(attrs={'class':'form-control'}),
-            'nomEcole' : forms.TextInput(attrs={'class':'form-control'}),
             'sourceDiplome' : forms.TextInput(attrs={'class':'form-control'}),
             'numDiplome' : forms.TextInput(attrs={'class':'form-control'}),
             'specialiteDiplome' : forms.TextInput(attrs={'class':'form-control'}),

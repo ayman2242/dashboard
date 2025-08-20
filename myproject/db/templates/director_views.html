@@ -1,0 +1,380 @@
+{% extends "base.html" %}
+{% load group_tags %}
+
+{% block title %}Director Details{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <!-- Back Button -->
+    <div class="page-header">
+        <button class="btn btn-secondary" onclick="window.history.back()">
+            <i class="fas fa-arrow-left"></i> Back to Directors List
+        </button>
+        <h1><i class="fas fa-user-tie"></i> Director Details</h1>
+        <button class="btn btn-primary" onclick="window.print()">
+            <i class="fas fa-print"></i> Print
+        </button>
+    </div>
+
+    <!-- Director Information Card -->
+    <div class="detail-card">
+        <div class="detail-card-header">
+            <h2>Personal Information</h2>
+        </div>
+        <div class="detail-card-body">
+            <div class="info-grid">
+                <div class="info-item">
+                    <label>Full Name:</label>
+                    <span>{{ director.nom }}</span>
+                </div>
+                <div class="info-item">
+                    <label>NNI:</label>
+                    <span>{{ director.nni }}</span>
+                </div>
+                <div class="info-item">
+                    <label>Date of Birth:</label>
+                    <span>{{ director.dateNais|date:"d/m/Y" }}</span>
+                </div>
+                <div class="info-item">
+                    <label>Place of Birth:</label>
+                    <span>{{ director.lieuNai }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- School Information Card -->
+    <div class="detail-card">
+        <div class="detail-card-header">
+            <h2>School Information</h2>
+        </div>
+        <div class="detail-card-body">
+            <div class="info-grid">
+                <div class="info-item">
+                    <label>School Name:</label>
+                    <span>{{ director.nomEcole }}</span>
+                </div>
+                <div class="info-item">
+                    <label>Code AD:</label>
+                    <span>{{ director.codeAD }}</span>
+                </div>
+                <div class="info-item">
+                    <label>Wilaya:</label>
+                    <span>{{ director.wilaya }}</span>
+                </div>
+                <div class="info-item">
+                    <label>Moughataa:</label>
+                    <span>{{ director.nomMoughatta }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Authorization Information Card -->
+    <div class="detail-card">
+        <div class="detail-card-header">
+            <h2>Authorization Details</h2>
+        </div>
+        <div class="detail-card-body">
+            <div class="info-grid">
+                <div class="info-item">
+                    <label>Authorization Type:</label>
+                    <span>{{ director.typeAutorisationDirige }}</span>
+                </div>
+                <div class="info-item">
+                    <label>Authorization Number:</label>
+                    <span>{{ director.autorisationNum }}</span>
+                </div>
+                <div class="info-item">
+                    <label>Authorization Date:</label>
+                    <span>{{ director.dateAutorisation|date:"d/m/Y" }}</span>
+                </div>
+                <div class="info-item">
+                    <label>Authorization Period:</label>
+                    <span>{{ director.dateDebut|date:"d/m/Y" }} - {{ director.dateFin|date:"d/m/Y" }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Diploma Information Card -->
+    <div class="detail-card">
+        <div class="detail-card-header">
+            <h2>Diploma Information</h2>
+        </div>
+        <div class="detail-card-body">
+            <div class="info-grid">
+                <div class="info-item">
+                    <label>Diploma Source:</label>
+                    <span>{{ director.sourceDiplome }}</span>
+                </div>
+                <div class="info-item">
+                    <label>Diploma Number:</label>
+                    <span>{{ director.numDiplome }}</span>
+                </div>
+                <div class="info-item">
+                    <label>Specialty:</label>
+                    <span>{{ director.specialiteDiplome }}</span>
+                </div>
+                <div class="info-item">
+                    <label>Diploma Level:</label>
+                    <span>{{ director.niveauDiplom }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contact Information Card -->
+    <div class="detail-card">
+        <div class="detail-card-header">
+            <h2>Contact Information</h2>
+        </div>
+        <div class="detail-card-body">
+            <div class="info-grid">
+                <div class="info-item">
+                    <label>Phone Number:</label>
+                    <span>{{ director.numTel }}</span>
+                </div>
+                <div class="info-item">
+                    <label>Noter:</label>
+                    <span>{{ director.noter }}</span>
+                </div>
+                <div class="info-item">
+                    <label>Noter Authorization Number:</label>
+                    <span>{{ director.numAutorisationNoter }}</span>
+                </div>
+                <div class="info-item">
+                    <label>Noter Authorization Date:</label>
+                    <span>{{ director.dateAutorisationNoter|date:"d/m/Y" }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Additional Information Card -->
+    <div class="detail-card">
+        <div class="detail-card-header">
+            <h2>Additional Information</h2>
+        </div>
+        <div class="detail-card-body">
+            <div class="info-grid">
+                <div class="info-item">
+                    <label>Date Added:</label>
+                    <span>{{ director.dateAjout|date:"d/m/Y" }}</span>
+                </div>
+                <div class="info-item">
+                    <label>QR Code:</label>
+                    {% if director.lienQR %}
+                        <a href="{{ director.lienQR }}" target="_blank">View QR Code</a>
+                    {% else %}
+                        <span>Not available</span>
+                    {% endif %}
+                </div>
+                <div class="info-item">
+                    <label>PDF Document:</label>
+                    {% if director.pdf_file %}
+                        <a href="{{ director.pdf_file.url }}" target="_blank">View PDF</a>
+                    {% else %}
+                        <span>Not available</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+        <button class="btn btn-edit">
+            <i class="fas fa-edit"></i> Edit Director
+        </button>
+        <button class="btn btn-delete">
+            <i class="fas fa-trash"></i> Delete Director
+        </button>
+    </div>
+</div>
+
+<style>
+    /* Detail View Styles */
+    .dashboard-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+    
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+        padding: 20px;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .page-header h1 {
+        color: #2c3e50;
+        font-size: 1.8rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .detail-card {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+        overflow: hidden;
+    }
+    
+    .detail-card-header {
+        padding: 15px 20px;
+        background: linear-gradient(135deg, #2c3e50 0%, #2c3e50 100%);
+        color: white;
+    }
+    
+    .detail-card-header h2 {
+        margin: 0;
+        font-size: 1.3rem;
+    }
+    
+    .detail-card-body {
+        padding: 20px;
+    }
+    
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+    }
+    
+    .info-item {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .info-item label {
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 5px;
+    }
+    
+    .info-item span, .info-item a {
+        color: #34495e;
+        font-size: 1rem;
+    }
+    
+    .info-item a {
+        color: #3498db;
+        text-decoration: none;
+    }
+    
+    .info-item a:hover {
+        text-decoration: underline;
+    }
+    
+    .action-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        margin-top: 30px;
+    }
+    
+    .btn {
+        padding: 10px 20px;
+        border-radius: 5px;
+        border: none;
+        cursor: pointer;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 1rem;
+    }
+    
+    .btn-secondary {
+        background-color: #95a5a6;
+        color: white;
+    }
+    
+    .btn-secondary:hover {
+        background-color: #7f8c8d;
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+        color: white;
+    }
+    
+    .btn-primary:hover {
+        background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 6px rgba(37, 99, 235, 0.3);
+    }
+    
+    .btn-edit {
+        background-color: #f39c12;
+        color: white;
+    }
+    
+    .btn-edit:hover {
+        background-color: #e67e22;
+    }
+    
+    .btn-delete {
+        background-color: #e74c3c;
+        color: white;
+    }
+    
+    .btn-delete:hover {
+        background-color: #c0392b;
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .page-header {
+            flex-direction: column;
+            gap: 15px;
+            text-align: center;
+        }
+        
+        .info-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .action-buttons {
+            flex-direction: column;
+        }
+    }
+</style>
+
+<script>
+    // Delete confirmation
+    document.querySelector('.btn-delete').addEventListener('click', () => {
+        if (confirm('Are you sure you want to delete this director?')) {
+            // Here would be the code to actually delete the director
+            alert('Director deleted successfully!');
+            window.location.href = "{% url 'directors_list' %}";  // Redirect to directors list
+        }
+    });
+    
+    // Edit button functionality
+    document.querySelector('.btn-edit').addEventListener('click', () => {
+        // Redirect to edit page
+        window.location.href = "{% url 'edit_director' director.id %}";
+    });
+    
+    // Add Font Awesome icons
+    document.addEventListener('DOMContentLoaded', function() {
+        // Create a link element for Font Awesome if not already loaded
+        if (!document.querySelector('link[href*="font-awesome"]')) {
+            const fontAwesomeLink = document.createElement('link');
+            fontAwesomeLink.rel = 'stylesheet';
+            fontAwesomeLink.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css';
+            document.head.appendChild(fontAwesomeLink);
+        }
+    });
+</script>
+{% endblock content %}

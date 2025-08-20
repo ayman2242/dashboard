@@ -9,7 +9,7 @@ import qrcode
 from .forms import LoginForm ,DirectorAuthorizationForm,SchoolForm,TeacherAuthorizationForm,UserForm
 from django.core.files.base import ContentFile
 from django.contrib.auth.decorators import login_required
-from .models import DirectorAuthorization,School,TeacherAuthorization
+from .models import DirectorAuthorization,School,TeacherAuthorization,CustomUser
 from django.utils.timezone import now
 from .utils.pdf_utils import fill_pdf
 from datetime import date
@@ -58,7 +58,8 @@ def school(request):
             instance.save()
 
             # 4️⃣ Generate final QR link
-            qr_link = f"http://127.0.0.1:8000/lettre/{instance.id}/"
+            qr_link = f"{request.scheme}://{request.get_host()}/lettre/{instance.id}/"
+
             instance.lienQR = qr_link
 
             # 5️⃣ Generate QR code PNG
@@ -146,7 +147,8 @@ def director_autor(request):
                 instance.save()
                 
                 # Generate QR link
-                qr_link = f"http://127.0.0.1:8000/director/{instance.id}/"
+                # qr_link = f"http://127.0.0.1:8000/director/{instance.id}/"
+                qr_link = f"{request.scheme}://{request.get_host()}/director/{instance.id}/"
                 instance.lienQR = qr_link
 
                 # Generate QR code PNG
@@ -375,6 +377,8 @@ def success(request, school_id=None, director_id=None, teacher_id=None):
     return render(request, 'succes.html', context)
 
 
+#---------------------------------- detail -----------------------------------------#
+
 def teacher_detail(request, teacher_id):
     teacher = get_object_or_404(TeacherAuthorization, id=teacher_id)
     return render(request, 'teacher_detail.html', {'teacher': teacher})
@@ -386,3 +390,93 @@ def school_detail(request, school_id):
 def director_detail(request, director_id):
     director = get_object_or_404(DirectorAuthorization, id=director_id)
     return render(request, 'director_detail.html', {'director': director})
+
+
+
+#---------------------------------- list /table-----------------------------------------#
+
+
+# 1) director
+def directors_list(request):
+    directors = DirectorAuthorization.objects.all()
+    return render(request, 'directors_list.html', {'directors': directors})
+
+# 2) teacher
+def teacher_list(request):
+    teachers = TeacherAuthorization.objects.all()
+    return render(request, 'teachers_list.html', {'teachers': teachers})
+
+# 3) school/lettre
+def school_list(request):
+    schools = School.objects.all()
+    return render(request, 'schools_list.html', {'schools': schools})
+
+# 4)user 
+def user_list(request):
+    users = CustomUser.objects.all()
+    return render(request, 'user_list.html', {'users': users})
+
+#---------------------------------- views -----------------------------------------#
+
+
+# 1) director
+def director_views(request, director_id):
+    director = get_object_or_404(DirectorAuthorization, id=director_id)
+    return render(request, 'director_views.html', {'director': director})
+# 2) teacher
+# 3) school/lettre
+# 4)user 
+
+
+#---------------------------------- EDIT -----------------------------------------#
+
+# 1) director
+def edit_director(request, director_id):
+    director = get_object_or_404(DirectorAuthorization, id=director_id)
+
+    if request.method == "POST":
+        form = DirectorAuthorizationForm(request.POST, request.FILES, instance=director)
+        if form.is_valid():
+            form.save()
+            return redirect('director_detail', director_id=director.id)  # ✅ make sure urls.py expects "director_id"
+        else:
+            print(form.errors)  # 👈 shows validation errors in console
+    else:
+        form = DirectorAuthorizationForm(instance=director)
+
+    return render(request, "edit_director.html", {
+        "form": form,
+        "director": director,
+    })
+
+# 2) teacher
+# 3) school/lettre
+# 4)user 
+
+
+#---------------------------------- delete -----------------------------------------#
+
+# 1) director
+def delete_director(request, director_id):
+    director = get_object_or_404(DirectorAuthorization, id=director_id)
+    director.delete()
+    return redirect('directors_list')
+
+
+# 2) teacher
+def delete_teacher(request, teacher_id):
+    teacher = get_object_or_404(TeacherAuthorization, id=teacher_id)
+    teacher.delete()
+    return redirect('teacher_list')
+
+# 3) school/lettre
+def delete_school(request, school_id):
+    school = get_object_or_404(School, id=school_id)
+    school.delete()
+    return redirect('school_list')
+# 4)user 
+def user_school(request, school_id):
+    school = get_object_or_404(CustomUser, id=school_id)
+    school.delete()
+    return redirect('CustomUser_list')
+
