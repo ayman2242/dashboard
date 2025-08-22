@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Edit User: {{ user.username }}</h2>
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            {{ form.username.label_tag }}
+            {{ form.username }}
+        </div>
+        <div class="form-group">
+            {{ form.email.label_tag }}
+            {{ form.email }}
+        </div>
+        <div class="form-group">
+            {{ form.nni.label_tag }}
+            {{ form.nni }}
+        </div>
+        <div class="form-group">
+            {{ form.phone.label_tag }}
+            {{ form.phone }}
+        </div>
+        <div class="form-group">
+            <label>Groups</label>
+            {{ form.groups }}
+        </div>
+        <button type="submit" class="btn btn-success">Save</button>
+        <a href="{% url 'user_list' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}

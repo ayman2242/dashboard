@@ -1,0 +1,416 @@
+{% extends "base.html" %}
+{% load group_tags %}
+
+{% block title %}Edit Teacher{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <!-- Page Header -->
+    <div class="page-header">
+        <button class="btn btn-secondary" onclick="window.history.back()">
+            <i class="fas fa-arrow-left"></i> Back
+        </button>
+        <h1><i class="fas fa-edit"></i> Edit Teacher</h1>
+        <button class="btn btn-primary" onclick="document.getElementById('TeacherAuthorizationForm').submit()">
+            <i class="fas fa-save"></i> Save Changes
+        </button>
+    </div>
+
+    <!-- Edit Form -->
+    <div class="form-container">
+        <form id="TeacherAuthorizationForm" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <!-- Display form errors at the top -->
+            {% if form.errors %}
+            <div class="alert alert-danger">
+                <strong>Please correct the following errors:</strong>
+                <ul>
+                    {% for field in form %}
+                        {% for error in field.errors %}
+                            <li>{{ field.label }}: {{ error }}</li>
+                        {% endfor %}
+                    {% endfor %}
+                    {% for error in form.non_field_errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+
+            <!-- Personal Information Section -->
+            <div class="form-section">
+                <h2 class="section-title">
+                    <i class="fas fa-user"></i> Personal Information
+                </h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="{{ form.nom.id_for_label }}">Full Name</label>
+                        {{ form.nom }}
+                        {% if form.nom.errors %}
+                        <div class="error-text">{{ form.nom.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.nni.id_for_label }}">NNI</label>
+                        {{ form.nni }}
+                        {% if form.nni.errors %}
+                        <div class="error-text">{{ form.nni.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.dateNais.id_for_label }}">Date of Birth</label>
+                        {{ form.dateNais }}
+                        {% if form.dateNais.errors %}
+                        <div class="error-text">{{ form.dateNais.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.lieuNai.id_for_label }}">Place of Birth</label>
+                        {{ form.lieuNai }}
+                        {% if form.lieuNai.errors %}
+                        <div class="error-text">{{ form.lieuNai.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- School Information Section -->
+            <div class="form-section">
+                <h2 class="section-title">
+                    <i class="fas fa-school"></i> School Information
+                </h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="{{ form.school.id_for_label }}">School Name *</label>
+                        {{ form.school }}
+                        {% if form.school.errors %}
+                        <div class="error-text">{{ form.school.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.code.id_for_label }}">Teacher Code</label>
+                        {{ form.code }}
+                        {% if form.code.errors %}
+                        <div class="error-text">{{ form.code.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label>Code AE</label>
+                        <p class="form-control-plaintext">{{ teacher.codeAE }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Teaching Information Section -->
+            <div class="form-section">
+                <h2 class="section-title">
+                    <i class="fas fa-chalkboard-teacher"></i> Teaching Information
+                </h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="{{ form.degree.id_for_label }}">Degree</label>
+                        {{ form.degree }}
+                        {% if form.degree.errors %}
+                        <div class="error-text">{{ form.degree.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.matierEnseigner.id_for_label }}">Subject Taught</label>
+                        {{ form.matierEnseigner }}
+                        {% if form.matierEnseigner.errors %}
+                        <div class="error-text">{{ form.matierEnseigner.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Diploma Information Section -->
+            <div class="form-section">
+                <h2 class="section-title">
+                    <i class="fas fa-graduation-cap"></i> Diploma Information
+                </h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="{{ form.sourceDiplome.id_for_label }}">Diploma Source</label>
+                        {{ form.sourceDiplome }}
+                        {% if form.sourceDiplome.errors %}
+                        <div class="error-text">{{ form.sourceDiplome.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.numDiplome.id_for_label }}">Diploma Number</label>
+                        {{ form.numDiplome }}
+                        {% if form.numDiplome.errors %}
+                        <div class="error-text">{{ form.numDiplome.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.specialiteDiplome.id_for_label }}">Specialty</label>
+                        {{ form.specialiteDiplome }}
+                        {% if form.specialiteDiplome.errors %}
+                        <div class="error-text">{{ form.specialiteDiplome.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.niveauDiplom.id_for_label }}">Diploma Level</label>
+                        {{ form.niveauDiplom }}
+                        {% if form.niveauDiplom.errors %}
+                        <div class="error-text">{{ form.niveauDiplom.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Authorization Dates Section -->
+            <div class="form-section">
+                <h2 class="section-title">
+                    <i class="fas fa-calendar-alt"></i> Authorization Dates
+                </h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Date Added</label>
+                        <p class="form-control-plaintext">{{ teacher.dateAjout }}</p>
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.dateDebut.id_for_label }}">Start Date *</label>
+                        {{ form.dateDebut }}
+                        {% if form.dateDebut.errors %}
+                        <div class="error-text">{{ form.dateDebut.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.dateFin.id_for_label }}">End Date *</label>
+                        {{ form.dateFin }}
+                        {% if form.dateFin.errors %}
+                        <div class="error-text">{{ form.dateFin.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Additional Information Section -->
+            <div class="form-section">
+                <h2 class="section-title">
+                    <i class="fas fa-info-circle"></i> Additional Information
+                </h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="{{ form.pdf_file.id_for_label }}">PDF File</label>
+                        {% if form.instance.pdf_file %}
+                            <p>Current file: <a href="{{ form.instance.pdf_file.url }}" target="_blank">{{ form.instance.pdf_file.name }}</a></p>
+                        {% endif %}
+                        {{ form.pdf_file }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="form-actions">
+                <button type="button" class="btn btn-cancel" onclick="window.history.back()">Cancel</button>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Save Changes
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+.dashboard-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.page-header h1 {
+    margin: 0;
+    color: #2c3e50;
+    font-size: 28px;
+}
+
+.btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background-color: #3498db;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #2980b9;
+}
+
+.btn-secondary {
+    background-color: #95a5a6;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background-color: #7f8c8d;
+}
+
+.btn-cancel {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.btn-cancel:hover {
+    background-color: #c0392b;
+}
+
+.form-container {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 25px;
+}
+
+.form-section {
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #eee;
+}
+
+.section-title {
+    color: #2c3e50;
+    font-size: 20px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #34495e;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+    transition: border-color 0.3s;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    border-color: #3498db;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
+
+.error-text {
+    color: #e74c3c;
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+.alert {
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 4px;
+}
+
+.alert-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.alert ul {
+    margin: 10px 0 0 0;
+    padding-left: 20px;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+}
+
+.form-control-plaintext {
+    padding: 12px 0;
+    margin-bottom: 0;
+    line-height: 1.5;
+    background-color: transparent;
+    border: solid transparent;
+    border-width: 1px 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .page-header {
+        flex-direction: column;
+        gap: 15px;
+        align-items: flex-start;
+    }
+    
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+    }
+    
+    .btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+</style>
+
+<script>
+// Add date picker functionality to date fields
+document.addEventListener('DOMContentLoaded', function() {
+    // This would be where you initialize a date picker library
+    // For example, if using flatpickr:
+    // flatpickr(".date-input", {dateFormat: "Y-m-d"});
+    
+    // For now, we'll just add a class to date inputs for styling
+    const dateInputs = document.querySelectorAll('input[type="date"]');
+    dateInputs.forEach(input => {
+        input.classList.add('date-input');
+    });
+});
+</script>
+{% endblock %}

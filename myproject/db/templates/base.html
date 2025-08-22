@@ -520,25 +520,25 @@
                 <!-- Desktop Menu -->
                 <div class="nav-menu">
                     {% if user.is_superuser %}
-                        <a href="{% url 'add_user' %}" class="nav-item">
+                        <a href="{% url 'user_list' %}" class="nav-item">
                             <i class="icon-cog"></i> Add User
                         </a>
                     {% endif %}
 
                     {% if request.user|has_group:"Director" %}
-                        <a href="{% url 'director' %}" class="nav-item">
+                        <a href="{% url 'directors_list' %}" class="nav-item">
                             <i class="icon-project"></i> Director Authorization
                         </a>
                     {% endif %}
 
                     {% if request.user|has_group:"Teacher" %}
-                        <a href="{% url 'teacher_autor' %}" class="nav-item">
+                        <a href="{% url 'teacher_list' %}" class="nav-item">
                             <i class="icon-users"></i> Teacher Authorization
                         </a>
                     {% endif %}
 
                     {% if request.user|has_group:"Schools" %}
-                        <a href="{% url 'school' %}" class="nav-item">
+                        <a href="{% url 'school_list' %}" class="nav-item">
                             <i class="icon-dashboard"></i> Lettre Reception
                         </a>
                     {% endif %}
@@ -588,25 +588,25 @@
             
             <div class="mobile-nav-menu">
                 {% if user.is_superuser %}
-                    <a href="{% url 'add_user' %}" class="mobile-nav-item">
+                    <a href="{% url 'user_list' %}" class="mobile-nav-item">
                         <i class="icon-cog"></i> Add User
                     </a>
                 {% endif %}
 
                 {% if request.user|has_group:"Director" %}
-                    <a href="{% url 'director' %}" class="mobile-nav-item">
+                    <a href="{% url 'directors_list' %}" class="mobile-nav-item">
                         <i class="icon-project"></i> Director Authorization
                     </a>
                 {% endif %}
 
                 {% if request.user|has_group:"Teacher" %}
-                    <a href="{% url 'teacher_autor' %}" class="mobile-nav-item">
+                    <a href="{% url 'teacher_list' %}" class="mobile-nav-item">
                         <i class="icon-users"></i> Teacher Authorization
                     </a>
                 {% endif %}
 
                 {% if request.user|has_group:"Schools" %}
-                    <a href="{% url 'school' %}" class="mobile-nav-item">
+                    <a href="{% url 'school_list' %}" class="mobile-nav-item">
                         <i class="icon-dashboard"></i> Lettre Reception
                     </a>
                 {% endif %}

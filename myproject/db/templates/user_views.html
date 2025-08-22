@@ -1,93 +1,77 @@
 {% extends "base.html" %}
 {% load group_tags %}
 
-{% block title %}Teacher Authorization Details{% endblock %}
+{% block title %}User Details{% endblock %}
 
 {% block content %}
 <div class="dashboard-container">
     <!-- Back Button -->
     <div class="page-header">
         <button class="btn btn-secondary" onclick="window.history.back()">
-            <i class="fas fa-arrow-left"></i> Back to Teachers List
+            <i class="fas fa-arrow-left"></i> Back to Users List
         </button>
-        <h1><i class="fas fa-chalkboard-teacher"></i> Teacher Authorization Details</h1>
+        <h1><i class="fas fa-user"></i> User Details</h1>
         <button class="btn btn-primary" onclick="window.print()">
             <i class="fas fa-print"></i> Print
         </button>
     </div>
 
-    <!-- Teacher Information Card -->
+    <!-- User Information Card -->
     <div class="detail-card">
         <div class="detail-card-header">
-            <h2>Personal Information</h2>
+            <h2>Account Information</h2>
         </div>
         <div class="detail-card-body">
             <div class="info-grid">
                 <div class="info-item">
-                    <label>Full Name:</label>
-                    <span>{{ teacher.nom }}</span>
+                    <label>Username:</label>
+                    <span>{{ custom_user.username }}</span>
                 </div>
                 <div class="info-item">
-                    <label>NNI:</label>
-                    <span>{{ teacher.nni }}</span>
+                    <label>Email:</label>
+                    <span>{{ custom_user.email|default:"Not provided" }}</span>
                 </div>
                 <div class="info-item">
-                    <label>Date of Birth:</label>
-                    <span>{{ teacher.dateNais }}</span>
-                </div>
-                <div class="info-item">
-                    <label>Place of Birth:</label>
-                    <span>{{ teacher.lieuNai }}</span>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- School Information Card -->
-    <div class="detail-card">
-        <div class="detail-card-header">
-            <h2>School Information</h2>
-        </div>
-        <div class="detail-card-body">
-            <div class="info-grid">
-                <div class="info-item">
-                    <label>School Name:</label>
-                    <span>{{ teacher.school.nomEcole }}</span>
-                </div>
-                <div class="info-item">
-                    <label>School Code:</label>
-                    <span>{{ teacher.code }}</span>
-                </div>
-                <div class="info-item">
-                    <label>Code AE:</label>
-                    <span>{{ teacher.codeAE }}</span>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Teaching Information Card -->
-    <div class="detail-card">
-        <div class="detail-card-header">
-            <h2>Teaching Details</h2>
-        </div>
-        <div class="detail-card-body">
-            <div class="info-grid">
-                <div class="info-item">
-                    <label>Subject:</label>
-                    <span>{{ teacher.matierEnseigner }}</span>
-                </div>
-                <div class="info-item">
-                    <label>Degree:</label>
-                    <span>{{ teacher.degree }}</span>
-                </div>
-                <div class="info-item">
-                    <label>Authorization Status:</label>
+                    <label>Account Status:</label>
                     <span>
-                        {% if teacher.is_active %}
+                        {% if custom_user.is_active %}
                             <span class="badge badge-success">Active</span>
                         {% else %}
                             <span class="badge badge-danger">Inactive</span>
+                        {% endif %}
+                    </span>
+                </div>
+                <div class="info-item">
+                    <label>Staff Status:</label>
+                    <span>
+                        {% if custom_user.is_staff %}
+                            <span class="badge badge-info">Staff Member</span>
+                        {% else %}
+                            <span class="badge badge-secondary">Regular User</span>
+                        {% endif %}
+                    </span>
+                </div>
+                <div class="info-item">
+                    <label>Superuser Status:</label>
+                    <span>
+                        {% if custom_user.is_superuser %}
+                            <span class="badge badge-warning">Superuser</span>
+                        {% else %}
+                            <span>No</span>
+                        {% endif %}
+                    </span>
+                </div>
+                <div class="info-item">
+                    <label>Date Joined:</label>
+                    <span>{{ custom_user.date_joined|date:"d/m/Y H:i" }}</span>
+                </div>
+                <div class="info-item">
+                    <label>Last Login:</label>
+                    <span>
+                        {% if custom_user.last_login %}
+                            {{ custom_user.last_login|date:"d/m/Y H:i" }}
+                        {% else %}
+                            Never logged in
                         {% endif %}
                     </span>
                 </div>
@@ -95,71 +79,68 @@
         </div>
     </div>
 
-    <!-- Diploma Information Card -->
+    <!-- Personal Information Card -->
     <div class="detail-card">
         <div class="detail-card-header">
-            <h2>Diploma Information</h2>
+            <h2>Personal Information</h2>
         </div>
         <div class="detail-card-body">
             <div class="info-grid">
                 <div class="info-item">
-                    <label>Diploma Source:</label>
-                    <span>{{ teacher.sourceDiplome }}</span>
+                    <label>First Name:</label>
+                    <span>{{ custom_user.first_name|default:"Not provided" }}</span>
                 </div>
                 <div class="info-item">
-                    <label>Diploma Number:</label>
-                    <span>{{ teacher.numDiplome }}</span>
+                    <label>Last Name:</label>
+                    <span>{{ custom_user.last_name|default:"Not provided" }}</span>
                 </div>
                 <div class="info-item">
-                    <label>Specialty:</label>
-                    <span>{{ teacher.specialiteDiplome }}</span>
+                    <label>National ID (NNI):</label>
+                    <span>{{ custom_user.nni|default:"Not provided" }}</span>
                 </div>
                 <div class="info-item">
-                    <label>Diploma Level:</label>
-                    <span>{{ teacher.niveauDiplom }}</span>
+                    <label>Phone Number:</label>
+                    <span>{{ custom_user.phone|default:"Not provided" }}</span>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Authorization Period Card -->
+    <!-- Permissions and Groups Card -->
     <div class="detail-card">
         <div class="detail-card-header">
-            <h2>Authorization Period</h2>
+            <h2>Permissions & Groups</h2>
         </div>
         <div class="detail-card-body">
             <div class="info-grid">
-                <div class="info-item">
-                    <label>Start Date:</label>
-                    <span>{{ teacher.dateDebut|date:"d/m/Y" }}</span>
+                <div class="info-item full-width">
+                    <label>Groups:</label>
+                    <div class="tags-container">
+                        {% if custom_user.groups.all %}
+                            {% for group in custom_user.groups.all %}
+                                <span class="badge badge-primary">{{ group.name }}</span>
+                            {% endfor %}
+                        {% else %}
+                            <span>No groups assigned</span>
+                        {% endif %}
+                    </div>
                 </div>
-                <div class="info-item">
-                    <label>End Date:</label>
-                    <span>{{ teacher.dateFin|date:"d/m/Y" }}</span>
-                </div>
-                <div class="info-item">
-                    <label>Date Added:</label>
-                    <span>{{ teacher.dateAjout|date:"d/m/Y" }}</span>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Additional Information Card -->
-    <div class="detail-card">
-        <div class="detail-card-header">
-            <h2>Additional Information</h2>
-        </div>
-        <div class="detail-card-body">
-            <div class="info-grid">
-                
-                <div class="info-item">
-                    <label>PDF Document:</label>
-                    {% if teacher.pdf_file %}
-                        <a href="{{ teacher.pdf_file.url }}" target="_blank">View PDF</a>
-                    {% else %}
-                        <span>Not available</span>
-                    {% endif %}
+                <div class="info-item full-width">
+                    <label>Permissions:</label>
+                    <div class="permissions-list">
+                        {% if custom_user.user_permissions.all or custom_user.get_all_permissions %}
+                            <details>
+                                <summary>View Permissions ({{ custom_user.get_all_permissions|length }})</summary>
+                                <ul>
+                                    {% for perm in custom_user.get_all_permissions %}
+                                        <li>{{ perm }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </details>
+                        {% else %}
+                            <span>No specific permissions assigned</span>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
         </div>
@@ -167,13 +148,12 @@
 
     <!-- Action Buttons -->
     <div class="action-buttons">
-        <button class="btn btn-edit" onclick="window.location.href='{% url 'edit_teacher' teacher.id %}'">
-            <i class="fas fa-edit"></i> Edit Teacher
+        <button class="btn btn-edit" onclick="window.location.href='{% url 'edit_user' user.id %}'">
+            <i class="fas fa-edit"></i> Edit User
         </button>
-        <button class="btn btn-delete" id="deleteTeacherBtn">
-            <i class="fas fa-trash"></i> Delete Teacher
+        <button class="btn btn-delete" id="deleteUserBtn">
+            <i class="fas fa-trash"></i> Delete User
         </button>
-
     </div>
 </div>
 
@@ -238,6 +218,10 @@
         flex-direction: column;
     }
     
+    .info-item.full-width {
+        grid-column: 1 / -1;
+    }
+    
     .info-item label {
         font-weight: 600;
         color: #2c3e50;
@@ -249,20 +233,12 @@
         font-size: 1rem;
     }
     
-    .info-item a {
-        color: #3498db;
-        text-decoration: none;
-    }
-    
-    .info-item a:hover {
-        text-decoration: underline;
-    }
-    
     .badge {
         padding: 5px 10px;
         border-radius: 15px;
         font-size: 0.85rem;
         font-weight: 600;
+        margin: 2px;
     }
     
     .badge-success {
@@ -273,6 +249,58 @@
     .badge-danger {
         background-color: #f8d7da;
         color: #721c24;
+    }
+    
+    .badge-info {
+        background-color: #d1ecf1;
+        color: #0c5460;
+    }
+    
+    .badge-warning {
+        background-color: #fff3cd;
+        color: #856404;
+    }
+    
+    .badge-secondary {
+        background-color: #f8f9fa;
+        color: #6c757d;
+    }
+    
+    .badge-primary {
+        background-color: #d6eaf8;
+        color: #2c3e50;
+    }
+    
+    .tags-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+    }
+    
+    .permissions-list details {
+        margin-top: 10px;
+    }
+    
+    .permissions-list summary {
+        cursor: pointer;
+        font-weight: 500;
+        color: #3498db;
+    }
+    
+    .permissions-list ul {
+        margin-top: 10px;
+        padding-left: 20px;
+        max-height: 200px;
+        overflow-y: auto;
+        background: #f8f9fa;
+        padding: 10px;
+        border-radius: 5px;
+    }
+    
+    .permissions-list li {
+        margin-bottom: 5px;
+        font-family: monospace;
+        font-size: 0.9rem;
     }
     
     .action-buttons {
@@ -352,6 +380,15 @@
         background-color: #e0a800;
     }
     
+    .btn-info {
+        background-color: #17a2b8;
+        color: white;
+    }
+    
+    .btn-info:hover {
+        background-color: #138496;
+    }
+    
     /* Responsive Design */
     @media (max-width: 768px) {
         .page-header {
@@ -378,15 +415,16 @@
 
 <script>
     // Delete confirmation
-    document.getElementById('deleteTeacherBtn').addEventListener('click', () => {
-        if (confirm('Are you sure you want to delete this teacher authorization? This action cannot be undone.')) {
-            // Here would be the code to actually delete the teacher
-            window.location.href = "{% url 'delete_teacher' teacher.id %}";
+    document.getElementById('deleteUserBtn').addEventListener('click', () => {
+        if (confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
+            // Here would be the code to actually delete the user
+            window.location.href = "{% url 'delete_user' user.id %}";
         }
     });
     
+  
+    
 
-   
     
     // Add Font Awesome icons
     document.addEventListener('DOMContentLoaded', function() {

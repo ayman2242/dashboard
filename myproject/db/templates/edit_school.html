@@ -1,0 +1,352 @@
+{% extends "base.html" %}
+
+{% block title %}Edit School{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <!-- Page Header -->
+    <div class="page-header">
+        <button class="btn btn-secondary" onclick="window.history.back()">
+            <i class="fas fa-arrow-left"></i> Back
+        </button>
+        <h1><i class="fas fa-edit"></i> Edit School</h1>
+        <button class="btn btn-primary" onclick="document.getElementById('SchoolForm').submit()">
+            <i class="fas fa-save"></i> Save Changes
+        </button>
+    </div>
+
+    <!-- Edit Form -->
+    <div class="form-container">
+        <form id="SchoolForm" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            {% if form.errors %}
+            <div class="alert alert-danger">
+                <strong>Please correct the following errors:</strong>
+                <ul>
+                    {% for field in form %}
+                        {% for error in field.errors %}
+                            <li>{{ field.label }}: {{ error }}</li>
+                        {% endfor %}
+                    {% endfor %}
+                    {% for error in form.non_field_errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+
+            <!-- Basic Information Section -->
+            <div class="form-section">
+                <h2 class="section-title"><i class="fas fa-school"></i> School Information</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="{{ form.nomEcole.id_for_label }}">School Name *</label>
+                        {{ form.nomEcole }}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>School Code</label>
+                        <p class="form-control-plaintext">{{ school.code }}</p>
+                    </div>
+            
+                    <div class="form-group">
+                        <label>Code LR</label>
+                        <p class="form-control-plaintext">{{ school.codeLR }}</p>
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.dateLettreWaly.id_for_label }}">Letter Date (Waly) *</label>
+                        {{ form.dateLettreWaly }}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.numLettreWaly.id_for_label }}">Letter Number (Waly)</label>
+                        {{ form.numLettreWaly }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact Information Section -->
+            <div class="form-section">
+                <h2 class="section-title"><i class="fas fa-phone"></i> Contact Information</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="{{ form.numTel.id_for_label }}">Phone Number</label>
+                        {{ form.numTel }}
+                    </div>
+            
+                </div>
+            </div>
+
+            <!-- Location Section -->
+            <div class="form-section">
+                <h2 class="section-title"><i class="fas fa-map-marker-alt"></i> Location</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="{{ form.wilaya.id_for_label }}">Wilaya</label>
+                        {{ form.wilaya }}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.nomMoughatta.id_for_label }}">Moughataa</label>
+                        {{ form.nomMoughatta }}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.idMoughatta.id_for_label }}">Moughataa ID</label>
+                        {{ form.idMoughatta }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Personal / Identity Section -->
+            <div class="form-section">
+                <h2 class="section-title"><i class="fas fa-id-card"></i> Personal / Identity</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="{{ form.nni.id_for_label }}">NNI</label>
+                        {{ form.nni }}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.nom.id_for_label }}">Principal Name</label>
+                        {{ form.nom }}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.nationalite.id_for_label }}">Nationality</label>
+                        {{ form.nationalite }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Diploma / Level Section -->
+            <div class="form-section">
+                <h2 class="section-title"><i class="fas fa-graduation-cap"></i> Diploma / Level</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="{{ form.diplome.id_for_label }}">Diploma</label>
+                        {{ form.diplome }}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.niveau.id_for_label }}">Level</label>
+                        {{ form.niveau }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- PDF Upload Section -->
+            <div class="form-section">
+                <h2 class="section-title"><i class="fas fa-file-pdf"></i> PDF File</h2>
+                <div class="form-group">
+                    {% if form.instance.pdf_file %}
+                        <p>Current file: <a href="{{ form.instance.pdf_file.url }}" target="_blank">{{ form.instance.pdf_file.name }}</a></p>
+                    {% endif %}
+
+                </div>
+            </div>
+
+            <!-- Date Added (readonly) -->
+            <div class="form-section">
+                <div class="form-group">
+                    <label>Date Added</label>
+                    <p class="form-control-plaintext">{{ form.instance.dateAjout }}</p>
+                </div>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="form-actions">
+                <button type="button" class="btn btn-cancel" onclick="window.history.back()">Cancel</button>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Save Changes
+                </button>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+
+<style>
+.dashboard-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.page-header h1 {
+    margin: 0;
+    color: #2c3e50;
+    font-size: 28px;
+}
+
+.btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background-color: #3498db;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #2980b9;
+}
+
+.btn-secondary {
+    background-color: #95a5a6;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background-color: #7f8c8d;
+}
+
+.btn-cancel {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.btn-cancel:hover {
+    background-color: #c0392b;
+}
+
+.form-container {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 25px;
+}
+
+.form-section {
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #eee;
+}
+
+.section-title {
+    color: #2c3e50;
+    font-size: 20px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #34495e;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+    transition: border-color 0.3s;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    border-color: #3498db;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
+
+.error-text {
+    color: #e74c3c;
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+.alert {
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 4px;
+}
+
+.alert-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.alert ul {
+    margin: 10px 0 0 0;
+    padding-left: 20px;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .page-header {
+        flex-direction: column;
+        gap: 15px;
+        align-items: flex-start;
+    }
+    
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+    }
+    
+    .btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+</style>
+
+<script>
+// Add date picker functionality to date fields
+document.addEventListener('DOMContentLoaded', function() {
+    // This would be where you initialize a date picker library
+    // For example, if using flatpickr:
+    // flatpickr(".date-input", {dateFormat: "Y-m-d"});
+    
+    // For now, we'll just add a class to date inputs for styling
+    const dateInputs = document.querySelectorAll('input[type="date"]');
+    dateInputs.forEach(input => {
+        input.classList.add('date-input');
+    });
+});
+</script>
+{% endblock %}

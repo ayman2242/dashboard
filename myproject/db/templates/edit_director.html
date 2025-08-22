@@ -1,736 +1,461 @@
 {% extends "base.html" %}
 {% load group_tags %}
 
-{% block title %}Directors Database{% endblock %}
-
+{% block title %}Edit Director{% endblock %}
 
 {% block content %}
 <div class="dashboard-container">
-    <!-- Page Header with Add Button -->
+    <!-- Page Header -->
     <div class="page-header">
-    <h1><i class="fas fa-user-tie"></i> Directors Database</h1>
-    <a href="{% url 'teacher_autor' %}" class="btn btn-primary">
-        <i class="fas fa-plus"></i> Add New Director
-    </a>
+        <button class="btn btn-secondary" onclick="window.history.back()">
+            <i class="fas fa-arrow-left"></i> Back
+        </button>
+        <h1><i class="fas fa-edit"></i> Edit Director</h1>
+        <button class="btn btn-primary" onclick="document.getElementById('DirectorAuthorizationForm').submit()">
+            <i class="fas fa-save"></i> Save Changes
+        </button>
     </div>
 
-    <!-- Statistics Cards -->
-    <div class="stats-container">
-        <div class="stat-card">
-            <div class="stat-icon blue">
-                <i class="fas fa-school"></i>
+    <!-- Edit Form -->
+    <div class="form-container">
+        <form id="DirectorAuthorizationForm" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <!-- Display form errors at the top -->
+            {% if form.errors %}
+            <div class="alert alert-danger">
+                <strong>Please correct the following errors:</strong>
+                <ul>
+                    {% for field in form %}
+                        {% for error in field.errors %}
+                            <li>{{ field.label }}: {{ error }}</li>
+                        {% endfor %}
+                    {% endfor %}
+                    {% for error in form.non_field_errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
             </div>
-            <div class="stat-info">
-                <h3>142</h3>
-                <p>Total Schools</p>
-            </div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-icon green">
-                <i class="fas fa-user-tie"></i>
-            </div>
-            <div class="stat-info">
-                <h3>86</h3>
-                <p>Active Directors</p>
-            </div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-icon orange">
-                <i class="fas fa-map-marker-alt"></i>
-            </div>
-            <div class="stat-info">
-                <h3>24</h3>
-                <p>Wilayas Covered</p>
-            </div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-icon red">
-                <i class="fas fa-clock"></i>
-            </div>
-            <div class="stat-info">
-                <h3>7</h3>
-                <p>Pending Updates</p>
-            </div>
-        </div>
-    </div>
+            {% endif %}
 
-    <!-- Directors Table -->
-    <div class="table-container">
-        <div class="table-header">
-            <h2><i class="fas fa-list"></i> Directors List</h2>
-            <div class="search-box">
-                <i class="fas fa-search"></i>
-                <input type="text" id="searchInput" placeholder="Search directors...">
+            <!-- Personal Information Section -->
+            <div class="form-section">
+                <h2 class="section-title">
+                    <i class="fas fa-user"></i> Personal Information
+                </h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="{{ form.nom.id_for_label }}">Full Name *</label>
+                        {{ form.nom }}
+                        {% if form.nom.errors %}
+                        <div class="error-text">{{ form.nom.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.nni.id_for_label }}">NNI *</label>
+                        {{ form.nni }}
+                        {% if form.nni.errors %}
+                        <div class="error-text">{{ form.nni.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.dateNais.id_for_label }}">Date of Birth *</label>
+                        {{ form.dateNais }}
+                        {% if form.dateNais.errors %}
+                        <div class="error-text">{{ form.dateNais.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.lieuNai.id_for_label }}">Place of Birth</label>
+                        {{ form.lieuNai }}
+                        {% if form.lieuNai.errors %}
+                        <div class="error-text">{{ form.lieuNai.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
             </div>
-        </div>
+
+            <!-- School Information Section -->
+            <div class="form-section">
+                <h2 class="section-title">
+                    <i class="fas fa-school"></i> School Information
+                </h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="{{ form.school.id_for_label }}">School Name *</label>
+                            {{ form.school }}   <!-- this will render a <select> -->
+                            {% if form.school.errors %}
+                                <div class="error-text">{{ form.school.errors }}</div>
+                            {% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label>Code AD *</label>
+                        <p class="form-control-plaintext">{{ form.instance.codeAD }}</p>
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.wilaya.id_for_label }}">Wilaya *</label>
+                        {{ form.wilaya }}
+                        {% if form.wilaya.errors %}
+                        <div class="error-text">{{ form.wilaya.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.nomMoughatta.id_for_label }}">Moughataa *</label>
+                        {{ form.nomMoughatta }}
+                        {% if form.nomMoughatta.errors %}
+                        <div class="error-text">{{ form.nomMoughatta.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.idMoughatta.id_for_label }}">Moughataa ID</label>
+                        {{ form.idMoughatta }}
+                        {% if form.idMoughatta.errors %}
+                        <div class="error-text">{{ form.idMoughatta.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Authorization Information Section -->
+            <div class="form-section">
+                <h2 class="section-title">
+                    <i class="fas fa-file-signature"></i> Authorization Details
+                </h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="{{ form.typeAutorisationDirige.id_for_label }}">Authorization Type *</label>
+                        {{ form.typeAutorisationDirige }}
+                        {% if form.typeAutorisationDirige.errors %}
+                        <div class="error-text">{{ form.typeAutorisationDirige.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.autorisationNum.id_for_label }}">Authorization Number *</label>
+                        {{ form.autorisationNum }}
+                        {% if form.autorisationNum.errors %}
+                        <div class="error-text">{{ form.autorisationNum.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.dateAutorisation.id_for_label }}">Authorization Date *</label>
+                        {{ form.dateAutorisation }}
+                        {% if form.dateAutorisation.errors %}
+                        <div class="error-text">{{ form.dateAutorisation.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.dateDebut.id_for_label }}">Start Date *</label>
+                        {{ form.dateDebut }}
+                        {% if form.dateDebut.errors %}
+                        <div class="error-text">{{ form.dateDebut.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.dateFin.id_for_label }}">End Date *</label>
+                        {{ form.dateFin }}
+                        {% if form.dateFin.errors %}
+                        <div class="error-text">{{ form.dateFin.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Diploma Information Section -->
+            <div class="form-section">
+                <h2 class="section-title">
+                    <i class="fas fa-graduation-cap"></i> Diploma Information
+                </h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="{{ form.sourceDiplome.id_for_label }}">Diploma Source</label>
+                        {{ form.sourceDiplome }}
+                        {% if form.sourceDiplome.errors %}
+                        <div class="error-text">{{ form.sourceDiplome.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.numDiplome.id_for_label }}">Diploma Number</label>
+                        {{ form.numDiplome }}
+                        {% if form.numDiplome.errors %}
+                        <div class="error-text">{{ form.numDiplome.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.specialiteDiplome.id_for_label }}">Specialty</label>
+                        {{ form.specialiteDiplome }}
+                        {% if form.specialiteDiplome.errors %}
+                        <div class="error-text">{{ form.specialiteDiplome.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.niveauDiplom.id_for_label }}">Diploma Level</label>
+                        {{ form.niveauDiplom }}
+                        {% if form.niveauDiplom.errors %}
+                        <div class="error-text">{{ form.niveauDiplom.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact Information Section -->
+            <div class="form-section">
+                <h2 class="section-title">
+                    <i class="fas fa-phone"></i> Contact Information
+                </h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="{{ form.numTel.id_for_label }}">Phone Number *</label>
+                        {{ form.numTel }}
+                        {% if form.numTel.errors %}
+                        <div class="error-text">{{ form.numTel.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.noter.id_for_label }}">Noter</label>
+                        {{ form.noter }}
+                        {% if form.noter.errors %}
+                        <div class="error-text">{{ form.noter.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.numAutorisationNoter.id_for_label }}">Noter Authorization Number</label>
+                        {{ form.numAutorisationNoter }}
+                        {% if form.numAutorisationNoter.errors %}
+                        <div class="error-text">{{ form.numAutorisationNoter.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.dateAutorisationNoter.id_for_label }}">Noter Authorization Date</label>
+                        {{ form.dateAutorisationNoter }}
+                        {% if form.dateAutorisationNoter.errors %}
+                        <div class="error-text">{{ form.dateAutorisationNoter.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Additional Information Section -->
+            <div class="form-section">
+                <h2 class="section-title">
+                    <i class="fas fa-info-circle"></i> Additional Information
+                </h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="{{ form.dateAjout.id_for_label }}">Date Added *</label>
         
-    <table id="directorsTable">
-            <thead>
-                <tr>
-                    <th data-sort="id">ID <i class="fas fa-sort"></i></th>
-                    <th data-sort="nomEcole">Nom École <i class="fas fa-sort"></i></th>
-                    <th data-sort="wilaya">Wilaya <i class="fas fa-sort"></i></th>
-                    <th data-sort="code">Code <i class="fas fa-sort"></i></th>
-                    <th data-sort="nom">Nom <i class="fas fa-sort"></i></th>
-                    <th data-sort="niveau">Niveau <i class="fas fa-sort"></i></th>
-                    <th data-sort="dateAjout">Date Ajout <i class="fas fa-sort"></i></th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-        <tbody>
-            {% for director in directors %}
-            <tr>
-                <td>{{ director.id }}</td>
-                <td>{{ director.nomEcole }}</td>
-                <td>{{ director.wilaya }}</td>
-                <td>{{ director.code }}</td>
-                <td>{{ director.nom }}</td>
-                <td>{{ director.niveau }}</td>
-                <td>{{ director.dateAjout }}</td>
-                <td class="action-cell">
-                    <!-- View -->
-                    <a href="{% url 'director_views' director.id %}" class="btn btn-view">
-                        <i class="fas fa-eye"></i> View
-                    </a>
+                        <p class="form-control-plaintext">{{ form.instance.dateAjout }}</p>
+                    </div>
 
-                    <!-- Edit -->
-                    <a href="{% url 'edit_director' director.id %}" class="btn btn-edit">
-                        <i class="fas fa-edit"></i> Edit
-                    </a>
-
-                    <!-- Delete -->
-                    <a href="{% url 'delete_director' director.id %}" class="btn btn-delete"
-                    onclick="return confirm('Are you sure you want to delete this director?');">
-                        <i class="fas fa-trash"></i> Delete
-                    </a>
-                </td>
-
-            </tr>
-            {% empty %}
-            <tr><td colspan="8">No directors found</td></tr>
-            {% endfor %}
-        </tbody>
-    </table>
-        
-        <!-- Pagination -->
-        <div class="pagination">
-            <button class="btn-pagination">&laquo; Previous</button>
-            <button class="btn-pagination active">1</button>
-            <button class="btn-pagination">2</button>
-            <button class="btn-pagination">3</button>
-            <button class="btn-pagination">Next &raquo;</button>
-        </div>
-</div>
-
-<!-- Add Director Modal -->
-<div id="addDirectorModal" class="modal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2><i class="fas fa-user-plus"></i> Add New Director</h2>
-            <span class="close">&times;</span>
-        </div>
-        <div class="modal-body">
-            <form id="directorForm">
-                <div class="form-row">
                     <div class="form-group">
-                        <label for="schoolName">School Name</label>
-                        <input type="text" id="schoolName" required>
+                        <label>QR Code URL</label>
+                        <p><a href="{{ form.instance.lienQR}}" target="_blank">{{ form.instance.lienQR }}</a></p>
                     </div>
                     <div class="form-group">
-                        <label for="wilaya">Wilaya</label>
-                        <input type="text" id="wilaya" required>
+                        <label for="{{ form.pdf_file.id_for_label }}">PDF File</label>
+                        {% if form.instance.pdf_file %}
+                            <p>Current file: <a href="{{ form.instance.pdf_file.url }}" target="_blank">{{ form.instance.pdf_file.name }}</a></p>
+                        {% endif %}
+                        {{ form.pdf_file }}
                     </div>
                 </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="directorName">Director Name</label>
-                        <input type="text" id="directorName" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="code">Code</label>
-                        <input type="text" id="code" required>
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="level">Level</label>
-                        <select id="level" required>
-                            <option value="">Select Level</option>
-                            <option value="primary">Primary</option>
-                            <option value="middle">Middle</option>
-                            <option value="high">High</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="date">Date Added</label>
-                        <input type="date" id="date" required>
-                    </div>
-                </div>
-                <div class="form-actions">
-                    <button type="button" id="cancelBtn" class="btn btn-cancel">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Add Director</button>
-                </div>
-            </form>
-        </div>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="form-actions">
+                <button type="button" class="btn btn-cancel" onclick="window.history.back()">Cancel</button>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Save Changes
+                </button>
+            </div>
+        </form>
     </div>
 </div>
 
 <style>
-    /* Dashboard specific styles */
-    .dashboard-container {
-        max-width: 1400px;
-        margin: 0 auto;
-        padding: 20px;
-    }
-    
-    /* Page Header */
+.dashboard-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.page-header h1 {
+    margin: 0;
+    color: #2c3e50;
+    font-size: 28px;
+}
+
+.btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background-color: #3498db;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #2980b9;
+}
+
+.btn-secondary {
+    background-color: #95a5a6;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background-color: #7f8c8d;
+}
+
+.btn-cancel {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.btn-cancel:hover {
+    background-color: #c0392b;
+}
+
+.form-container {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 25px;
+}
+
+.form-section {
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #eee;
+}
+
+.section-title {
+    color: #2c3e50;
+    font-size: 20px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #34495e;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+    transition: border-color 0.3s;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    border-color: #3498db;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
+
+.error-text {
+    color: #e74c3c;
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+.alert {
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 4px;
+}
+
+.alert-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.alert ul {
+    margin: 10px 0 0 0;
+    padding-left: 20px;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
     .page-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 30px;
-        padding: 20px;
-        background: white;
-        border-radius: 10px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
-    
-    .page-header h1 {
-        color: #2c3e50;
-        font-size: 1.8rem;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-    
-    /* Statistics Cards */
-    .stats-container {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-        gap: 20px;
-        margin-bottom: 30px;
-    }
-    
-    .stat-card {
-        background: white;
-        padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        display: flex;
-        align-items: center;
-        gap: 15px;
-        transition: all 0.3s ease;
-    }
-    
-    .stat-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
-    }
-    
-    .stat-icon {
-        width: 60px;
-        height: 60px;
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.8rem;
-        color: white;
-    }
-    
-    .stat-icon.blue {
-        background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
-    }
-    
-    .stat-icon.green {
-        background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
-    }
-    
-    .stat-icon.orange {
-        background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
-    }
-    
-    .stat-icon.red {
-        background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
-    }
-    
-    .stat-info h3 {
-        font-size: 1.8rem;
-        margin-bottom: 5px;
-        color: #2c3e50;
-    }
-    
-    .stat-info p {
-        color: #95a5a6;
-        font-weight: 500;
-    }
-    
-    /* Table Styles */
-    .table-container {
-        background: white;
-        border-radius: 10px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        overflow: hidden;
-        margin-bottom: 30px;
-    }
-    
-    .table-header {
-        padding: 20px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        background-color: #f8f9fa;
-        border-bottom: 1px solid #eee;
-    }
-    
-    .table-header h2 {
-        color: #2c3e50;
-        font-size: 1.5rem;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-    
-    .search-box {
-        display: flex;
-        align-items: center;
-        background: white;
-        padding: 8px 15px;
-        border-radius: 50px;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
-    
-    .search-box input {
-        border: none;
-        outline: none;
-        padding: 5px 10px;
-        font-size: 1rem;
-        width: 200px;
-    }
-    
-    .search-box i {
-        color: #95a5a6;
-    }
-    
-    table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-    
-    thead {
-        background: linear-gradient(135deg, #2c3e50 0%, #2c3e50 100%);
-        color: white;
-    }
-    
-    th {
-        padding: 15px;
-        text-align: left;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        position: relative;
-    }
-    
-    th:hover {
-        background-color: rgba(255, 255, 255, 0.1);
-    }
-    
-    th i {
-        margin-left: 5px;
-        font-size: 0.8rem;
-        position: absolute;
-        right: 10px;
-        top: 50%;
-        transform: translateY(-50%);
-    }
-    
-    tbody tr {
-        border-bottom: 1px solid #eee;
-        transition: all 0.3s ease;
-    }
-    
-    tbody tr:hover {
-        background-color: #f8f9fa;
-    }
-    
-    td {
-        padding: 15px;
-    }
-    
-    .action-cell {
-        display: flex;
-        gap: 10px;
-    }
-    
-    .btn {
-        padding: 8px 15px;
-        border-radius: 5px;
-        border: none;
-        cursor: pointer;
-        font-weight: 500;
-        transition: all 0.3s ease;
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
-        font-size: 0.9rem;
-        text-decoration: none;
-    }
-    
-    .btn-primary {
-        background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
-        color: white;
-    }
-    
-    .btn-primary:hover {
-        background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
-        transform: translateY(-2px);
-        box-shadow: 0 4px 6px rgba(37, 99, 235, 0.3);
-    }
-    
-    .btn-view {
-        background-color: #3498db;
-        color: white;
-    }
-    
-    .btn-view:hover {
-        background-color: #2980b9;
-    }
-    
-    .btn-edit {
-        background-color: #f39c12;
-        color: white;
-    }
-    
-    .btn-edit:hover {
-        background-color: #e67e22;
-    }
-    
-    .btn-delete {
-        background-color: #e74c3c;
-        color: white;
-    }
-    
-    .btn-delete:hover {
-        background-color: #c0392b;
-    }
-    
-    .btn-cancel {
-        background-color: #95a5a6;
-        color: white;
-    }
-    
-    .btn-cancel:hover {
-        background-color: #7f8c8d;
-    }
-    
-    .btn-pagination {
-        padding: 8px 15px;
-        background-color: white;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
-    
-    .btn-pagination.active {
-        background-color: #3498db;
-        color: white;
-        border-color: #3498db;
-    }
-    
-    .btn-pagination:hover:not(.active) {
-        background-color: #f1f1f1;
-    }
-    
-    /* Pagination */
-    .pagination {
-        display: flex;
-        justify-content: center;
-        padding: 20px;
-        gap: 10px;
-    }
-    
-    /* Modal Styles */
-    .modal {
-        display: none;
-        position: fixed;
-        z-index: 1000;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
-        animation: fadeIn 0.3s ease;
-    }
-    
-    @keyframes fadeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
-    }
-    
-    .modal-content {
-        background-color: white;
-        margin: 5% auto;
-        border-radius: 10px;
-        width: 90%;
-        max-width: 600px;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-        animation: slideIn 0.3s ease;
-    }
-    
-    @keyframes slideIn {
-        from { transform: translateY(-50px); opacity: 0; }
-        to { transform: translateY(0); opacity: 1; }
-    }
-    
-    .modal-header {
-        padding: 20px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        border-bottom: 1px solid #eee;
-    }
-    
-    .modal-header h2 {
-        color: #2c3e50;
-        font-size: 1.5rem;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-    
-    .close {
-        color: #95a5a6;
-        font-size: 28px;
-        font-weight: bold;
-        cursor: pointer;
-        transition: color 0.3s ease;
-    }
-    
-    .close:hover {
-        color: #e74c3c;
-    }
-    
-    .modal-body {
-        padding: 20px;
-    }
-    
-    /* Form Styles */
-    .form-row {
-        display: flex;
-        gap: 20px;
-        margin-bottom: 20px;
-    }
-    
-    .form-group {
-        flex: 1;
-        display: flex;
         flex-direction: column;
+        gap: 15px;
+        align-items: flex-start;
     }
     
-    .form-group label {
-        margin-bottom: 8px;
-        font-weight: 500;
-        color: #2c3e50;
-    }
-    
-    .form-group input,
-    .form-group select {
-        padding: 10px 12px;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-        font-size: 1rem;
-        transition: border-color 0.3s ease;
-    }
-    
-    .form-group input:focus,
-    .form-group select:focus {
-        outline: none;
-        border-color: #3498db;
-        box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+    .form-grid {
+        grid-template-columns: 1fr;
     }
     
     .form-actions {
-        display: flex;
-        justify-content: flex-end;
-        gap: 10px;
-        margin-top: 30px;
-        padding-top: 20px;
-        border-top: 1px solid #eee;
+        flex-direction: column;
     }
     
-    /* Responsive Design */
-    @media (max-width: 992px) {
-        .stats-container {
-            grid-template-columns: repeat(2, 1fr);
-        }
-        
-        .action-cell {
-            flex-direction: column;
-        }
-        
-        .form-row {
-            flex-direction: column;
-            gap: 15px;
-        }
+    .btn {
+        width: 100%;
+        justify-content: center;
     }
-    
-    @media (max-width: 768px) {
-        .page-header {
-            flex-direction: column;
-            gap: 15px;
-            text-align: center;
-        }
-        
-        .stats-container {
-            grid-template-columns: 1fr;
-        }
-        
-        .table-header {
-            flex-direction: column;
-            gap: 15px;
-        }
-        
-        .search-box {
-            width: 100%;
-        }
-        
-        .search-box input {
-            width: 100%;
-        }
-        
-        table {
-            display: block;
-            overflow-x: auto;
-        }
-        
-        .action-cell {
-            flex-direction: row;
-            flex-wrap: wrap;
-        }
-    }
+}
 </style>
 
 <script>
-    // Delete confirmation
-    document.addEventListener('DOMContentLoaded', function() {
-        const deleteButtons = document.querySelectorAll('.btn-delete');
-        
-        deleteButtons.forEach(button => {
-            button.addEventListener('click', (e) => {
-                if (!confirm('Are you sure you want to delete this director?')) {
-                    e.preventDefault();
-                }
-            });
-        });
-        
-        // Simple search functionality
-        const searchInput = document.getElementById('searchInput');
-        
-        searchInput.addEventListener('input', () => {
-            const searchTerm = searchInput.value.toLowerCase();
-            const rows = document.querySelectorAll('#directorsTable tbody tr');
-            
-            rows.forEach(row => {
-                const text = row.textContent.toLowerCase();
-                if (text.includes(searchTerm)) {
-                    row.style.display = '';
-                } else {
-                    row.style.display = 'none';
-                }
-            });
-        });
-        
-        // Sorting functionality
-        document.querySelectorAll('th[data-sort]').forEach(header => {
-            header.addEventListener('click', () => {
-                const table = header.closest('table');
-                const tbody = table.querySelector('tbody');
-                const columnIndex = Array.from(header.parentNode.children).indexOf(header);
-                const rows = Array.from(tbody.querySelectorAll('tr'));
-                const sortKey = header.getAttribute('data-sort');
-                
-                // Determine sort direction
-                const isAscending = header.classList.contains('asc');
-                header.classList.toggle('asc', !isAscending);
-                header.classList.toggle('desc', isAscending);
-                
-                // Sort rows
-                rows.sort((a, b) => {
-                    const aValue = a.children[columnIndex].textContent.trim();
-                    const bValue = b.children[columnIndex].textContent.trim();
-                    
-                    // Check if values are numeric
-                    if (!isNaN(aValue) && !isNaN(bValue)) {
-                        return isAscending ? 
-                            Number(aValue) - Number(bValue) : 
-                            Number(bValue) - Number(aValue);
-                    }
-                    
-                    // Check if values are dates
-                    if (sortKey === 'dateAjout') {
-                        const aDate = new Date(aValue);
-                        const bDate = new Date(bValue);
-                        return isAscending ? 
-                            aDate - bDate : 
-                            bDate - aDate;
-                    }
-                    
-                    return isAscending ? 
-                        aValue.localeCompare(bValue) : 
-                        bValue.localeCompare(aValue);
-                });
-                
-                // Remove existing rows
-                while (tbody.firstChild) {
-                    tbody.removeChild(tbody.firstChild);
-                }
-                
-                // Add sorted rows
-                rows.forEach(row => tbody.appendChild(row));
-            });
-        });
-        
-        // Modal functionality
-        const modal = document.getElementById("addDirectorModal");
-        const addBtn = document.querySelector(".btn-primary");
-        const closeBtn = document.querySelector(".close");
-        const cancelBtn = document.getElementById("cancelBtn");
-        const directorForm = document.getElementById("directorForm");
-        
-        if (addBtn) {
-            addBtn.addEventListener("click", () => {
-                modal.style.display = "block";
-            });
-        }
-        
-        if (closeBtn) {
-            closeBtn.addEventListener("click", () => {
-                modal.style.display = "none";
-            });
-        }
-        
-        if (cancelBtn) {
-            cancelBtn.addEventListener("click", () => {
-                modal.style.display = "none";
-            });
-        }
-        
-        window.addEventListener("click", (event) => {
-            if (event.target === modal) {
-                modal.style.display = "none";
-            }
-        });
-        
-        if (directorForm) {
-            directorForm.addEventListener("submit", (e) => {
-                e.preventDefault();
-                // Here you would handle form submission
-                alert("Director added successfully!");
-                modal.style.display = "none";
-                directorForm.reset();
-            });
-        }
+// Add date picker functionality to date fields
+document.addEventListener('DOMContentLoaded', function() {
+    // This would be where you initialize a date picker library
+    // For example, if using flatpickr:
+    // flatpickr(".date-input", {dateFormat: "Y-m-d"});
+    
+    // For now, we'll just add a class to date inputs for styling
+    const dateInputs = document.querySelectorAll('input[type="date"]');
+    dateInputs.forEach(input => {
+        input.classList.add('date-input');
     });
+});
 </script>
-{% endblock content %}
+{% endblock %}

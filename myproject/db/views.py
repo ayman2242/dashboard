@@ -6,7 +6,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.core.files import File
 import qrcode
-from .forms import LoginForm ,DirectorAuthorizationForm,SchoolForm,TeacherAuthorizationForm,UserForm
+from .forms import LoginForm ,DirectorAuthorizationForm,SchoolForm,TeacherAuthorizationForm,UserForm,UserEditForm
 from django.core.files.base import ContentFile
 from django.contrib.auth.decorators import login_required
 from .models import DirectorAuthorization,School,TeacherAuthorization,CustomUser
@@ -316,18 +316,18 @@ def add_user(request):
     if request.method == 'POST':
         form = UserForm(request.POST)
         if form.is_valid():
-            user = form.save(commit=False)  # password is already hashed by UserCreationForm
+            user = form.save(commit=False)
             user.save()
 
-            # Assign selected group
-            group = form.cleaned_data['group']
-            user.groups.add(group)
+            # Assign selected groups
+            groups = form.cleaned_data['groups']  # ✅ key matches the form
+            user.groups.set(groups)  # use set() to assign multiple groups
 
             return redirect('home')
     else:
         form = UserForm()
-    return render(request, 'add_user.html', {'form': form})
 
+    return render(request, 'add_user.html', {'form': form})
 
 def logout_page(request):
     logout(request)
@@ -424,9 +424,17 @@ def director_views(request, director_id):
     director = get_object_or_404(DirectorAuthorization, id=director_id)
     return render(request, 'director_views.html', {'director': director})
 # 2) teacher
+def teacher_views(request, teacher_id):
+    teacher = get_object_or_404(TeacherAuthorization, id=teacher_id)
+    return render(request, 'teacher_views.html', {'teacher': teacher})
 # 3) school/lettre
+def school_views(request, school_id):
+    school= get_object_or_404(School, id=school_id)
+    return render(request, 'school_views.html', {'school':school })
 # 4)user 
-
+def user_views(request, user_id):
+    user= get_object_or_404(CustomUser, id=user_id)
+    return render(request, 'user_views.html', {'user': user})
 
 #---------------------------------- EDIT -----------------------------------------#
 
@@ -450,8 +458,55 @@ def edit_director(request, director_id):
     })
 
 # 2) teacher
+def edit_teacher(request, teacher_id):
+    teacher = get_object_or_404(TeacherAuthorization, id=teacher_id)
+
+    if request.method == "POST":
+        form = TeacherAuthorizationForm(request.POST, request.FILES, instance=teacher)
+        if form.is_valid():
+            form.save()
+            return redirect('teacher_detail', teacher_id=teacher.id)  
+        else:
+            print(form.errors)  # 👈 shows validation errors in console
+    else:
+        form = TeacherAuthorizationForm(instance=teacher)
+
+    return render(request, "edit_teacher.html", {
+        "form": form,
+        "teacher": teacher,
+    })
+
 # 3) school/lettre
+def edit_school(request, school_id):
+    school = get_object_or_404(School, id=school_id)
+
+    if request.method == "POST":
+        form = SchoolForm(request.POST, request.FILES, instance=school)
+        if form.is_valid():
+            form.save()
+            return redirect('school_detail', school_id=school.id)  # ✅ make sure urls.py expects "school_id"
+        else:
+            print(form.errors)  # 👈 shows validation errors in console
+    else:
+        form = SchoolForm(instance=school)
+
+    return render(request, "edit_school.html", {
+        "form": form,
+        "school": school,
+    })
 # 4)user 
+def edit_user(request, user_id):
+    user = get_object_or_404(CustomUser, id=user_id)
+
+    if request.method == "POST":
+        form = UserEditForm(request.POST, instance=user)
+        if form.is_valid():
+            form.save()
+            return redirect("user_list")  # 🔄 redirect where you want
+    else:
+        form = UserEditForm(instance=user)
+
+    return render(request, "edit_user.html", {"form": form, "user": user})
 
 
 #---------------------------------- delete -----------------------------------------#
@@ -475,8 +530,8 @@ def delete_school(request, school_id):
     school.delete()
     return redirect('school_list')
 # 4)user 
-def user_school(request, school_id):
-    school = get_object_or_404(CustomUser, id=school_id)
+def delete_user(request, user_id):
+    school = get_object_or_404(CustomUser, id=user_id)
     school.delete()
-    return redirect('CustomUser_list')
+    return redirect('user_list')
 

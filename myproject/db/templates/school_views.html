@@ -1,46 +1,19 @@
 {% extends "base.html" %}
 {% load group_tags %}
 
-{% block title %}Director Details{% endblock %}
+{% block title %}School Details{% endblock %}
 
 {% block content %}
 <div class="dashboard-container">
     <!-- Back Button -->
     <div class="page-header">
         <button class="btn btn-secondary" onclick="window.history.back()">
-            <i class="fas fa-arrow-left"></i> Back to Directors List
+            <i class="fas fa-arrow-left"></i> Back to Schools List
         </button>
-        <h1><i class="fas fa-user-tie"></i> Director Details</h1>
+        <h1><i class="fas fa-school"></i> School Details</h1>
         <button class="btn btn-primary" onclick="window.print()">
             <i class="fas fa-print"></i> Print
         </button>
-    </div>
-
-    <!-- Director Information Card -->
-    <div class="detail-card">
-        <div class="detail-card-header">
-            <h2>Personal Information</h2>
-        </div>
-        <div class="detail-card-body">
-            <div class="info-grid">
-                <div class="info-item">
-                    <label>Full Name:</label>
-                    <span>{{ director.nom }}</span>
-                </div>
-                <div class="info-item">
-                    <label>NNI:</label>
-                    <span>{{ director.nni }}</span>
-                </div>
-                <div class="info-item">
-                    <label>Date of Birth:</label>
-                    <span>{{ director.dateNais|date:"d/m/Y" }}</span>
-                </div>
-                <div class="info-item">
-                    <label>Place of Birth:</label>
-                    <span>{{ director.lieuNai }}</span>
-                </div>
-            </div>
-        </div>
     </div>
 
     <!-- School Information Card -->
@@ -52,19 +25,73 @@
             <div class="info-grid">
                 <div class="info-item">
                     <label>School Name:</label>
-                    <span>{{ director.school.nomEcole }}</span>
+                    <span>{{ school.nomEcole }}</span>
                 </div>
                 <div class="info-item">
-                    <label>Code AD:</label>
-                    <span>{{ director.codeAD }}</span>
+                    <label>School Code:</label>
+                    <span>{{ school.code }}</span>
                 </div>
+                <div class="info-item">
+                    <label>Code LR:</label>
+                    <span>{{ school.codeLR }}</span>
+                </div>
+                <div class="info-item">
+                    <label>Educational Level:</label>
+                    <span>{{ school.niveau }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Location Information Card -->
+    <div class="detail-card">
+        <div class="detail-card-header">
+            <h2>Location Information</h2>
+        </div>
+        <div class="detail-card-body">
+            <div class="info-grid">
                 <div class="info-item">
                     <label>Wilaya:</label>
-                    <span>{{ director.wilaya }}</span>
+                    <span>{{ school.wilaya }}</span>
                 </div>
                 <div class="info-item">
                     <label>Moughataa:</label>
-                    <span>{{ director.nomMoughatta }}</span>
+                    <span>{{ school.nomMoughatta }}</span>
+                </div>
+                <div class="info-item">
+                    <label>Moughataa ID:</label>
+                    <span>{{ school.idMoughatta }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Administrator Information Card -->
+    <div class="detail-card">
+        <div class="detail-card-header">
+            <h2>Administrator Information</h2>
+        </div>
+        <div class="detail-card-body">
+            <div class="info-grid">
+                <div class="info-item">
+                    <label>Administrator Name:</label>
+                    <span>{{ school.nom }}</span>
+                </div>
+                <div class="info-item">
+                    <label>NNI:</label>
+                    <span>{{ school.nni }}</span>
+                </div>
+                <div class="info-item">
+                    <label>Nationality:</label>
+                    <span>{{ school.nationalite }}</span>
+                </div>
+                <div class="info-item">
+                    <label>Diploma:</label>
+                    <span>{{ school.diplome }}</span>
+                </div>
+                <div class="info-item">
+                    <label>Phone Number:</label>
+                    <span>{{ school.numTel }}</span>
                 </div>
             </div>
         </div>
@@ -78,74 +105,16 @@
         <div class="detail-card-body">
             <div class="info-grid">
                 <div class="info-item">
-                    <label>Authorization Type:</label>
-                    <span>{{ director.typeAutorisationDirige }}</span>
+                    <label>Waly Letter Number:</label>
+                    <span>{{ school.numLettreWaly }}</span>
                 </div>
                 <div class="info-item">
-                    <label>Authorization Number:</label>
-                    <span>{{ director.autorisationNum }}</span>
+                    <label>Waly Letter Date:</label>
+                    <span>{{ school.dateLettreWaly|date:"d/m/Y" }}</span>
                 </div>
                 <div class="info-item">
-                    <label>Authorization Date:</label>
-                    <span>{{ director.dateAutorisation|date:"d/m/Y" }}</span>
-                </div>
-                <div class="info-item">
-                    <label>Authorization Period:</label>
-                    <span>{{ director.dateDebut|date:"d/m/Y" }} - {{ director.dateFin|date:"d/m/Y" }}</span>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Diploma Information Card -->
-    <div class="detail-card">
-        <div class="detail-card-header">
-            <h2>Diploma Information</h2>
-        </div>
-        <div class="detail-card-body">
-            <div class="info-grid">
-                <div class="info-item">
-                    <label>Diploma Source:</label>
-                    <span>{{ director.sourceDiplome }}</span>
-                </div>
-                <div class="info-item">
-                    <label>Diploma Number:</label>
-                    <span>{{ director.numDiplome }}</span>
-                </div>
-                <div class="info-item">
-                    <label>Specialty:</label>
-                    <span>{{ director.specialiteDiplome }}</span>
-                </div>
-                <div class="info-item">
-                    <label>Diploma Level:</label>
-                    <span>{{ director.niveauDiplom }}</span>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Contact Information Card -->
-    <div class="detail-card">
-        <div class="detail-card-header">
-            <h2>Contact Information</h2>
-        </div>
-        <div class="detail-card-body">
-            <div class="info-grid">
-                <div class="info-item">
-                    <label>Phone Number:</label>
-                    <span>{{ director.numTel }}</span>
-                </div>
-                <div class="info-item">
-                    <label>Noter:</label>
-                    <span>{{ director.noter }}</span>
-                </div>
-                <div class="info-item">
-                    <label>Noter Authorization Number:</label>
-                    <span>{{ director.numAutorisationNoter }}</span>
-                </div>
-                <div class="info-item">
-                    <label>Noter Authorization Date:</label>
-                    <span>{{ director.dateAutorisationNoter|date:"d/m/Y" }}</span>
+                    <label>Date Added:</label>
+                    <span>{{ school.dateAjout|date:"d/m/Y" }}</span>
                 </div>
             </div>
         </div>
@@ -159,21 +128,17 @@
         <div class="detail-card-body">
             <div class="info-grid">
                 <div class="info-item">
-                    <label>Date Added:</label>
-                    <span>{{ director.dateAjout|date:"d/m/Y" }}</span>
-                </div>
-                <div class="info-item">
                     <label>QR Code:</label>
-                    {% if director.lienQR %}
-                        <a href="{{ director.lienQR }}" target="_blank">View QR Code</a>
+                    {% if school.lienQR %}
+                        <a href="{{ school.lienQR }}" target="_blank">View QR Code</a>
                     {% else %}
                         <span>Not available</span>
                     {% endif %}
                 </div>
                 <div class="info-item">
                     <label>PDF Document:</label>
-                    {% if director.pdf_file %}
-                        <a href="{{ director.pdf_file.url }}" target="_blank">View PDF</a>
+                    {% if school.pdf_file %}
+                        <a href="{{ school.pdf_file.url }}" target="_blank">View PDF</a>
                     {% else %}
                         <span>Not available</span>
                     {% endif %}
@@ -184,11 +149,11 @@
 
     <!-- Action Buttons -->
     <div class="action-buttons">
-        <button class="btn btn-edit">
-            <i class="fas fa-edit"></i> Edit Director
+        <button class="btn btn-edit" onclick="window.location.href='{% url 'edit_school' school.id %}'">
+            <i class="fas fa-edit"></i> Edit School
         </button>
-        <button class="btn btn-delete">
-            <i class="fas fa-trash"></i> Delete Director
+        <button class="btn btn-delete" id="deleteSchoolBtn">
+            <i class="fas fa-trash"></i> Delete School
         </button>
     </div>
 </div>
@@ -352,18 +317,11 @@
 
 <script>
     // Delete confirmation
-    document.querySelector('.btn-delete').addEventListener('click', () => {
-        if (confirm('Are you sure you want to delete this director?')) {
-            // Here would be the code to actually delete the director
-            alert('Director deleted successfully!');
-            window.location.href = "{% url 'directors_list' %}";  // Redirect to directors list
+    document.getElementById('deleteSchoolBtn').addEventListener('click', () => {
+        if (confirm('Are you sure you want to delete this school? This action cannot be undone.')) {
+            // Here would be the code to actually delete the school
+            window.location.href = "{% url 'delete_school' school.id %}";
         }
-    });
-    
-    // Edit button functionality
-    document.querySelector('.btn-edit').addEventListener('click', () => {
-        // Redirect to edit page
-        window.location.href = "{% url 'edit_director' director.id %}";
     });
     
     // Add Font Awesome icons

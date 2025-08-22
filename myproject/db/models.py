@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.utils.translation import gettext_lazy as _
+
+
 MOUGHATAA_CHOICES = [
     ('adel_bagrou', 'Adel Bagrou'),
     ('aïoun', 'Aïoun'),
@@ -111,6 +113,8 @@ class CustomUser(AbstractUser):
         verbose_name = 'User'
         verbose_name_plural = 'Users'
 
+    
+
 class School(models.Model):
     id = models.AutoField(primary_key=True)
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE,null=True)
@@ -188,7 +192,7 @@ class TeacherAuthorization(models.Model):
     nom=models.CharField(max_length=50,blank=True,null=True)
     code=models.CharField(max_length=50,blank=True,null=True)
     codeAE =models.CharField(max_length=50,blank=True,null=True)
-    qr_code = models.CharField(max_length=50, blank=True, null=True) #remove
+    qr_code = models.CharField(max_length=50, blank=True, null=True) 
     pdf_file = models.FileField(upload_to='pdfs/', blank=True, null=True)  
     dateAjout = models.DateField()
     dateDebut = models.DateField()

@@ -2,6 +2,8 @@ from django import forms
 from .models import School, TeacherAuthorization, DirectorAuthorization,CustomUser
 from django.contrib.auth.models import User, Group
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserChangeForm
+from django import forms
 
 class LoginForm(forms.Form):
     username = forms.CharField(
@@ -14,16 +16,16 @@ class LoginForm(forms.Form):
 
 
 class UserForm(UserCreationForm):
-    group = forms.ModelChoiceField(
+    groups = forms.ModelMultipleChoiceField(
         queryset=Group.objects.all(),
-        required=True,
-        widget=forms.Select(attrs={'class': 'form-control'})
+        required=False,
+        widget=forms.CheckboxSelectMultiple
     )
 
     class Meta:
         model = CustomUser
-        fields = ['username', 'email', 'password1', 'password2', 'nni', 'phone', 'group']
-        help_texts = {  # remove all default help_text
+        fields = ['username', 'email', 'password1', 'password2', 'nni', 'phone', 'groups']
+        help_texts = {
             'username': None,
             'password1': None,
             'password2': None,
@@ -34,6 +36,22 @@ class UserForm(UserCreationForm):
             'nni': forms.TextInput(attrs={'class': 'form-control'}),
             'phone': forms.TextInput(attrs={'class': 'form-control'}),
         }
+
+
+class UserEditForm(UserChangeForm):
+    password = None  # hide password field when editing
+
+    class Meta:
+        model = CustomUser
+        fields = ['username', 'email', 'nni', 'phone', 'groups']
+        widgets = {
+            'username': forms.TextInput(attrs={'class': 'form-control'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control'}),
+            'nni': forms.TextInput(attrs={'class': 'form-control'}),
+            'phone': forms.TextInput(attrs={'class': 'form-control'}),
+            'groups': forms.CheckboxSelectMultiple(),  # multiple groups ✅
+        }
+
 
 class SchoolForm(forms.ModelForm):
     class Meta:
@@ -77,6 +95,7 @@ class TeacherAuthorizationForm(forms.ModelForm):
         'dateFin' : forms.DateInput(attrs={'class':'form-control', 'type':'date'}),
 
     }
+
 
 
 class DirectorAuthorizationForm(forms.ModelForm):
