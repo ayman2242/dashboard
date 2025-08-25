@@ -43,6 +43,8 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    'django.middleware.locale.LocaleMiddleware',  # ✅ add this
+    
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -107,9 +109,12 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
-LANGUAGE_CODE = "en-us"
+LANGUAGE_CODE = 'fr'
+
+
 
 TIME_ZONE = "UTC"
+USE_L10N = True
 
 USE_I18N = True
 
@@ -131,3 +136,27 @@ AUTH_USER_MODEL = 'db.CustomUser'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+INSTALLED_APPS += [
+    'axes',
+]
+
+MIDDLEWARE += [
+    'axes.middleware.AxesMiddleware',
+]
+
+AUTHENTICATION_BACKENDS = [
+    'axes.backends.AxesStandaloneBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
+
+# Lockout settings
+AXES_FAILURE_LIMIT = 5                 # Max failed attempts
+AXES_COOLOFF_TIME = 1                  # Lockout duration in hours
+AXES_LOCKOUT_TEMPLATE = 'registration/lockout.html'
+
+# Replacement for deprecated settings:
+AXES_LOCK_OUT_BY_COMBINATION = True    # Track per username + IP
+AXES_LOCK_OUT_BY_USER_AGENT = True     # Track per device/browser
+
+AXES_RESET_ON_SUCCESS = True           # Reset counter on successful login

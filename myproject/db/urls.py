@@ -21,10 +21,11 @@ urlpatterns = [
     path('success/teacher/<int:teacher_id>/', success, name='success_teacher'),
 
     
-    path('teacher/<int:teacher_id>/',teacher_detail, name='teacher_detail'),
-    path('school/<int:school_id>/',school_detail, name='school_detail'),
-    path('director/<int:director_id>/',director_detail, name='director_detail'),
 
+
+    path('director/<uuid:qr_uuid>/', director_detail, name='director_detail'),
+    path('teacher/<uuid:qr_uuid>/', teacher_detail, name='teacher_detail'),
+    path('lettre/<uuid:qr_uuid>/', school_detail, name='school_detail'),
 
 
     # for director remove modified add and views 

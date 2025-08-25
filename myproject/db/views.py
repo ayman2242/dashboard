@@ -15,25 +15,67 @@ from .utils.pdf_utils import fill_pdf
 from datetime import date
 from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect
+from datetime import timedelta
+from django.utils import timezone
 
                     
+MAX_FAILED_ATTEMPTS = 5
+LOCKOUT_DURATION = timezone.timedelta(minutes=5)
+
 def login_page(request):
-    if request.method == 'POST':
-        form = LoginForm(request.POST)
-        if form.is_valid():
-            username = form.cleaned_data['username']
-            password = form.cleaned_data['password']
-            user = authenticate(request, username=username , password= password)
-            if user:
-                login(request,user)
-                return redirect('home')
+    # Redirect already logged-in users
+    if request.user.is_authenticated:
+        return redirect('home')
+
+    form = LoginForm(request.POST or None)
+
+    if request.method == 'POST' and form.is_valid():
+        username = form.cleaned_data['username']
+        password = form.cleaned_data['password']
+
+        try:
+            user = CustomUser.objects.get(username=username)
+        except CustomUser.DoesNotExist:
+            user = None
+
+        # Check if user is locked
+        if user and user.is_locked:
+            if user.lockout_time and timezone.now() < user.lockout_time + LOCKOUT_DURATION:
+                remaining = (user.lockout_time + LOCKOUT_DURATION) - timezone.now()
+                remaining_minutes = int(remaining.total_seconds() // 60) + 1
+                messages.error(request, f"Votre compte est bloqué pour {remaining_minutes} minutes.")
+                return render(request, 'login.html', {'form': form})
             else:
-                form.add_error(None, "incalid username or password")
-    else:
-        form = LoginForm()
+                # Unlock user automatically
+                user.is_locked = False
+                user.failed_login_attempts = 0
+                user.lockout_time = None
+                user.save()
 
-    return render(request,'login.html',{'form':form})
+        # Authenticate user
+        user_auth = authenticate(request, username=username, password=password)
+        if user_auth:
+            # Reset failed attempts on successful login
+            user.failed_login_attempts = 0
+            user.is_locked = False
+            user.lockout_time = None
+            user.save()
+            login(request, user_auth)
+            return redirect('home')
+        else:
+            if user:
+                user.failed_login_attempts += 1
+                if user.failed_login_attempts >= MAX_FAILED_ATTEMPTS:
+                    user.is_locked = True
+                    user.lockout_time = timezone.now()
+                    messages.error(request, "Trop de tentatives échouées. Votre compte est bloqué pour 5 minutes.")
+                else:
+                    messages.error(request, "Nom d'utilisateur ou mot de passe incorrect.")
+                user.save()
+            else:
+                messages.error(request, "Nom d'utilisateur ou mot de passe incorrect.")
 
+    return render(request, 'login.html', {'form': form})
 
 @login_required(login_url='/login/')
 def school(request):
@@ -58,8 +100,7 @@ def school(request):
             instance.save()
 
             # 4️⃣ Generate final QR link
-            qr_link = f"{request.scheme}://{request.get_host()}/lettre/{instance.id}/"
-
+            qr_link = f"{request.scheme}://{request.get_host()}/lettre/{instance.qr_uuid}/"
             instance.lienQR = qr_link
 
             # 5️⃣ Generate QR code PNG
@@ -148,7 +189,7 @@ def director_autor(request):
                 
                 # Generate QR link
                 # qr_link = f"http://127.0.0.1:8000/director/{instance.id}/"
-                qr_link = f"{request.scheme}://{request.get_host()}/director/{instance.id}/"
+                qr_link = f"{request.scheme}://{request.get_host()}/director/{instance.qr_uuid}/"
                 instance.lienQR = qr_link
 
                 # Generate QR code PNG
@@ -242,7 +283,7 @@ def teacher_autor(request):
             instance.save()
 
             # 3️⃣ Generate QR link
-            qr_link = f"{request.scheme}://{request.get_host()}/teacher/{instance.id}/"
+            qr_link = f"{request.scheme}://{request.get_host()}/teacher/{instance.qr_uuid}/"
             instance.lienQR = qr_link
 
             # 4️⃣ Generate QR code PNG
@@ -313,6 +354,10 @@ def teacher_autor(request):
 
 @login_required(login_url='/login/')
 def add_user(request):
+    if not request.user.is_superuser:
+        messages.error(request, "You do not have permission to access this page.")
+        return redirect("home")
+
     if request.method == 'POST':
         form = UserForm(request.POST)
         if form.is_valid():
@@ -379,16 +424,16 @@ def success(request, school_id=None, director_id=None, teacher_id=None):
 
 #---------------------------------- detail -----------------------------------------#
 
-def teacher_detail(request, teacher_id):
-    teacher = get_object_or_404(TeacherAuthorization, id=teacher_id)
+def teacher_detail(request, qr_uuid):
+    teacher = get_object_or_404(TeacherAuthorization, qr_uuid=qr_uuid)
     return render(request, 'teacher_detail.html', {'teacher': teacher})
 
-def school_detail(request, school_id):
-    school = get_object_or_404(School, id=school_id)
+def school_detail(request, qr_uuid):
+    school = get_object_or_404(School, qr_uuid=qr_uuid)
     return render(request, 'school_detail.html', {'school': school})
 
-def director_detail(request, director_id):
-    director = get_object_or_404(DirectorAuthorization, id=director_id)
+def director_detail(request, qr_uuid):
+    director = get_object_or_404(DirectorAuthorization, qr_uuid=qr_uuid)
     return render(request, 'director_detail.html', {'director': director})
 
 
@@ -398,95 +443,316 @@ def director_detail(request, director_id):
 
 # 1) director
 def directors_list(request):
+    school_count = School.objects.count()
+    total_directors = DirectorAuthorization.objects.count()
+    total_teachers = TeacherAuthorization.objects.count()
+
+    if not request.user.groups.filter(name="Director").exists():
+        messages.error(request, "You do not have permission to access this page.")
+        return redirect("home") 
     directors = DirectorAuthorization.objects.all()
-    return render(request, 'directors_list.html', {'directors': directors})
+    return render(request, 'directors_list.html', {'directors': directors,"school_count": school_count,'total_directors':total_directors,'total_teachers':total_teachers})
 
 # 2) teacher
 def teacher_list(request):
+    school_count = School.objects.count()
+    total_directors = DirectorAuthorization.objects.count()
+    total_teachers = TeacherAuthorization.objects.count()
+
+    if not request.user.groups.filter(name="Teacher").exists():
+        messages.error(request, "You do not have permission to access this page.")
+        return redirect("home") 
     teachers = TeacherAuthorization.objects.all()
-    return render(request, 'teachers_list.html', {'teachers': teachers})
+    return render(request, 'teachers_list.html', {'teachers': teachers,"school_count": school_count,'total_directors':total_directors,'total_teachers':total_teachers})
 
 # 3) school/lettre
 def school_list(request):
+    school_count = School.objects.count()
+    total_directors = DirectorAuthorization.objects.count()
+    total_teachers = TeacherAuthorization.objects.count()
+
+    if not request.user.groups.filter(name="Schools").exists():
+        messages.error(request, "You do not have permission to access this page.")
+        return redirect("home") 
     schools = School.objects.all()
-    return render(request, 'schools_list.html', {'schools': schools})
+    return render(request, 'schools_list.html', {'schools': schools,"school_count": school_count,'total_directors':total_directors,'total_teachers':total_teachers})
 
 # 4)user 
 def user_list(request):
+    school_count = School.objects.count()
+    total_directors = DirectorAuthorization.objects.count()
+    total_teachers = TeacherAuthorization.objects.count()
+    if not request.user.is_superuser:
+        messages.error(request, "You do not have permission to access this page.")
+        return redirect("home")
     users = CustomUser.objects.all()
-    return render(request, 'user_list.html', {'users': users})
+    return render(request, 'user_list.html', {'users': users,"school_count": school_count,'total_directors':total_directors,'total_teachers':total_teachers})
 
 #---------------------------------- views -----------------------------------------#
 
 
 # 1) director
 def director_views(request, director_id):
+    if not request.user.groups.filter(name="Director").exists():
+        messages.error(request, "You do not have permission to access this page.")
+        return redirect("home") 
     director = get_object_or_404(DirectorAuthorization, id=director_id)
     return render(request, 'director_views.html', {'director': director})
 # 2) teacher
 def teacher_views(request, teacher_id):
+    if not request.user.groups.filter(name="Teacher").exists():
+        messages.error(request, "You do not have permission to access this page.")
+        return redirect("home") 
     teacher = get_object_or_404(TeacherAuthorization, id=teacher_id)
     return render(request, 'teacher_views.html', {'teacher': teacher})
 # 3) school/lettre
 def school_views(request, school_id):
+    if not request.user.groups.filter(name="Schools").exists():
+        messages.error(request, "You do not have permission to access this page.")
+        return redirect("home") 
     school= get_object_or_404(School, id=school_id)
     return render(request, 'school_views.html', {'school':school })
 # 4)user 
 def user_views(request, user_id):
+    if not request.user.is_superuser:
+        messages.error(request, "You do not have permission to access this page.")
+        return redirect("home")
     user= get_object_or_404(CustomUser, id=user_id)
     return render(request, 'user_views.html', {'user': user})
 
 #---------------------------------- EDIT -----------------------------------------#
 
 # 1) director
+@login_required(login_url='/login/')
 def edit_director(request, director_id):
+    if not request.user.groups.filter(name="Director").exists():
+        messages.error(request, "You do not have permission to access this page.")
+        return redirect("home") 
+
     director = get_object_or_404(DirectorAuthorization, id=director_id)
 
     if request.method == "POST":
         form = DirectorAuthorizationForm(request.POST, request.FILES, instance=director)
         if form.is_valid():
-            form.save()
-            return redirect('director_detail', director_id=director.id)  # ✅ make sure urls.py expects "director_id"
+            instance = form.save(commit=False)
+            instance.user = request.user
+            instance.dateAjout = date.today()  # optional: track edit date
+
+            # Ensure codeAD exists (for older directors)
+            if not instance.codeAD:
+                year = str(now().year)[-2:]
+                last_director = DirectorAuthorization.objects.filter(codeAD__startswith=f'DEPAD{year}').order_by('id').last()
+                number = int(last_director.codeAD[-6:]) + 1 if last_director else 1
+                instance.codeAD = f'DEPAD{year}{number:06d}'
+
+            # Generate QR link
+            qr_link = f"{request.scheme}://{request.get_host()}/director/{instance.id}/"
+            instance.lienQR = qr_link
+
+            # Generate QR code PNG
+            qr_img = qrcode.make(qr_link)
+            temp_dir = os.path.join(settings.MEDIA_ROOT, "temp_qr1")
+            os.makedirs(temp_dir, exist_ok=True)
+            safe_name = re.sub(r'[^0-9a-zA-Z]+', '_', instance.codeAD)
+            qr_filename = f"{safe_name}_qr.png"
+            qr_path = os.path.join(temp_dir, qr_filename)
+            qr_img.save(qr_path)
+
+            # Generate PDF with QR inserted
+            pdf_replacements = {
+                "[nom]": instance.nom,
+                "[codeAE]": instance.codeAD,
+                "[date]": instance.dateAjout.strftime("%d/%m/%Y"),
+                "[QR]": "[QR]"
+            }
+
+            try:
+                pdf_path = fill_pdf(
+                    "template.pdf",
+                    f"{instance.codeAD}.pdf",
+                    pdf_replacements,
+                    qr_image_path=qr_path
+                )
+
+                # Save PDF to model
+                with open(pdf_path, 'rb') as f:
+                    instance.pdf_file.save(f"{instance.codeAD}.pdf", File(f), save=False)
+
+                # Final save
+                instance.save()
+
+                # Cleanup temp files
+                for path in [qr_path, pdf_path]:
+                    if os.path.exists(path):
+                        os.remove(path)
+                if os.path.exists(temp_dir) and not os.listdir(temp_dir):
+                    os.rmdir(temp_dir)
+
+                return redirect('director_detail', qr_uuid=instance.qr_uuid)
+
+            except Exception as e:
+                messages.error(request, f"Error generating PDF: {str(e)}")
+                return render(request, 'edit_director.html', {'form': form, 'director': director})
+
         else:
-            print(form.errors)  # 👈 shows validation errors in console
+            print(form.errors)
     else:
         form = DirectorAuthorizationForm(instance=director)
 
-    return render(request, "edit_director.html", {
-        "form": form,
-        "director": director,
-    })
+    return render(request, "edit_director.html", {'form': form, 'director': director})
+
 
 # 2) teacher
+@login_required(login_url='/login/')
 def edit_teacher(request, teacher_id):
+    if not request.user.groups.filter(name="Teacher").exists():
+        messages.error(request, "You do not have permission to access this page.")
+        return redirect("home") 
+
     teacher = get_object_or_404(TeacherAuthorization, id=teacher_id)
 
     if request.method == "POST":
         form = TeacherAuthorizationForm(request.POST, request.FILES, instance=teacher)
         if form.is_valid():
-            form.save()
-            return redirect('teacher_detail', teacher_id=teacher.id)  
+            instance = form.save(commit=False)
+            instance.user = request.user
+            instance.dateAjout = date.today()  # optional: update last edit date
+
+            # Ensure codeAE exists (for older teachers)
+            if not instance.codeAE:
+                year = str(date.today().year)[-2:]
+                last_teacher = TeacherAuthorization.objects.filter(codeAE__startswith=f'DEPAE{year}').order_by('id').last()
+                number = int(last_teacher.codeAE[-6:]) + 1 if last_teacher and last_teacher.codeAE else 1
+                instance.codeAE = f'DEPAE{year}{number:06d}'
+
+            # Generate QR link
+            qr_link = f"{request.scheme}://{request.get_host()}/teacher/{instance.id}/"
+            instance.lienQR = qr_link
+
+            # Generate QR code image
+            qr_img = qrcode.make(qr_link)
+            temp_dir = tempfile.mkdtemp()
+            safe_name = re.sub(r'[^0-9a-zA-Z]+', '_', instance.codeAE)
+            qr_filename = f"{safe_name}_qr.png"
+            qr_path = os.path.join(temp_dir, qr_filename)
+            qr_img.save(qr_path)
+
+            # Generate PDF with QR inserted
+            pdf_replacements = {
+                "[nom]": instance.nom,
+                "[codeAE]": instance.codeAE,
+                "[date]": instance.dateAjout.strftime("%d/%m/%Y"),
+                "[QR]": "[QR]"
+            }
+
+            try:
+                pdf_path = fill_pdf(
+                    "template.pdf",
+                    f"{instance.id}.pdf",
+                    pdf_replacements,
+                    qr_image_path=qr_path
+                )
+
+                # Save PDF to model
+                with open(pdf_path, 'rb') as f:
+                    instance.pdf_file.save(f"{instance.id}.pdf", File(f), save=False)
+
+                instance.save()
+
+                # Cleanup temporary files
+                for path in [qr_path, pdf_path]:
+                    if os.path.exists(path):
+                        os.remove(path)
+                if os.path.exists(temp_dir) and not os.listdir(temp_dir):
+                    os.rmdir(temp_dir)
+
+                return redirect('teacher_detail', qr_uuid=instance.qr_uuid)
+
+            except Exception as e:
+                messages.error(request, f"Error generating PDF: {str(e)}")
+                return render(request, 'edit_teacher.html', {'form': form, 'teacher': teacher})
+
         else:
-            print(form.errors)  # 👈 shows validation errors in console
+            print(form.errors)
+
     else:
         form = TeacherAuthorizationForm(instance=teacher)
 
-    return render(request, "edit_teacher.html", {
-        "form": form,
-        "teacher": teacher,
-    })
+    return render(request, "edit_teacher.html", {'form': form, 'teacher': teacher})
 
 # 3) school/lettre
+@login_required(login_url='/login/')
 def edit_school(request, school_id):
+    if not request.user.groups.filter(name="Schools").exists():
+        messages.error(request, "You do not have permission to access this page.")
+        return redirect("home") 
+
     school = get_object_or_404(School, id=school_id)
 
     if request.method == "POST":
         form = SchoolForm(request.POST, request.FILES, instance=school)
         if form.is_valid():
-            form.save()
-            return redirect('school_detail', school_id=school.id)  # ✅ make sure urls.py expects "school_id"
+            instance = form.save(commit=False)
+
+            # Update user and date if needed
+            instance.user = request.user
+            instance.dateAjout = date.today()
+
+            # Regenerate codeLR only if needed
+            if not instance.codeLR:
+                year = str(now().year)[-2:]
+                last_school = School.objects.filter(codeLR__startswith=f'DEPLR{year}').order_by('id').last()
+                number = int(last_school.codeLR[-6:]) + 1 if last_school else 1
+                instance.codeLR = f'DEPLR{year}{number:06d}'
+
+            # Generate QR link and image
+            qr_link = f"{request.scheme}://{request.get_host()}/lettre/{instance.id}/"
+            instance.lienQR = qr_link
+
+            qr_img = qrcode.make(qr_link)
+            temp_dir = os.path.join(settings.MEDIA_ROOT, "temp_qr")
+            os.makedirs(temp_dir, exist_ok=True)
+            safe_name = re.sub(r'[^0-9a-zA-Z]+', '_', instance.codeLR)
+            qr_filename = f"{safe_name}_qr.png"
+            qr_path = os.path.join(temp_dir, qr_filename)
+            qr_img.save(qr_path)
+
+            # Regenerate PDF only if user wants (or always regenerate)
+            pdf_replacements = {
+                "[nom]": instance.nom,
+                "[codeAE]": instance.codeLR,
+                "[date]": instance.dateAjout.strftime("%d/%m/%Y"),
+                "[QR]": "[QR]"  # placeholder in PDF template
+            }
+
+            pdf_path = fill_pdf(
+                "template.pdf",
+                f"{instance.codeLR}.pdf",
+                pdf_replacements,
+                qr_image_path=qr_path
+            )
+
+            # Save PDF to model
+            with open(pdf_path, 'rb') as f:
+                instance.pdf_file.save(f"{instance.codeLR}.pdf", File(f), save=False)
+
+            # Save instance
+            instance.save()
+
+            # Cleanup temporary files
+            try:
+                if os.path.exists(qr_path):
+                    os.remove(qr_path)
+                if os.path.exists(pdf_path):
+                    os.remove(pdf_path)
+                if os.path.exists(temp_dir) and not os.listdir(temp_dir):
+                    os.rmdir(temp_dir)
+            except Exception as e:
+                print(f"Error cleaning up files: {e}")
+
+            return redirect('school_detail', qr_uuid=instance.qr_uuid)
         else:
-            print(form.errors)  # 👈 shows validation errors in console
+            print(form.errors)
     else:
         form = SchoolForm(instance=school)
 
@@ -494,8 +760,12 @@ def edit_school(request, school_id):
         "form": form,
         "school": school,
     })
+
 # 4)user 
 def edit_user(request, user_id):
+    if not request.user.is_superuser:
+        messages.error(request, "You do not have permission to access this page.")
+        return redirect("home") 
     user = get_object_or_404(CustomUser, id=user_id)
 
     if request.method == "POST":
@@ -513,6 +783,9 @@ def edit_user(request, user_id):
 
 # 1) director
 def delete_director(request, director_id):
+    if not request.user.groups.filter(name="Director").exists():
+        messages.error(request, "You do not have permission to access this page.")
+        return redirect("home") 
     director = get_object_or_404(DirectorAuthorization, id=director_id)
     director.delete()
     return redirect('directors_list')
@@ -520,17 +793,26 @@ def delete_director(request, director_id):
 
 # 2) teacher
 def delete_teacher(request, teacher_id):
+    if not request.user.groups.filter(name="Teacher").exists():
+        messages.error(request, "You do not have permission to access this page.")
+        return redirect("home") 
     teacher = get_object_or_404(TeacherAuthorization, id=teacher_id)
     teacher.delete()
     return redirect('teacher_list')
 
 # 3) school/lettre
 def delete_school(request, school_id):
+    if not request.user.groups.filter(name="Schools").exists():
+        messages.error(request, "You do not have permission to access this page.")
+        return redirect("home") 
     school = get_object_or_404(School, id=school_id)
     school.delete()
     return redirect('school_list')
 # 4)user 
 def delete_user(request, user_id):
+    if not request.user.is_superuser:
+        messages.error(request, "You do not have permission to access this page.")
+        return redirect("home")
     school = get_object_or_404(CustomUser, id=user_id)
     school.delete()
     return redirect('user_list')

@@ -1,162 +1,113 @@
 {% extends "base.html" %}
-{% load group_tags %}
 
 {% block title %}User Details{% endblock %}
 
 {% block content %}
 <div class="dashboard-container">
-    <!-- Back Button -->
+    <!-- Page Header -->
     <div class="page-header">
         <button class="btn btn-secondary" onclick="window.history.back()">
-            <i class="fas fa-arrow-left"></i> Back to Users List
+            <i class="fas fa-arrow-left"></i> Back
         </button>
-        <h1><i class="fas fa-user"></i> User Details</h1>
+        <h1><i class="fas fa-user"></i> User: {{ user.username }}</h1>
         <button class="btn btn-primary" onclick="window.print()">
             <i class="fas fa-print"></i> Print
         </button>
     </div>
 
-    <!-- User Information Card -->
-    <div class="detail-card">
-        <div class="detail-card-header">
-            <h2>Account Information</h2>
-        </div>
-        <div class="detail-card-body">
-            <div class="info-grid">
-                <div class="info-item">
-                    <label>Username:</label>
-                    <span>{{ custom_user.username }}</span>
-                </div>
-                <div class="info-item">
-                    <label>Email:</label>
-                    <span>{{ custom_user.email|default:"Not provided" }}</span>
-                </div>
-                <div class="info-item">
-                    <label>Account Status:</label>
-                    <span>
-                        {% if custom_user.is_active %}
-                            <span class="badge badge-success">Active</span>
-                        {% else %}
-                            <span class="badge badge-danger">Inactive</span>
-                        {% endif %}
-                    </span>
-                </div>
-                <div class="info-item">
-                    <label>Staff Status:</label>
-                    <span>
-                        {% if custom_user.is_staff %}
-                            <span class="badge badge-info">Staff Member</span>
-                        {% else %}
-                            <span class="badge badge-secondary">Regular User</span>
-                        {% endif %}
-                    </span>
-                </div>
-                <div class="info-item">
-                    <label>Superuser Status:</label>
-                    <span>
-                        {% if custom_user.is_superuser %}
-                            <span class="badge badge-warning">Superuser</span>
-                        {% else %}
-                            <span>No</span>
-                        {% endif %}
-                    </span>
-                </div>
-                <div class="info-item">
-                    <label>Date Joined:</label>
-                    <span>{{ custom_user.date_joined|date:"d/m/Y H:i" }}</span>
-                </div>
-                <div class="info-item">
-                    <label>Last Login:</label>
-                    <span>
-                        {% if custom_user.last_login %}
-                            {{ custom_user.last_login|date:"d/m/Y H:i" }}
-                        {% else %}
-                            Never logged in
-                        {% endif %}
-                    </span>
-                </div>
+    <!-- Account Information -->
+    <div class="form-section">
+        <h2 class="section-title"><i class="fas fa-id-card"></i> Account Information</h2>
+        <div class="info-grid">
+            <div class="info-item"><label>Username:</label> <span>{{ user.username }}</span></div>
+            <div class="info-item"><label>Prénom:</label> <span>{{ user.first_name }}</span></div>
+            <div class="info-item"><label>Nom:</label> <span>{{ user.last_name }}</span></div>
+
+
+            <div class="info-item"><label>Email:</label> <span>{{ user.email|default:"Not provided" }}</span></div>
+            <div class="info-item"><label>Status:</label>
+                {% if user.is_active %}
+                    <span class="badge badge-success">Active</span>
+                {% else %}
+                    <span class="badge badge-danger">Inactive</span>
+                {% endif %}
+            </div>
+            <div class="info-item"><label>Staff:</label>
+                {% if user.is_staff %}
+                    <span class="badge badge-info">Yes</span>
+                {% else %}
+                    <span class="badge badge-secondary">No</span>
+                {% endif %}
+            </div>
+            <div class="info-item"><label>Superuser:</label>
+                {% if user.is_superuser %}
+                    <span class="badge badge-warning">Yes</span>
+                {% else %}
+                    <span>No</span>
+                {% endif %}
+            </div>
+            <div class="info-item"><label>Date Joined:</label> <span>{{ user.date_joined|date:"d/m/Y H:i" }}</span></div>
+            <div class="info-item"><label>Last Login:</label>
+                {% if user.last_login %}
+                    <span>{{ user.last_login|date:"d/m/Y H:i" }}</span>
+                {% else %}
+                    <span>Never</span>
+                {% endif %}
             </div>
         </div>
     </div>
 
-    <!-- Personal Information Card -->
-    <div class="detail-card">
-        <div class="detail-card-header">
-            <h2>Personal Information</h2>
-        </div>
-        <div class="detail-card-body">
-            <div class="info-grid">
-                <div class="info-item">
-                    <label>First Name:</label>
-                    <span>{{ custom_user.first_name|default:"Not provided" }}</span>
-                </div>
-                <div class="info-item">
-                    <label>Last Name:</label>
-                    <span>{{ custom_user.last_name|default:"Not provided" }}</span>
-                </div>
-                <div class="info-item">
-                    <label>National ID (NNI):</label>
-                    <span>{{ custom_user.nni|default:"Not provided" }}</span>
-                </div>
-                <div class="info-item">
-                    <label>Phone Number:</label>
-                    <span>{{ custom_user.phone|default:"Not provided" }}</span>
-                </div>
-            </div>
+    <!-- Personal Information -->
+    <div class="form-section">
+        <h2 class="section-title"><i class="fas fa-user-circle"></i> Personal Information</h2>
+        <div class="info-grid">
+            <div class="info-item"><label>NNI:</label> <span>{{ user.nni|default:"Not provided" }}</span></div>
+            <div class="info-item"><label>Phone:</label> <span>{{ user.phone|default:"Not provided" }}</span></div>
         </div>
     </div>
 
-    <!-- Permissions and Groups Card -->
-    <div class="detail-card">
-        <div class="detail-card-header">
-            <h2>Permissions & Groups</h2>
-        </div>
-        <div class="detail-card-body">
-            <div class="info-grid">
-                <div class="info-item full-width">
-                    <label>Groups:</label>
-                    <div class="tags-container">
-                        {% if custom_user.groups.all %}
-                            {% for group in custom_user.groups.all %}
-                                <span class="badge badge-primary">{{ group.name }}</span>
+    <!-- Groups & Permissions -->
+    <div class="form-section">
+        <h2 class="section-title"><i class="fas fa-users-cog"></i> Groups & Permissions</h2>
+        <div class="info-grid">
+            <div class="info-item full-width">
+                <label>Groups:</label>
+                {% if user.groups.all %}
+                    {% for group in user.groups.all %}
+                        <span class="badge badge-primary">{{ group.name }}</span>
+                    {% empty %}
+                        <span>No groups assigned</span>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            <div class="info-item full-width">
+                <label>Permissions:</label>
+                {% if user.get_all_permissions %}
+                    <details>
+                        <summary>View Permissions ({{ user.get_all_permissions|length }})</summary>
+                        <ul>
+                            {% for perm in user.get_all_permissions %}
+                                <li>{{ perm }}</li>
                             {% endfor %}
-                        {% else %}
-                            <span>No groups assigned</span>
-                        {% endif %}
-                    </div>
-                </div>
-                <div class="info-item full-width">
-                    <label>Permissions:</label>
-                    <div class="permissions-list">
-                        {% if custom_user.user_permissions.all or custom_user.get_all_permissions %}
-                            <details>
-                                <summary>View Permissions ({{ custom_user.get_all_permissions|length }})</summary>
-                                <ul>
-                                    {% for perm in custom_user.get_all_permissions %}
-                                        <li>{{ perm }}</li>
-                                    {% endfor %}
-                                </ul>
-                            </details>
-                        {% else %}
-                            <span>No specific permissions assigned</span>
-                        {% endif %}
-                    </div>
-                </div>
+                        </ul>
+                    </details>
+                {% else %}
+                    <span>No specific permissions</span>
+                {% endif %}
             </div>
         </div>
     </div>
 
-    <!-- Action Buttons -->
-    <div class="action-buttons">
-        <button class="btn btn-edit" onclick="window.location.href='{% url 'edit_user' user.id %}'">
+    <!-- Actions -->
+    <div class="form-actions">
+        <a href="{% url 'edit_user' user.id %}" class="btn btn-edit">
             <i class="fas fa-edit"></i> Edit User
-        </button>
+        </a>
         <button class="btn btn-delete" id="deleteUserBtn">
             <i class="fas fa-trash"></i> Delete User
         </button>
     </div>
 </div>
-
 <style>
     /* Detail View Styles */
     .dashboard-container {
