@@ -160,3 +160,4 @@ AXES_LOCK_OUT_BY_COMBINATION = True    # Track per username + IP
 AXES_LOCK_OUT_BY_USER_AGENT = True     # Track per device/browser
 
 AXES_RESET_ON_SUCCESS = True           # Reset counter on successful login
+

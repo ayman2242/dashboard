@@ -17,6 +17,8 @@ from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect
 from datetime import timedelta
 from django.utils import timezone
+import arabic_reshaper
+from bidi.algorithm import get_display
 
                     
 MAX_FAILED_ATTEMPTS = 5
@@ -114,22 +116,40 @@ def school(request):
             qr_path = os.path.join(temp_dir, qr_filename)
             qr_img.save(qr_path)
 
+            arabic_message = """
+            إلى
+            السيد( ة ) : [name]
+            الرقم الوطني للتعريف : [nni]
+            الموضوع : استلام ملف افتتاح مؤسسة حرة
+            المرجع : رسالة والي ولاية : انواكشوط الغربية  رقم : [code] تاريخ : [date1]
+            طبقا للمادة6:
+             مؤسسات التعليم الخاص يطيب لي أن أستلم ملفكم المتعلق بفتح مؤسسة خاصة للتعليم الأساسي والثانوي من المرسوم رقم 28/510 مكرر الصادر بتاريخ 82/02/12 المحدد لشروط افتتاح
+            تدعى : [school_name]
+            في مقاطعة : [moghataa]
+            بولاية : [wilaya]
+            """
 
-
-            # 8️⃣ Generate PDF with QR inserted
             pdf_replacements = {
-                "[nom]": instance.nom,
+                "[name]":instance.nom,
+                "[nni]":instance.nni ,
                 "[codeAE]": instance.codeLR,
-                "[date]": instance.dateAjout.strftime("%d/%m/%Y"),
-                "[QR]": "[QR]"  # Placeholder in PDF template
+                "[code]": instance.code,
+                "[date1]": instance.dateLettreWaly.strftime("%d/%m/%Y"),
+                "[school_name]": instance.nomEcole,
+                "[moghataa]":instance.nomMoughatta ,
+                "[wilaya]":instance.wilaya ,
+                "[date]":  instance.dateAjout.strftime('%d/%m/%Y'),
+                "[QR]": "[QR]"  # عشان الكود يشتغل
             }
 
             pdf_path = fill_pdf(
                 "template.pdf",
-                f"{instance.codeLR}.pdf",
-                pdf_replacements,
-                qr_image_path=qr_path  # ✅ pass the actual QR PNG path
+                "output.pdf",
+                replacements=pdf_replacements,
+                qr_image_path=qr_path,
+                arabic_text=arabic_message
             )
+
 
             # 9️⃣ Save PDF to model
             with open(pdf_path, 'rb') as f:
@@ -204,19 +224,47 @@ def director_autor(request):
                 qr_img.save(qr_path)
 
                 # Generate PDF with QR inserted
+                arabic_message = """
+                نحن مدير التعليم الخاص
+                نأذن للسيد ( ة ) : [name]
+                الرقم الوطني للتعريف : [nni]
+                المولود (ة) بتاريخ : [dateNaissance] في : [lieuNaissance]
+                الحاصل على شهادة : [niveauDiplome] في : [specialiteDiplome]
+                بتسيير المؤسسة التعليمية الحرة : [school_name]
+                المرخصة ب : [typeAutorisation] رقم : [autorisationNum] بتاريخ : [dateAutorisation]
+                بولاية : [wilaya] في مقاطعة : [moughataa]
+                شريطة ألا يصطدم نشاطه بأي التزام مناف لنصوص الوظيفة العمومية
+                ملاحظة : تاريخ انتهاء الصلاحية : [dateFin]
+                """
+
+
                 pdf_replacements = {
-                    "[nom]": instance.nom,
+                    "[name]": instance.nom,
+                    "[nni]": instance.nni,
                     "[codeAE]": instance.codeAD,
-                    "[date]": instance.dateAjout.strftime("%d/%m/%Y"),
-                    "[QR]": "[QR]"
+                    "[dateNaissance]": instance.dateNais.strftime("%d/%m/%Y") if instance.dateNais else "",
+                    "[niveauDiplome]": instance.niveauDiplom,
+                    "[specialiteDiplome]": instance.specialiteDiplome,
+                    "[lieuNaissance]": instance.lieuNai,
+                    "[school_name]": instance.school.nom if instance.school else "",
+                    "[typeAutorisation]": instance.typeAutorisationDirige,
+                    "[moughataa]": instance.nomMoughatta,
+                    "[autorisationNum]": instance.autorisationNum,
+                    "[wilaya]": instance.wilaya,
+                    "[dateAutorisation]": instance.dateAutorisation.strftime("%d/%m/%Y") if instance.dateAutorisation else "",
+                    "[date]": instance.dateAjout.strftime("%d/%m/%Y") if instance.dateAjout else "",
+                    "[dateFin]": instance.dateFin.strftime("%d/%m/%Y") if instance.dateFin else "",
+                    "[QR]": "[QR]"  # يبقى placeholder عشان يتحول لصورة QR لاحقاً
                 }
 
                 pdf_path = fill_pdf(
-                    "template.pdf",
-                    f"{instance.codeAD}.pdf",
-                    pdf_replacements,
-                    qr_image_path=qr_path
+                    "template_d.pdf",
+                    "output.pdf",
+                    replacements=pdf_replacements,
+                    qr_image_path=qr_path,
+                    arabic_text=arabic_message
                 )
+
 
                 # Save PDF to model
                 with open(pdf_path, 'rb') as f:
@@ -248,6 +296,9 @@ def director_autor(request):
         form = DirectorAuthorizationForm()
     return render(request, "directeur.html", {'form': form})
 
+def prepare_arabic(text):
+    reshaped = arabic_reshaper.reshape(text)
+    return get_display(reshaped)
 
 @login_required(login_url='/login/')    
 def teacher_autor(request):
@@ -297,22 +348,41 @@ def teacher_autor(request):
             qr_img.save(qr_path)
 
             # 6️⃣ Generate PDF with QR inserted
-            code = instance.codeAE
-            pdf_replacements = {
-                "[nom]": instance.nom,
-                "[codeAE]": code,  # Just use the code directly
-                "[date]": instance.dateAjout.strftime("%d/%m/%Y"),
-                "[QR]": "[QR]"
-            }
-            print("PDF replacements:", pdf_replacements)
+            arabic_message = """
+                نحن مدير التعليم الخاص
+                نأذن للسيد ( ة ) : [name]
+                الرقم الوطني للتعريف : [nni]
+                المولود (ة) بتاريخ : [dateNaissance] في : [lieuNaissance]
+                الحاصل على شهادة : [niveauDiplome] في : [specialiteDiplome]
+                بتقديم دروس في مؤسسات التعليم الحر
+                التخصص : [matierEnseigner]
+                المستوى : [niveauDiplome]
+                شريطة ألا يصطدم نشاطه بأي التزام مناف لنصوص الوظيفة العمومية
+                ملاحظة : تاريخ انتهاء الصلاحية : [dateFin]
+                """
 
+            pdf_replacements = {
+            "[codeAE]": instance.codeAE or "",
+            "[date]": instance.dateAjout.strftime("%d/%m/%Y") if instance.dateAjout else "",
+            "[name]": instance.nom or "",
+            "[nni]": instance.nni or "",
+            "[dateNaissance]": instance.dateNais.strftime("%d/%m/%Y") if instance.dateNais else "",
+            "[lieuNaissance]": instance.lieuNai or "",
+            "[niveauDiplome]": instance.niveauDiplom or "",
+            "[specialiteDiplome]": instance.specialiteDiplome or "",
+            "[matierEnseigner]": instance.matierEnseigner or "",
+            "[dateFin]": instance.dateFin.strftime("%d/%m/%Y") if instance.dateFin else "",
+            "[QR]": "[QR]"  # placeholder للصورة QR
+                }
             try:
                 pdf_path = fill_pdf(
-                    "template.pdf",
-                    f"{instance.id}.pdf",
-                    pdf_replacements,
-                    qr_image_path=qr_path
+                    "template1.pdf",
+                    "output.pdf",
+                    replacements=pdf_replacements,
+                    qr_image_path=qr_path,
+                    arabic_text=arabic_message
                 )
+
     
                 # 7️⃣ Save PDF to model
                 with open(pdf_path, 'rb') as f:
@@ -546,7 +616,7 @@ def edit_director(request, director_id):
                 instance.codeAD = f'DEPAD{year}{number:06d}'
 
             # Generate QR link
-            qr_link = f"{request.scheme}://{request.get_host()}/director/{instance.id}/"
+            qr_link = f"{request.scheme}://{request.get_host()}/director/{instance.qr_uuid}/"
             instance.lienQR = qr_link
 
             # Generate QR code PNG
@@ -626,7 +696,7 @@ def edit_teacher(request, teacher_id):
                 instance.codeAE = f'DEPAE{year}{number:06d}'
 
             # Generate QR link
-            qr_link = f"{request.scheme}://{request.get_host()}/teacher/{instance.id}/"
+            qr_link = f"{request.scheme}://{request.get_host()}/teacher/{instance.qr_uuid}/"
             instance.lienQR = qr_link
 
             # Generate QR code image
@@ -706,7 +776,7 @@ def edit_school(request, school_id):
                 instance.codeLR = f'DEPLR{year}{number:06d}'
 
             # Generate QR link and image
-            qr_link = f"{request.scheme}://{request.get_host()}/lettre/{instance.id}/"
+            qr_link = f"{request.scheme}://{request.get_host()}/lettre/{instance.qr_uuid}/"
             instance.lienQR = qr_link
 
             qr_img = qrcode.make(qr_link)
@@ -718,19 +788,40 @@ def edit_school(request, school_id):
             qr_img.save(qr_path)
 
             # Regenerate PDF only if user wants (or always regenerate)
+            arabic_message = """
+            إلى
+            السيد( ة ) : [name]
+            الرقم الوطني للتعريف : [nni]
+            الموضوع : استلام ملف افتتاح مؤسسة حرة
+            المرجع : رسالة والي ولاية : انواكشوط الغربية  رقم : [code] تاريخ : [date1]
+            طبقا للمادة6:
+             مؤسسات التعليم الخاص يطيب لي أن أستلم ملفكم المتعلق بفتح مؤسسة خاصة للتعليم الأساسي والثانوي من المرسوم رقم 28/510 مكرر الصادر بتاريخ 82/02/12 المحدد لشروط افتتاح
+            تدعى : [school_name]
+            في مقاطعة : [moghataa]
+            بولاية : [wilaya]
+            """
+
             pdf_replacements = {
-                "[nom]": instance.nom,
+                "[name]":instance.nom,
+                "[nni]":instance.nni ,
                 "[codeAE]": instance.codeLR,
-                "[date]": instance.dateAjout.strftime("%d/%m/%Y"),
-                "[QR]": "[QR]"  # placeholder in PDF template
+                "[code]": instance.code,
+                "[date1]": instance.dateLettreWaly.strftime("%d/%m/%Y"),
+                "[school_name]": instance.nomEcole,
+                "[moghataa]":instance.nomMoughatta ,
+                "[wilaya]":instance.wilaya ,
+                "[date]":  instance.dateAjout.strftime('%d/%m/%Y'),
+                "[QR]": "[QR]"  # عشان الكود يشتغل
             }
 
             pdf_path = fill_pdf(
                 "template.pdf",
-                f"{instance.codeLR}.pdf",
-                pdf_replacements,
-                qr_image_path=qr_path
+                "output.pdf",
+                replacements=pdf_replacements,
+                qr_image_path=qr_path,
+                arabic_text=arabic_message
             )
+
 
             # Save PDF to model
             with open(pdf_path, 'rb') as f:
@@ -750,7 +841,7 @@ def edit_school(request, school_id):
             except Exception as e:
                 print(f"Error cleaning up files: {e}")
 
-            return redirect('school_detail', qr_uuid=instance.qr_uuid)
+            return redirect('school_list')
         else:
             print(form.errors)
     else:
