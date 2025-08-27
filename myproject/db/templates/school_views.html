@@ -5,158 +5,159 @@
 
 {% block content %}
 <div class="dashboard-container">
-    <!-- Back Button -->
+    <!-- Bouton Retour -->
     <div class="page-header">
         <button class="btn btn-secondary" onclick="window.history.back()">
-            <i class="fas fa-arrow-left"></i> Back to Schools List
+            <i class="fas fa-arrow-left"></i> Retour à la liste des écoles
         </button>
-        <h1><i class="fas fa-school"></i> School Details</h1>
+        <h1><i class="fas fa-school"></i> Détails de l'École</h1>
         <button class="btn btn-primary" onclick="window.print()">
-            <i class="fas fa-print"></i> Print
+            <i class="fas fa-print"></i> Imprimer
         </button>
     </div>
 
-    <!-- School Information Card -->
+    <!-- Carte Informations École -->
     <div class="detail-card">
         <div class="detail-card-header">
-            <h2>School Information</h2>
+            <h2>Informations sur l'École</h2>
         </div>
         <div class="detail-card-body">
             <div class="info-grid">
                 <div class="info-item">
-                    <label>School Name:</label>
+                    <label>Nom de l'École :</label>
                     <span>{{ school.nomEcole }}</span>
                 </div>
                 <div class="info-item">
-                    <label>School Code:</label>
+                    <label>Code de l'École :</label>
                     <span>{{ school.code }}</span>
                 </div>
                 <div class="info-item">
-                    <label>Code LR:</label>
+                    <label>Code LR :</label>
                     <span>{{ school.codeLR }}</span>
                 </div>
                 <div class="info-item">
-                    <label>Educational Level:</label>
+                    <label>Niveau Éducatif :</label>
                     <span>{{ school.niveau }}</span>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Location Information Card -->
+    <!-- Carte Localisation -->
     <div class="detail-card">
         <div class="detail-card-header">
-            <h2>Location Information</h2>
+            <h2>Informations de Localisation</h2>
         </div>
         <div class="detail-card-body">
             <div class="info-grid">
                 <div class="info-item">
-                    <label>Wilaya:</label>
+                    <label>Wilaya :</label>
                     <span>{{ school.wilaya }}</span>
                 </div>
                 <div class="info-item">
-                    <label>Moughataa:</label>
+                    <label>Moughataa :</label>
                     <span>{{ school.nomMoughatta }}</span>
                 </div>
                 <div class="info-item">
-                    <label>Moughataa ID:</label>
+                    <label>ID de Moughataa :</label>
                     <span>{{ school.idMoughatta }}</span>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Administrator Information Card -->
+    <!-- Carte Administrateur -->
     <div class="detail-card">
         <div class="detail-card-header">
-            <h2>Administrator Information</h2>
+            <h2>Informations sur l'Administrateur</h2>
         </div>
         <div class="detail-card-body">
             <div class="info-grid">
                 <div class="info-item">
-                    <label>Administrator Name:</label>
+                    <label>Nom de l'Administrateur :</label>
                     <span>{{ school.nom }}</span>
                 </div>
                 <div class="info-item">
-                    <label>NNI:</label>
+                    <label>NNI :</label>
                     <span>{{ school.nni }}</span>
                 </div>
                 <div class="info-item">
-                    <label>Nationality:</label>
+                    <label>Nationalité :</label>
                     <span>{{ school.nationalite }}</span>
                 </div>
                 <div class="info-item">
-                    <label>Diploma:</label>
+                    <label>Diplôme :</label>
                     <span>{{ school.diplome }}</span>
                 </div>
                 <div class="info-item">
-                    <label>Phone Number:</label>
+                    <label>Numéro de Téléphone :</label>
                     <span>{{ school.numTel }}</span>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Authorization Information Card -->
+    <!-- Carte Autorisation -->
     <div class="detail-card">
         <div class="detail-card-header">
-            <h2>Authorization Details</h2>
+            <h2>Détails de l'Autorisation</h2>
         </div>
         <div class="detail-card-body">
             <div class="info-grid">
                 <div class="info-item">
-                    <label>Waly Letter Number:</label>
+                    <label>Numéro de la Lettre du Waly :</label>
                     <span>{{ school.numLettreWaly }}</span>
                 </div>
                 <div class="info-item">
-                    <label>Waly Letter Date:</label>
+                    <label>Date de la Lettre du Waly :</label>
                     <span>{{ school.dateLettreWaly|date:"d/m/Y" }}</span>
                 </div>
                 <div class="info-item">
-                    <label>Date Added:</label>
+                    <label>Date d'Ajout :</label>
                     <span>{{ school.dateAjout|date:"d/m/Y" }}</span>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Additional Information Card -->
+    <!-- Carte Informations Supplémentaires -->
     <div class="detail-card">
         <div class="detail-card-header">
-            <h2>Additional Information</h2>
+            <h2>Informations Supplémentaires</h2>
         </div>
         <div class="detail-card-body">
             <div class="info-grid">
                 <div class="info-item">
-                    <label>QR Code:</label>
+                    <label>Code QR :</label>
                     {% if school.lienQR %}
-                        <a href="{{ school.lienQR }}" target="_blank">View QR Code</a>
+                        <a href="{{ school.lienQR }}" target="_blank">Voir le Code QR</a>
                     {% else %}
-                        <span>Not available</span>
+                        <span>Non disponible</span>
                     {% endif %}
                 </div>
                 <div class="info-item">
-                    <label>PDF Document:</label>
+                    <label>Document PDF :</label>
                     {% if school.pdf_file %}
-                        <a href="{{ school.pdf_file.url }}" target="_blank">View PDF</a>
+                        <a href="{{ school.pdf_file.url }}" target="_blank">Voir le PDF</a>
                     {% else %}
-                        <span>Not available</span>
+                        <span>Non disponible</span>
                     {% endif %}
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Action Buttons -->
+    <!-- Boutons d'Action -->
     <div class="action-buttons">
         <button class="btn btn-edit" onclick="window.location.href='{% url 'edit_school' school.id %}'">
-            <i class="fas fa-edit"></i> Edit School
+            <i class="fas fa-edit"></i> Modifier l'École
         </button>
         <button class="btn btn-delete" id="deleteSchoolBtn">
-            <i class="fas fa-trash"></i> Delete School
+            <i class="fas fa-trash"></i> Supprimer l'École
         </button>
     </div>
 </div>
+
 
 <style>
     /* Detail View Styles */

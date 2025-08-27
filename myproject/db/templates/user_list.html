@@ -6,23 +6,23 @@
 
 {% block content %}
 <div class="dashboard-container">
-    <!-- Page Header with Add Button -->
+    <!-- En-tête de page avec bouton Ajouter -->
     <div class="page-header">
-    <h1><i class="fas fa-user-tie"></i> users Database</h1>
-    <a href="{% url 'add_user' %}" class="btn btn-primary">
-        <i class="fas fa-plus"></i> Add New user
-    </a>
+        <h1><i class="fas fa-user-tie"></i> Base de données des utilisateurs</h1>
+        <a href="{% url 'add_user' %}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Ajouter un nouvel utilisateur
+        </a>
     </div>
 
-    <!-- Statistics Cards -->
+    <!-- Cartes statistiques -->
     <div class="stats-container">
         <div class="stat-card">
             <div class="stat-icon blue">
                 <i class="fas fa-school"></i>
             </div>
             <div class="stat-info">
-                <h3> {{ school_count }}</h3>
-                <p>Total Schools</p>
+                <h3>{{ school_count }}</h3>
+                <p>Total des écoles</p>
             </div>
         </div>
         <div class="stat-card">
@@ -30,8 +30,8 @@
                 <i class="fas fa-user-tie"></i>
             </div>
             <div class="stat-info">
-                <h3>{{total_directors}}</h3>
-                <p>Active Directors</p>
+                <h3>{{ total_directors }}</h3>
+                <p>Directeurs actifs</p>
             </div>
         </div>
         <div class="stat-card">
@@ -40,7 +40,7 @@
             </div>
             <div class="stat-info">
                 <h3>{{ total_teachers }}</h3>
-                <p>Total Teachers</p>
+                <p>Total des enseignants</p>
             </div>
         </div>
         <div class="stat-card">
@@ -48,31 +48,31 @@
                 <i class="fas fa-map-marker-alt"></i>
             </div>
             <div class="stat-info">
-                <h3>24</h3>
-                <p>Wilayas Covered</p>
+                <h3>15</h3>
+                <p>Wilayas couvertes</p>
             </div>
         </div>
     </div>
 
-    <!-- Directors Table -->
+    <!-- Tableau des utilisateurs -->
     <div class="table-container">
         <div class="table-header">
-            <h2><i class="fas fa-list"></i> user List</h2>
+            <h2><i class="fas fa-list"></i> Liste des utilisateurs</h2>
             <div class="search-box">
                 <i class="fas fa-search"></i>
-                <input type="text" placeholder="Search user...">
+                <input type="text" placeholder="Rechercher un utilisateur...">
             </div>
         </div>
         
-            <table>
+        <table>
             <thead>
                 <tr>
                     <th>ID</th>
-                    <th>Username</th>
+                    <th>Nom d'utilisateur</th>
                     <th>Email</th>
-                    <th>Phone</th>
+                    <th>Téléphone</th>
                     <th>NNI</th>
-                    <th>Groups</th>
+                    <th>Groupes</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -88,25 +88,25 @@
                         {% for group in user.groups.all %}
                             {{ group.name }}{% if not forloop.last %}, {% endif %}
                         {% empty %}
-                            No Groups
+                            Aucun groupe
                         {% endfor %}
                     </td>
                     <td class="action-cell">
-                        <a href="{% url 'user_views' user.id %}" class="btn btn-view"><i class="fas fa-eye"></i> View</a>
-                        <a href="{% url 'edit_user' user.id %}" class="btn btn-edit"><i class="fas fa-edit"></i> Edit</a>
-                    <!-- Delete -->
-                    <a href="{% url 'delete_user' user.id %}" class="btn btn-delete">
-                        <i class="fas fa-trash"></i> Delete
-                    </a>
+                        <a href="{% url 'user_views' user.id %}" class="btn btn-view"><i class="fas fa-eye"></i> Voir</a>
+                        <a href="{% url 'edit_user' user.id %}" class="btn btn-edit"><i class="fas fa-edit"></i> Modifier</a>
+                        <a href="{% url 'delete_user' user.id %}" class="btn btn-delete"><i class="fas fa-trash"></i> Supprimer</a>
                     </td>
                 </tr>
                 {% empty %}
-                <tr><td colspan="7">No users found</td></tr>
+                <tr>
+                    <td colspan="7">Aucun utilisateur trouvé</td>
+                </tr>
                 {% endfor %}
             </tbody>
         </table>
-
+    </div>
 </div>
+
 
 <!-- Add Director Modal -->
 

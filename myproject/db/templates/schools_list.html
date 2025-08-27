@@ -5,23 +5,23 @@
 
 {% block content %}
 <div class="dashboard-container">
-    <!-- Page Header with Add Button -->
+    <!-- En-tête de la page avec bouton Ajouter -->
     <div class="page-header">
-    <h1><i class="fas fa-user-tie"></i> schools Database</h1>
-    <a href="{% url 'school' %}" class="btn btn-primary">
-        <i class="fas fa-plus"></i> Add New school
-    </a>
+        <h1><i class="fas fa-user-tie"></i> Base de données des écoles</h1>
+        <a href="{% url 'school' %}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Ajouter une nouvelle école
+        </a>
     </div>
 
-    <!-- Statistics Cards -->
+    <!-- Cartes statistiques -->
     <div class="stats-container">
         <div class="stat-card">
             <div class="stat-icon blue">
                 <i class="fas fa-school"></i>
             </div>
             <div class="stat-info">
-                <h3> {{ school_count }}</h3>
-                <p>Total Schools</p>
+                <h3>{{ school_count }}</h3>
+                <p>Total des écoles</p>
             </div>
         </div>
         <div class="stat-card">
@@ -29,8 +29,8 @@
                 <i class="fas fa-user-tie"></i>
             </div>
             <div class="stat-info">
-                <h3>{{total_directors}}</h3>
-                <p>Active Directors</p>
+                <h3>{{ total_directors }}</h3>
+                <p>Directeurs actifs</p>
             </div>
         </div>
         <div class="stat-card">
@@ -39,7 +39,7 @@
             </div>
             <div class="stat-info">
                 <h3>{{ total_teachers }}</h3>
-                <p>Total Teachers</p>
+                <p>Total des enseignants</p>
             </div>
         </div>
         <div class="stat-card">
@@ -47,71 +47,70 @@
                 <i class="fas fa-map-marker-alt"></i>
             </div>
             <div class="stat-info">
-                <h3>24</h3>
-                <p>Wilayas Covered</p>
+                <h3>15</h3>
+                <p>Wilayas couvertes</p>
             </div>
         </div>
     </div>
 
-    <!-- Directors Table -->
+    <!-- Tableau des écoles -->
     <div class="table-container">
         <div class="table-header">
-            <h2><i class="fas fa-list"></i> school List</h2>
+            <h2><i class="fas fa-list"></i> Liste des écoles</h2>
             <div class="search-box">
                 <i class="fas fa-search"></i>
-                <input type="text" placeholder="Search school...">
+                <input type="text" placeholder="Rechercher une école...">
             </div>
         </div>
         
-    <table>
+        <table>
             <thead>
                 <tr>
                     <th>ID <i class="fas fa-sort"></i></th>
-                    <th>Nom École <i class="fas fa-sort"></i></th>
+                    <th>Nom de l'École <i class="fas fa-sort"></i></th>
                     <th>Wilaya <i class="fas fa-sort"></i></th>
-                    <th>code LR <i class="fas fa-sort"></i></th>
+                    <th>Code LR <i class="fas fa-sort"></i></th>
                     <th>Nom <i class="fas fa-sort"></i></th>
                     <th>Niveau <i class="fas fa-sort"></i></th>
-                    <th>Date Ajout <i class="fas fa-sort"></i></th>
+                    <th>Date d'Ajout <i class="fas fa-sort"></i></th>
                     <th>Actions</th>
                 </tr>
             </thead>
-        <tbody>
-            {% for school in schools %}
-            <tr>
-                <td>{{ school.id }}</td>
-                <td>{{ school.nomEcole }}</td>
-                <td>{{ school.wilaya }}</td>
-                <td>{{ school.codeLR }}</td>
-                <td>{{ school.nom }}</td>
-                <td>{{ school.niveau }}</td>
-                <td>{{ school.dateAjout }}</td>
-                <td class="action-cell">
-                    <!-- View -->
-                    <a href="{% url 'school_views' school.id  %}" class="btn btn-view">
-                        <i class="fas fa-eye"></i> View
-                    </a>
+            <tbody>
+                {% for school in schools %}
+                <tr>
+                    <td>{{ school.id }}</td>
+                    <td>{{ school.nomEcole }}</td>
+                    <td>{{ school.wilaya }}</td>
+                    <td>{{ school.codeLR }}</td>
+                    <td>{{ school.nom }}</td>
+                    <td>{{ school.niveau }}</td>
+                    <td>{{ school.dateAjout }}</td>
+                    <td class="action-cell">
+                        <!-- Voir -->
+                        <a href="{% url 'school_views' school.id  %}" class="btn btn-view">
+                            <i class="fas fa-eye"></i> Voir
+                        </a>
 
-                    <!-- Edit -->
-                    <a href="{% url 'edit_school' school.id %}" class="btn btn-edit">
-                        <i class="fas fa-edit"></i> Edit
-                    </a>
+                        <!-- Modifier -->
+                        <a href="{% url 'edit_school' school.id %}" class="btn btn-edit">
+                            <i class="fas fa-edit"></i> Modifier
+                        </a>
 
-                    <!-- Delete -->
-                    <!-- Delete -->
-                    <a href="{% url 'delete_school' school.id %}" class="btn btn-delete">
-                        <i class="fas fa-trash"></i> Delete
-                    </a>
-                </td>
-
-            </tr>
-            {% empty %}
-            <tr><td colspan="8">No school found</td></tr>
-            {% endfor %}
-        </tbody>
-    </table>
-
+                        <!-- Supprimer -->
+                        <a href="{% url 'delete_school' school.id %}" class="btn btn-delete">
+                            <i class="fas fa-trash"></i> Supprimer
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="8">Aucune école trouvée</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
+
 
 <!-- Add Director Modal -->
 

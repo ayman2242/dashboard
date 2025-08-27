@@ -1,42 +1,42 @@
 {% extends "base.html" %}
 {% load group_tags %}
 
-{% block title %}Director Details{% endblock %}
+{% block title %} Détails du Directeur{% endblock %}
 
 {% block content %}
 <div class="dashboard-container">
     <!-- Back Button -->
     <div class="page-header">
         <button class="btn btn-secondary" onclick="window.history.back()">
-            <i class="fas fa-arrow-left"></i> Back to Directors List
+            <i class="fas fa-arrow-left"></i> Retour à la liste des directeurs
         </button>
-        <h1><i class="fas fa-user-tie"></i> Director Details</h1>
+        <h1><i class="fas fa-user-tie"></i> Détails du directeur</h1>
         <button class="btn btn-primary" onclick="window.print()">
-            <i class="fas fa-print"></i> Print
+            <i class="fas fa-print"></i> Imprimer
         </button>
     </div>
 
     <!-- Director Information Card -->
     <div class="detail-card">
         <div class="detail-card-header">
-            <h2>Personal Information</h2>
+            <h2>Informations personnelles</h2>
         </div>
         <div class="detail-card-body">
             <div class="info-grid">
                 <div class="info-item">
-                    <label>Full Name:</label>
+                    <label>Nom complet :</label>
                     <span>{{ director.nom }}</span>
                 </div>
                 <div class="info-item">
-                    <label>NNI:</label>
+                    <label>NNI :</label>
                     <span>{{ director.nni }}</span>
                 </div>
                 <div class="info-item">
-                    <label>Date of Birth:</label>
+                    <label>Date de naissance :</label>
                     <span>{{ director.dateNais|date:"d/m/Y" }}</span>
                 </div>
                 <div class="info-item">
-                    <label>Place of Birth:</label>
+                    <label>Lieu de naissance :</label>
                     <span>{{ director.lieuNai }}</span>
                 </div>
             </div>
@@ -46,24 +46,24 @@
     <!-- School Information Card -->
     <div class="detail-card">
         <div class="detail-card-header">
-            <h2>School Information</h2>
+            <h2>Informations sur l'école</h2>
         </div>
         <div class="detail-card-body">
             <div class="info-grid">
                 <div class="info-item">
-                    <label>School Name:</label>
+                    <label>Nom de l'école :</label>
                     <span>{{ director.school.nomEcole }}</span>
                 </div>
                 <div class="info-item">
-                    <label>Code AD:</label>
+                    <label>Code AD :</label>
                     <span>{{ director.codeAD }}</span>
                 </div>
                 <div class="info-item">
-                    <label>Wilaya:</label>
+                    <label>Wilaya :</label>
                     <span>{{ director.wilaya }}</span>
                 </div>
                 <div class="info-item">
-                    <label>Moughataa:</label>
+                    <label>Moughataa :</label>
                     <span>{{ director.nomMoughatta }}</span>
                 </div>
             </div>
@@ -73,24 +73,24 @@
     <!-- Authorization Information Card -->
     <div class="detail-card">
         <div class="detail-card-header">
-            <h2>Authorization Details</h2>
+            <h2>Détails de l'autorisation</h2>
         </div>
         <div class="detail-card-body">
             <div class="info-grid">
                 <div class="info-item">
-                    <label>Authorization Type:</label>
+                    <label>Type d'autorisation :</label>
                     <span>{{ director.typeAutorisationDirige }}</span>
                 </div>
                 <div class="info-item">
-                    <label>Authorization Number:</label>
+                    <label>Numéro de l'autorisation :</label>
                     <span>{{ director.autorisationNum }}</span>
                 </div>
                 <div class="info-item">
-                    <label>Authorization Date:</label>
+                    <label>Date de l'autorisation :</label>
                     <span>{{ director.dateAutorisation|date:"d/m/Y" }}</span>
                 </div>
                 <div class="info-item">
-                    <label>Authorization Period:</label>
+                    <label>Période d'autorisation :</label>
                     <span>{{ director.dateDebut|date:"d/m/Y" }} - {{ director.dateFin|date:"d/m/Y" }}</span>
                 </div>
             </div>
@@ -100,24 +100,24 @@
     <!-- Diploma Information Card -->
     <div class="detail-card">
         <div class="detail-card-header">
-            <h2>Diploma Information</h2>
+            <h2>Informations sur le diplôme</h2>
         </div>
         <div class="detail-card-body">
             <div class="info-grid">
                 <div class="info-item">
-                    <label>Diploma Source:</label>
+                    <label>Source du diplôme :</label>
                     <span>{{ director.sourceDiplome }}</span>
                 </div>
                 <div class="info-item">
-                    <label>Diploma Number:</label>
+                    <label>Numéro du diplôme :</label>
                     <span>{{ director.numDiplome }}</span>
                 </div>
                 <div class="info-item">
-                    <label>Specialty:</label>
+                    <label>Spécialité :</label>
                     <span>{{ director.specialiteDiplome }}</span>
                 </div>
                 <div class="info-item">
-                    <label>Diploma Level:</label>
+                    <label>Niveau du diplôme :</label>
                     <span>{{ director.niveauDiplom }}</span>
                 </div>
             </div>
@@ -127,24 +127,24 @@
     <!-- Contact Information Card -->
     <div class="detail-card">
         <div class="detail-card-header">
-            <h2>Contact Information</h2>
+            <h2>Informations de contact</h2>
         </div>
         <div class="detail-card-body">
             <div class="info-grid">
                 <div class="info-item">
-                    <label>Phone Number:</label>
+                    <label>Numéro de téléphone :</label>
                     <span>{{ director.numTel }}</span>
                 </div>
                 <div class="info-item">
-                    <label>Noter:</label>
+                    <label>Notaire :</label>
                     <span>{{ director.noter }}</span>
                 </div>
                 <div class="info-item">
-                    <label>Noter Authorization Number:</label>
+                    <label>Numéro d'autorisation notaire :</label>
                     <span>{{ director.numAutorisationNoter }}</span>
                 </div>
                 <div class="info-item">
-                    <label>Noter Authorization Date:</label>
+                    <label>Date d'autorisation notaire :</label>
                     <span>{{ director.dateAutorisationNoter|date:"d/m/Y" }}</span>
                 </div>
             </div>
@@ -154,28 +154,28 @@
     <!-- Additional Information Card -->
     <div class="detail-card">
         <div class="detail-card-header">
-            <h2>Additional Information</h2>
+            <h2>Informations supplémentaires</h2>
         </div>
         <div class="detail-card-body">
             <div class="info-grid">
                 <div class="info-item">
-                    <label>Date Added:</label>
+                    <label>Date d'ajout :</label>
                     <span>{{ director.dateAjout|date:"d/m/Y" }}</span>
                 </div>
                 <div class="info-item">
-                    <label>QR Code:</label>
+                    <label>QR Code :</label>
                     {% if director.lienQR %}
-                        <a href="{{ director.lienQR }}" target="_blank">View QR Code</a>
+                        <a href="{{ director.lienQR }}" target="_blank">Voir le QR Code</a>
                     {% else %}
-                        <span>Not available</span>
+                        <span>Non disponible</span>
                     {% endif %}
                 </div>
                 <div class="info-item">
-                    <label>PDF Document:</label>
+                    <label>Document PDF :</label>
                     {% if director.pdf_file %}
-                        <a href="{{ director.pdf_file.url }}" target="_blank">View PDF</a>
+                        <a href="{{ director.pdf_file.url }}" target="_blank">Voir le PDF</a>
                     {% else %}
-                        <span>Not available</span>
+                        <span>Non disponible</span>
                     {% endif %}
                 </div>
             </div>
@@ -185,10 +185,10 @@
     <!-- Action Buttons -->
     <div class="action-buttons">
         <button class="btn btn-edit">
-            <i class="fas fa-edit"></i> Edit Director
+            <i class="fas fa-edit"></i> Modifier le directeur
         </button>
         <button class="btn btn-delete">
-            <i class="fas fa-trash"></i> Delete Director
+            <i class="fas fa-trash"></i> Supprimer le directeur
         </button>
     </div>
 </div>

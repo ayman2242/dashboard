@@ -5,15 +5,15 @@
 
 {% block content %}
 <div class="dashboard-container">
-    <!-- Page Header with Add Button -->
+    <!-- En-tête de page avec bouton Ajouter -->
     <div class="page-header">
-    <h1><i class="fas fa-user-tie"></i> Directors Database</h1>
-    <a href="{% url 'director' %}" class="btn btn-primary">
-        <i class="fas fa-plus"></i> Add New Director
-    </a>
+        <h1><i class="fas fa-user-tie"></i> Base de données des Directeurs</h1>
+        <a href="{% url 'director' %}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Ajouter un nouveau Directeur
+        </a>
     </div>
 
-    <!-- Statistics Cards -->
+    <!-- Cartes de statistiques -->
     <div class="stats-container">
         <div class="stat-card">
             <div class="stat-icon blue">
@@ -21,7 +21,7 @@
             </div>
             <div class="stat-info">
                 <h3> {{ school_count }}</h3>
-                <p>Total Schools</p>
+                <p>Total des Écoles</p>
             </div>
         </div>
         <div class="stat-card">
@@ -30,7 +30,7 @@
             </div>
             <div class="stat-info">
                 <h3>{{total_directors}}</h3>
-                <p>Active Directors</p>
+                <p>Directeurs Actifs</p>
             </div>
         </div>
         <div class="stat-card">
@@ -39,7 +39,7 @@
             </div>
             <div class="stat-info">
                 <h3>{{ total_teachers }}</h3>
-                <p>Total Teachers</p>
+                <p>Total des Enseignants</p>
             </div>
         </div>
         <div class="stat-card">
@@ -47,83 +47,78 @@
                 <i class="fas fa-map-marker-alt"></i>
             </div>
             <div class="stat-info">
-                <h3>24</h3>
-                <p>Wilayas Covered</p>
+                <h3>15</h3>
+                <p>Wilayas Couvertes</p>
             </div>
         </div>
-        
     </div>
 
-    <!-- Directors Table -->
+    <!-- Tableau des Directeurs -->
     <div class="table-container">
         <div class="table-header">
-            <h2><i class="fas fa-list"></i> Directors List</h2>
+            <h2><i class="fas fa-list"></i> Liste des Directeurs</h2>
             <div class="search-box">
                 <i class="fas fa-search"></i>
-                <input type="text" placeholder="Search directors...">
+                <input type="text" placeholder="Rechercher des directeurs...">
             </div>
         </div>
-        
-    <table>
+
+        <table>
             <thead>
                 <tr>
                     <th>ID <i class="fas fa-sort"></i></th>
                     <th>Nom École <i class="fas fa-sort"></i></th>
-                    <th>Wilaya <i class="fas fa-sort"></i></th>
                     <th>NNI <i class="fas fa-sort"></i></th>
                     <th>Nom <i class="fas fa-sort"></i></th>
                     <th>Niveau <i class="fas fa-sort"></i></th>
-                    <th>Date Ajout <i class="fas fa-sort"></i></th>
+                    <th>Date d'ajout <i class="fas fa-sort"></i></th>
                     <th>Actions</th>
                 </tr>
             </thead>
-        <tbody>
-            {% for director in directors %}
-            <tr>
-                <td>{{ director.id }}</td>
-                <td>{{ director.school }}</td>
-                <td>{{ director.wilaya }}</td>
-                <td>{{ director.nni }}</td>
-                <td>{{ director.nom }}</td>
-                <td>{{ director.niveauDiplom }}</td>
-                <td>{{ director.dateAjout }}</td>
-                <td class="action-cell">
-                    <!-- View -->
-                    <a href="{% url 'director_views' director.id %}" class="btn btn-view">
-                        <i class="fas fa-eye"></i> View
-                    </a>
+            <tbody>
+                {% for director in directors %}
+                <tr>
+                    <td>{{ director.id }}</td>
+                    <td>{{ director.school }}</td>
+                    <td>{{ director.nni }}</td>
+                    <td>{{ director.nom }}</td>
+                    <td>{{ director.niveauDiplom }}</td>
+                    <td>{{ director.dateAjout }}</td>
+                    <td class="action-cell">
+                        <!-- Voir -->
+                        <a href="{% url 'director_views' director.id %}" class="btn btn-view">
+                            <i class="fas fa-eye"></i> Voir
+                        </a>
 
-                    <!-- Edit -->
-                    <a href="{% url 'edit_director' director.id %}" class="btn btn-edit">
-                        <i class="fas fa-edit"></i> Edit
-                    </a>
+                        <!-- Modifier -->
+                        <a href="{% url 'edit_director' director.id %}" class="btn btn-edit">
+                            <i class="fas fa-edit"></i> Modifier
+                        </a>
 
-                    <!-- Delete -->
-                    <a href="{% url 'delete_director' director.id %}" class="btn btn-delete">
-                        <i class="fas fa-trash"></i> Delete
-                    </a>
-                </td>
+                        <!-- Supprimer -->
+                        <a href="{% url 'delete_director' director.id %}" class="btn btn-delete">
+                            <i class="fas fa-trash"></i> Supprimer
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="8">Aucun directeur trouvé</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 
-            </tr>
-            {% empty %}
-            <tr><td colspan="8">No directors found</td></tr>
-            {% endfor %}
-        </tbody>
-    </table>
-        
-        <!-- Pagination -->
-
-</div>
-
-<!-- Add Director Modal -->
-<div id="addDirectorModal" class="modal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2><i class="fas fa-user-plus"></i> Add New Director</h2>
-            <span class="close">&times;</span>
+    <!-- Modal Ajouter Directeur -->
+    <div id="addDirectorModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-user-plus"></i> Ajouter un nouveau Directeur</h2>
+                <span class="close">&times;</span>
+            </div>
         </div>
     </div>
 </div>
+
 
 <style>
     /* Dashboard specific styles */

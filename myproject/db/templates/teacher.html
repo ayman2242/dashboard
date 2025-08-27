@@ -4,30 +4,30 @@
 
 {% block content %}
 <div class="dashboard-container">
-    <!-- Page Header -->
+    <!-- En-tête de page -->
     <div class="page-header">
         <button class="btn btn-secondary" onclick="window.history.back()">
-            <i class="fas fa-arrow-left"></i> Back
+            <i class="fas fa-arrow-left"></i> Retour
         </button>
-        <h1><i class="fas fa-user-check"></i> Teacher Authorization</h1>
+        <h1><i class="fas fa-user-check"></i> Autorisation de l'enseignant</h1>
         <button class="btn btn-primary" onclick="document.getElementById('authorizationForm').submit()">
-            <i class="fas fa-save"></i> Save Authorization
+            <i class="fas fa-save"></i> Enregistrer l'autorisation
         </button>
     </div>
 
-    <!-- Authorization Form -->
+    <!-- Formulaire d'autorisation -->
     <div class="form-container">
         <form id="authorizationForm" method="POST" enctype="multipart/form-data">
             {% csrf_token %}
             
-            <!-- Display form errors at the top -->
+            <!-- Affichage des erreurs -->
             {% if form.errors %}
             <div class="alert alert-danger">
-                <strong>Please correct the following errors:</strong>
+                <strong>Veuillez corriger les erreurs suivantes :</strong>
                 <ul>
                     {% for field in form %}
                         {% for error in field.errors %}
-                            <li>{{ field.label }}: {{ error }}</li>
+                            <li>{{ field.label }} : {{ error }}</li>
                         {% endfor %}
                     {% endfor %}
                     {% for error in form.non_field_errors %}
@@ -37,171 +37,170 @@
             </div>
             {% endif %}
 
-            <!-- Teacher Information Section -->
+            <!-- Informations sur l'enseignant -->
             <div class="form-section">
-            <h2 class="section-title">
-                <i class="fas fa-user-graduate"></i> Informations sur l'enseignant
-            </h2>
-            <div class="form-grid">
-                <div class="form-group">
-                    <label for="{{ form.school.id_for_label }}">École *</label>
-                    {{ form.school }}
-                    {% if form.school.errors %}
-                    <div class="error-text">{{ form.school.errors }}</div>
-                    {% endif %}
-                </div>
-                <div class="form-group">
-                    <label for="{{ form.nom.id_for_label }}">Nom complet</label>
-                    {{ form.nom }}
-                    {% if form.nom.errors %}
-                    <div class="error-text">{{ form.nom.errors }}</div>
-                    {% endif %}
-                </div>
-                <div class="form-group">
-                    <label for="{{ form.nni.id_for_label }}">NNI</label>
-                    {{ form.nni }}
-                    {% if form.nni.errors %}
-                    <div class="error-text">{{ form.nni.errors }}</div>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-
-        <!-- Détails personnels -->
-        <div class="form-section">
-            <h2 class="section-title">
-                <i class="fas fa-user-circle"></i> Détails personnels
-            </h2>
-            <div class="form-grid">
-                <div class="form-group">
-                    <label for="{{ form.dateNais.id_for_label }}">Date de naissance</label>
-                    {{ form.dateNais }}
-                    {% if form.dateNais.errors %}
-                    <div class="error-text">{{ form.dateNais.errors }}</div>
-                    {% endif %}
-                </div>
-                <div class="form-group">
-                    <label for="{{ form.lieuNai.id_for_label }}">Lieu de naissance</label>
-                    {{ form.lieuNai }}
-                    {% if form.lieuNai.errors %}
-                    <div class="error-text">{{ form.lieuNai.errors }}</div>
-                    {% endif %}
+                <h2 class="section-title">
+                    <i class="fas fa-user-graduate"></i> Informations sur l'enseignant
+                </h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="{{ form.school.id_for_label }}">École *</label>
+                        {{ form.school }}
+                        {% if form.school.errors %}
+                        <div class="error-text">{{ form.school.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.nom.id_for_label }}">Nom complet</label>
+                        {{ form.nom }}
+                        {% if form.nom.errors %}
+                        <div class="error-text">{{ form.nom.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.nni.id_for_label }}">NNI</label>
+                        {{ form.nni }}
+                        {% if form.nni.errors %}
+                        <div class="error-text">{{ form.nni.errors }}</div>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Informations sur l'enseignement -->
-        <div class="form-section">
-            <h2 class="section-title">
-                <i class="fas fa-chalkboard-teacher"></i> Informations sur l'enseignement
-            </h2>
-            <div class="form-grid">
-                <div class="form-group">
-                    <label for="{{ form.degree.id_for_label }}">Diplôme</label>
-                    {{ form.degree }}
-                    {% if form.degree.errors %}
-                    <div class="error-text">{{ form.degree.errors }}</div>
-                    {% endif %}
-                </div>
-                <div class="form-group">
-                    <label for="{{ form.matierEnseigner.id_for_label }}">Matière enseignée</label>
-                    {{ form.matierEnseigner }}
-                    {% if form.matierEnseigner.errors %}
-                    <div class="error-text">{{ form.matierEnseigner.errors }}</div>
-                    {% endif %}
+            <!-- Détails personnels -->
+            <div class="form-section">
+                <h2 class="section-title">
+                    <i class="fas fa-user-circle"></i> Détails personnels
+                </h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="{{ form.dateNais.id_for_label }}">Date de naissance</label>
+                        {{ form.dateNais }}
+                        {% if form.dateNais.errors %}
+                        <div class="error-text">{{ form.dateNais.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.lieuNai.id_for_label }}">Lieu de naissance</label>
+                        {{ form.lieuNai }}
+                        {% if form.lieuNai.errors %}
+                        <div class="error-text">{{ form.lieuNai.errors }}</div>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Détails du diplôme -->
-        <div class="form-section">
-            <h2 class="section-title">
-                <i class="fas fa-certificate"></i> Détails du diplôme
-            </h2>
-            <div class="form-grid">
-                <div class="form-group">
-                    <label for="{{ form.sourceDiplome.id_for_label }}">Source du diplôme</label>
-                    {{ form.sourceDiplome }}
-                    {% if form.sourceDiplome.errors %}
-                    <div class="error-text">{{ form.sourceDiplome.errors }}</div>
-                    {% endif %}
-                </div>
-                <div class="form-group">
-                    <label for="{{ form.numDiplome.id_for_label }}">Numéro du diplôme</label>
-                    {{ form.numDiplome }}
-                    {% if form.numDiplome.errors %}
-                    <div class="error-text">{{ form.numDiplome.errors }}</div>
-                    {% endif %}
-                </div>
-                <div class="form-group">
-                    <label for="{{ form.specialiteDiplome.id_for_label }}">Spécialité</label>
-                    {{ form.specialiteDiplome }}
-                    {% if form.specialiteDiplome.errors %}
-                    <div class="error-text">{{ form.specialiteDiplome.errors }}</div>
-                    {% endif %}
-                </div>
-                <div class="form-group">
-                    <label for="{{ form.niveauDiplom.id_for_label }}">Niveau du diplôme</label>
-                    {{ form.niveauDiplom }}
-                    {% if form.niveauDiplom.errors %}
-                    <div class="error-text">{{ form.niveauDiplom.errors }}</div>
-                    {% endif %}
+            <!-- Informations sur l'enseignement -->
+            <div class="form-section">
+                <h2 class="section-title">
+                    <i class="fas fa-chalkboard-teacher"></i> Informations sur l'enseignement
+                </h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="{{ form.degree.id_for_label }}">Diplôme</label>
+                        {{ form.degree }}
+                        {% if form.degree.errors %}
+                        <div class="error-text">{{ form.degree.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.matierEnseigner.id_for_label }}">Matière enseignée</label>
+                        {{ form.matierEnseigner }}
+                        {% if form.matierEnseigner.errors %}
+                        <div class="error-text">{{ form.matierEnseigner.errors }}</div>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Codes et QR -->
-        <div class="form-section">
-            <h2 class="section-title">
-                <i class="fas fa-qrcode"></i> Codes & QR
-            </h2>
-            <div class="form-grid">
-                <div class="form-group">
-                    <label for="{{ form.code.id_for_label }}">Code</label>
-                    {{ form.code }}
-                    {% if form.code.errors %}
-                    <div class="error-text">{{ form.code.errors }}</div>
-                    {% endif %}
-                </div>
-                
-            </div>
-        </div>
-
-        <!-- Dates importantes -->
-        <div class="form-section">
-            <h2 class="section-title">
-                <i class="fas fa-calendar-alt"></i> Dates importantes
-            </h2>
-            <div class="form-grid">
-                
-                <div class="form-group">
-                    <label for="{{ form.dateDebut.id_for_label }}">Date de début</label>
-                    {{ form.dateDebut }}
-                    {% if form.dateDebut.errors %}
-                    <div class="error-text">{{ form.dateDebut.errors }}</div>
-                    {% endif %}
-                </div>
-                <div class="form-group">
-                    <label for="{{ form.dateFin.id_for_label }}">Date de fin</label>
-                    {{ form.dateFin }}
-                    {% if form.dateFin.errors %}
-                    <div class="error-text">{{ form.dateFin.errors }}</div>
-                    {% endif %}
+            <!-- Détails du diplôme -->
+            <div class="form-section">
+                <h2 class="section-title">
+                    <i class="fas fa-certificate"></i> Détails du diplôme
+                </h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="{{ form.sourceDiplome.id_for_label }}">Source du diplôme</label>
+                        {{ form.sourceDiplome }}
+                        {% if form.sourceDiplome.errors %}
+                        <div class="error-text">{{ form.sourceDiplome.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.numDiplome.id_for_label }}">Numéro du diplôme</label>
+                        {{ form.numDiplome }}
+                        {% if form.numDiplome.errors %}
+                        <div class="error-text">{{ form.numDiplome.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.specialiteDiplome.id_for_label }}">Spécialité</label>
+                        {{ form.specialiteDiplome }}
+                        {% if form.specialiteDiplome.errors %}
+                        <div class="error-text">{{ form.specialiteDiplome.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.niveauDiplom.id_for_label }}">Niveau du diplôme</label>
+                        {{ form.niveauDiplom }}
+                        {% if form.niveauDiplom.errors %}
+                        <div class="error-text">{{ form.niveauDiplom.errors }}</div>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
-        </div>
 
-        
-            <!-- Form Actions -->
+            <!-- Codes et QR -->
+            <div class="form-section">
+                <h2 class="section-title">
+                    <i class="fas fa-qrcode"></i> Codes & QR
+                </h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="{{ form.code.id_for_label }}">Code</label>
+                        {{ form.code }}
+                        {% if form.code.errors %}
+                        <div class="error-text">{{ form.code.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dates importantes -->
+            <div class="form-section">
+                <h2 class="section-title">
+                    <i class="fas fa-calendar-alt"></i> Dates importantes
+                </h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="{{ form.dateDebut.id_for_label }}">Date de début</label>
+                        {{ form.dateDebut }}
+                        {% if form.dateDebut.errors %}
+                        <div class="error-text">{{ form.dateDebut.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.dateFin.id_for_label }}">Date de fin</label>
+                        {{ form.dateFin }}
+                        {% if form.dateFin.errors %}
+                        <div class="error-text">{{ form.dateFin.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions du formulaire -->
             <div class="form-actions">
-                <button type="button" class="btn btn-cancel" onclick="window.history.back()">Cancel</button>
+                <button type="button" class="btn btn-cancel" onclick="window.history.back()">Annuler</button>
                 <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-save"></i> Save Authorization
+                    <i class="fas fa-save"></i> Enregistrer l'autorisation
                 </button>
             </div>
         </form>
     </div>
 </div>
+
+
 
 <style>
 .dashboard-container {

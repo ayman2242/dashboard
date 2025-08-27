@@ -20,12 +20,7 @@ from django.utils import timezone
 import arabic_reshaper
 from bidi.algorithm import get_display
 
-                    
-MAX_FAILED_ATTEMPTS = 5
-LOCKOUT_DURATION = timezone.timedelta(minutes=5)
-
 def login_page(request):
-    # Redirect already logged-in users
     if request.user.is_authenticated:
         return redirect('home')
 
@@ -35,54 +30,20 @@ def login_page(request):
         username = form.cleaned_data['username']
         password = form.cleaned_data['password']
 
-        try:
-            user = CustomUser.objects.get(username=username)
-        except CustomUser.DoesNotExist:
-            user = None
-
-        # Check if user is locked
-        if user and user.is_locked:
-            if user.lockout_time and timezone.now() < user.lockout_time + LOCKOUT_DURATION:
-                remaining = (user.lockout_time + LOCKOUT_DURATION) - timezone.now()
-                remaining_minutes = int(remaining.total_seconds() // 60) + 1
-                messages.error(request, f"Votre compte est bloqué pour {remaining_minutes} minutes.")
-                return render(request, 'login.html', {'form': form})
-            else:
-                # Unlock user automatically
-                user.is_locked = False
-                user.failed_login_attempts = 0
-                user.lockout_time = None
-                user.save()
-
-        # Authenticate user
-        user_auth = authenticate(request, username=username, password=password)
-        if user_auth:
-            # Reset failed attempts on successful login
-            user.failed_login_attempts = 0
-            user.is_locked = False
-            user.lockout_time = None
-            user.save()
-            login(request, user_auth)
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)  # saves session automatically
+            messages.success(request, "Connexion réussie !")
             return redirect('home')
         else:
-            if user:
-                user.failed_login_attempts += 1
-                if user.failed_login_attempts >= MAX_FAILED_ATTEMPTS:
-                    user.is_locked = True
-                    user.lockout_time = timezone.now()
-                    messages.error(request, "Trop de tentatives échouées. Votre compte est bloqué pour 5 minutes.")
-                else:
-                    messages.error(request, "Nom d'utilisateur ou mot de passe incorrect.")
-                user.save()
-            else:
-                messages.error(request, "Nom d'utilisateur ou mot de passe incorrect.")
+            messages.error(request, "Nom d'utilisateur ou mot de passe incorrect.")
 
     return render(request, 'login.html', {'form': form})
 
 @login_required(login_url='/login/')
 def school(request):
     if not request.user.groups.filter(name="Schools").exists():
-        messages.error(request, "You do not have permission to access this page.")
+        messages.error(request, "Vous n’avez pas la permission d’accéder à cette page.")
         return redirect("home")  
     if request.method == 'POST':
         form = SchoolForm(request.POST)
@@ -121,7 +82,7 @@ def school(request):
             السيد( ة ) : [name]
             الرقم الوطني للتعريف : [nni]
             الموضوع : استلام ملف افتتاح مؤسسة حرة
-            المرجع : رسالة والي ولاية : انواكشوط الغربية  رقم : [code] تاريخ : [date1]
+            المرجع : رسالة والي ولاية : انواكشوط الغربية  رقم :  [code]  تاريخ : [date1]
             طبقا للمادة6:
              مؤسسات التعليم الخاص يطيب لي أن أستلم ملفكم المتعلق بفتح مؤسسة خاصة للتعليم الأساسي والثانوي من المرسوم رقم 28/510 مكرر الصادر بتاريخ 82/02/12 المحدد لشروط افتتاح
             تدعى : [school_name]
@@ -133,7 +94,7 @@ def school(request):
                 "[name]":instance.nom,
                 "[nni]":instance.nni ,
                 "[codeAE]": instance.codeLR,
-                "[code]": instance.code,
+                "[code]":instance.code ,
                 "[date1]": instance.dateLettreWaly.strftime("%d/%m/%Y"),
                 "[school_name]": instance.nomEcole,
                 "[moghataa]":instance.nomMoughatta ,
@@ -184,7 +145,7 @@ def school(request):
 @login_required(login_url='/login/')    
 def director_autor(request):
     if not request.user.groups.filter(name="Director").exists():
-        messages.error(request, "You do not have permission to access this page.")
+        messages.error(request, "Vous n’avez pas la permission d’accéder à cette page.")
         return redirect("home")  
     
     if request.method == "POST":
@@ -303,7 +264,7 @@ def prepare_arabic(text):
 @login_required(login_url='/login/')    
 def teacher_autor(request):
     if not request.user.groups.filter(name="Teacher").exists():
-        messages.error(request, "You do not have permission to access this page.")
+        messages.error(request, "Vous n’avez pas la permission d’accéder à cette page.")
         return redirect("home") 
     
     if request.method == "POST":
@@ -425,7 +386,7 @@ def teacher_autor(request):
 @login_required(login_url='/login/')
 def add_user(request):
     if not request.user.is_superuser:
-        messages.error(request, "You do not have permission to access this page.")
+        messages.error(request, "Vous n’avez pas la permission d’accéder à cette page.")
         return redirect("home")
 
     if request.method == 'POST':
@@ -438,7 +399,7 @@ def add_user(request):
             groups = form.cleaned_data['groups']  # ✅ key matches the form
             user.groups.set(groups)  # use set() to assign multiple groups
 
-            return redirect('home')
+            return redirect('user_list')
     else:
         form = UserForm()
 
@@ -512,48 +473,52 @@ def director_detail(request, qr_uuid):
 
 
 # 1) director
+@login_required(login_url='/login/')
 def directors_list(request):
     school_count = School.objects.count()
     total_directors = DirectorAuthorization.objects.count()
     total_teachers = TeacherAuthorization.objects.count()
 
     if not request.user.groups.filter(name="Director").exists():
-        messages.error(request, "You do not have permission to access this page.")
+        messages.error(request, "Vous n’avez pas la permission d’accéder à cette page.")
         return redirect("home") 
     directors = DirectorAuthorization.objects.all()
     return render(request, 'directors_list.html', {'directors': directors,"school_count": school_count,'total_directors':total_directors,'total_teachers':total_teachers})
 
 # 2) teacher
+@login_required(login_url='/login/')
 def teacher_list(request):
     school_count = School.objects.count()
     total_directors = DirectorAuthorization.objects.count()
     total_teachers = TeacherAuthorization.objects.count()
 
     if not request.user.groups.filter(name="Teacher").exists():
-        messages.error(request, "You do not have permission to access this page.")
+        messages.error(request, "Vous n’avez pas la permission d’accéder à cette page.")
         return redirect("home") 
     teachers = TeacherAuthorization.objects.all()
     return render(request, 'teachers_list.html', {'teachers': teachers,"school_count": school_count,'total_directors':total_directors,'total_teachers':total_teachers})
 
 # 3) school/lettre
+@login_required(login_url='/login/')
 def school_list(request):
     school_count = School.objects.count()
     total_directors = DirectorAuthorization.objects.count()
     total_teachers = TeacherAuthorization.objects.count()
 
     if not request.user.groups.filter(name="Schools").exists():
-        messages.error(request, "You do not have permission to access this page.")
+        messages.error(request, "Vous n’avez pas la permission d’accéder à cette page.")
         return redirect("home") 
     schools = School.objects.all()
     return render(request, 'schools_list.html', {'schools': schools,"school_count": school_count,'total_directors':total_directors,'total_teachers':total_teachers})
 
 # 4)user 
+@login_required(login_url='/login/')
 def user_list(request):
     school_count = School.objects.count()
     total_directors = DirectorAuthorization.objects.count()
     total_teachers = TeacherAuthorization.objects.count()
     if not request.user.is_superuser:
-        messages.error(request, "You do not have permission to access this page.")
+        messages.error(request, "Vous n’avez pas la permission d’accéder à cette page.")
         return redirect("home")
     users = CustomUser.objects.all()
     return render(request, 'user_list.html', {'users': users,"school_count": school_count,'total_directors':total_directors,'total_teachers':total_teachers})
@@ -562,30 +527,34 @@ def user_list(request):
 
 
 # 1) director
+@login_required(login_url='/login/')
 def director_views(request, director_id):
     if not request.user.groups.filter(name="Director").exists():
-        messages.error(request, "You do not have permission to access this page.")
+        messages.error(request, "Vous n’avez pas la permission d’accéder à cette page.")
         return redirect("home") 
     director = get_object_or_404(DirectorAuthorization, id=director_id)
     return render(request, 'director_views.html', {'director': director})
 # 2) teacher
+@login_required(login_url='/login/')
 def teacher_views(request, teacher_id):
     if not request.user.groups.filter(name="Teacher").exists():
-        messages.error(request, "You do not have permission to access this page.")
+        messages.error(request, "Vous n’avez pas la permission d’accéder à cette page.")
         return redirect("home") 
     teacher = get_object_or_404(TeacherAuthorization, id=teacher_id)
     return render(request, 'teacher_views.html', {'teacher': teacher})
 # 3) school/lettre
+@login_required(login_url='/login/')
 def school_views(request, school_id):
     if not request.user.groups.filter(name="Schools").exists():
-        messages.error(request, "You do not have permission to access this page.")
+        messages.error(request, "Vous n’avez pas la permission d’accéder à cette page.")
         return redirect("home") 
     school= get_object_or_404(School, id=school_id)
     return render(request, 'school_views.html', {'school':school })
 # 4)user 
+@login_required(login_url='/login/')
 def user_views(request, user_id):
     if not request.user.is_superuser:
-        messages.error(request, "You do not have permission to access this page.")
+        messages.error(request, "Vous n’avez pas la permission d’accéder à cette page.")
         return redirect("home")
     user= get_object_or_404(CustomUser, id=user_id)
     return render(request, 'user_views.html', {'user': user})
@@ -596,7 +565,7 @@ def user_views(request, user_id):
 @login_required(login_url='/login/')
 def edit_director(request, director_id):
     if not request.user.groups.filter(name="Director").exists():
-        messages.error(request, "You do not have permission to access this page.")
+        messages.error(request, "Vous n’avez pas la permission d’accéder à cette page.")
         return redirect("home") 
 
     director = get_object_or_404(DirectorAuthorization, id=director_id)
@@ -629,19 +598,48 @@ def edit_director(request, director_id):
             qr_img.save(qr_path)
 
             # Generate PDF with QR inserted
+            arabic_message = """
+            نحن مدير التعليم الخاص
+            نأذن للسيد ( ة ) : [name]
+            الرقم الوطني للتعريف : [nni]
+            المولود (ة) بتاريخ : [dateNaissance] في : [lieuNaissance]
+            الحاصل على شهادة : [niveauDiplome] في : [specialiteDiplome]
+            بتسيير المؤسسة التعليمية الحرة : [school_name]
+            المرخصة ب : [typeAutorisation] رقم : [autorisationNum] بتاريخ : [dateAutorisation]
+            بولاية : [wilaya] في مقاطعة : [moughataa]
+            شريطة ألا يصطدم نشاطه بأي التزام مناف لنصوص الوظيفة العمومية
+            ملاحظة : تاريخ انتهاء الصلاحية : [dateFin]
+            """
+
+
             pdf_replacements = {
-                "[nom]": instance.nom,
+                "[name]": instance.nom,
+                "[nni]": instance.nni,
                 "[codeAE]": instance.codeAD,
-                "[date]": instance.dateAjout.strftime("%d/%m/%Y"),
-                "[QR]": "[QR]"
+                "[dateNaissance]": instance.dateNais.strftime("%d/%m/%Y") if instance.dateNais else "",
+                "[niveauDiplome]": instance.niveauDiplom,
+                "[specialiteDiplome]": instance.specialiteDiplome,
+                "[lieuNaissance]": instance.lieuNai,
+                "[school_name]": instance.school.nom if instance.school else "",
+                "[typeAutorisation]": instance.typeAutorisationDirige,
+                "[moughataa]": instance.nomMoughatta,
+                "[autorisationNum]": instance.autorisationNum,
+                "[wilaya]": instance.wilaya,
+                "[dateAutorisation]": instance.dateAutorisation.strftime("%d/%m/%Y") if instance.dateAutorisation else "",
+                "[date]": instance.dateAjout.strftime("%d/%m/%Y") if instance.dateAjout else "",
+                "[dateFin]": instance.dateFin.strftime("%d/%m/%Y") if instance.dateFin else "",
+                "[QR]": "[QR]"  # يبقى placeholder عشان يتحول لصورة QR لاحقاً
             }
+
+
 
             try:
                 pdf_path = fill_pdf(
-                    "template.pdf",
-                    f"{instance.codeAD}.pdf",
-                    pdf_replacements,
-                    qr_image_path=qr_path
+                    "template_d.pdf",
+                    "output.pdf",
+                    replacements=pdf_replacements,
+                    qr_image_path=qr_path,
+                    arabic_text=arabic_message
                 )
 
                 # Save PDF to model
@@ -658,7 +656,7 @@ def edit_director(request, director_id):
                 if os.path.exists(temp_dir) and not os.listdir(temp_dir):
                     os.rmdir(temp_dir)
 
-                return redirect('director_detail', qr_uuid=instance.qr_uuid)
+                return redirect('directors_list')
 
             except Exception as e:
                 messages.error(request, f"Error generating PDF: {str(e)}")
@@ -676,7 +674,7 @@ def edit_director(request, director_id):
 @login_required(login_url='/login/')
 def edit_teacher(request, teacher_id):
     if not request.user.groups.filter(name="Teacher").exists():
-        messages.error(request, "You do not have permission to access this page.")
+        messages.error(request, "Vous n’avez pas la permission d’accéder à cette page.")
         return redirect("home") 
 
     teacher = get_object_or_404(TeacherAuthorization, id=teacher_id)
@@ -708,20 +706,41 @@ def edit_teacher(request, teacher_id):
             qr_img.save(qr_path)
 
             # Generate PDF with QR inserted
-            pdf_replacements = {
-                "[nom]": instance.nom,
-                "[codeAE]": instance.codeAE,
-                "[date]": instance.dateAjout.strftime("%d/%m/%Y"),
-                "[QR]": "[QR]"
-            }
+            arabic_message = """
+                نحن مدير التعليم الخاص
+                نأذن للسيد ( ة ) : [name]
+                الرقم الوطني للتعريف : [nni]
+                المولود (ة) بتاريخ : [dateNaissance] في : [lieuNaissance]
+                الحاصل على شهادة : [niveauDiplome] في : [specialiteDiplome]
+                بتقديم دروس في مؤسسات التعليم الحر
+                التخصص : [matierEnseigner]
+                المستوى : [niveauDiplome]
+                شريطة ألا يصطدم نشاطه بأي التزام مناف لنصوص الوظيفة العمومية
+                ملاحظة : تاريخ انتهاء الصلاحية : [dateFin]
+                """
 
+            pdf_replacements = {
+            "[codeAE]": instance.codeAE or "",
+            "[date]": instance.dateAjout.strftime("%d/%m/%Y") if instance.dateAjout else "",
+            "[name]": instance.nom or "",
+            "[nni]": instance.nni or "",
+            "[dateNaissance]": instance.dateNais.strftime("%d/%m/%Y") if instance.dateNais else "",
+            "[lieuNaissance]": instance.lieuNai or "",
+            "[niveauDiplome]": instance.niveauDiplom or "",
+            "[specialiteDiplome]": instance.specialiteDiplome or "",
+            "[matierEnseigner]": instance.matierEnseigner or "",
+            "[dateFin]": instance.dateFin.strftime("%d/%m/%Y") if instance.dateFin else "",
+            "[QR]": "[QR]"  # placeholder للصورة QR
+                }
             try:
                 pdf_path = fill_pdf(
-                    "template.pdf",
-                    f"{instance.id}.pdf",
-                    pdf_replacements,
-                    qr_image_path=qr_path
+                    "template1.pdf",
+                    "output.pdf",
+                    replacements=pdf_replacements,
+                    qr_image_path=qr_path,
+                    arabic_text=arabic_message
                 )
+
 
                 # Save PDF to model
                 with open(pdf_path, 'rb') as f:
@@ -736,7 +755,7 @@ def edit_teacher(request, teacher_id):
                 if os.path.exists(temp_dir) and not os.listdir(temp_dir):
                     os.rmdir(temp_dir)
 
-                return redirect('teacher_detail', qr_uuid=instance.qr_uuid)
+                return redirect('teacher_list')
 
             except Exception as e:
                 messages.error(request, f"Error generating PDF: {str(e)}")
@@ -754,7 +773,7 @@ def edit_teacher(request, teacher_id):
 @login_required(login_url='/login/')
 def edit_school(request, school_id):
     if not request.user.groups.filter(name="Schools").exists():
-        messages.error(request, "You do not have permission to access this page.")
+        messages.error(request, "Vous n’avez pas la permission d’accéder à cette page.")
         return redirect("home") 
 
     school = get_object_or_404(School, id=school_id)
@@ -853,9 +872,10 @@ def edit_school(request, school_id):
     })
 
 # 4)user 
+@login_required(login_url='/login/')
 def edit_user(request, user_id):
     if not request.user.is_superuser:
-        messages.error(request, "You do not have permission to access this page.")
+        messages.error(request, "Vous n’avez pas la permission d’accéder à cette page.")
         return redirect("home") 
     user = get_object_or_404(CustomUser, id=user_id)
 
@@ -875,7 +895,7 @@ def edit_user(request, user_id):
 # 1) director
 def delete_director(request, director_id):
     if not request.user.groups.filter(name="Director").exists():
-        messages.error(request, "You do not have permission to access this page.")
+        messages.error(request, "Vous n’avez pas la permission d’accéder à cette page.")
         return redirect("home") 
     director = get_object_or_404(DirectorAuthorization, id=director_id)
     director.delete()
@@ -885,7 +905,7 @@ def delete_director(request, director_id):
 # 2) teacher
 def delete_teacher(request, teacher_id):
     if not request.user.groups.filter(name="Teacher").exists():
-        messages.error(request, "You do not have permission to access this page.")
+        messages.error(request, "Vous n’avez pas la permission d’accéder à cette page.")
         return redirect("home") 
     teacher = get_object_or_404(TeacherAuthorization, id=teacher_id)
     teacher.delete()
@@ -894,7 +914,7 @@ def delete_teacher(request, teacher_id):
 # 3) school/lettre
 def delete_school(request, school_id):
     if not request.user.groups.filter(name="Schools").exists():
-        messages.error(request, "You do not have permission to access this page.")
+        messages.error(request, "Vous n’avez pas la permission d’accéder à cette page.")
         return redirect("home") 
     school = get_object_or_404(School, id=school_id)
     school.delete()
@@ -902,7 +922,7 @@ def delete_school(request, school_id):
 # 4)user 
 def delete_user(request, user_id):
     if not request.user.is_superuser:
-        messages.error(request, "You do not have permission to access this page.")
+        messages.error(request, "Vous n’avez pas la permission d’accéder à cette page.")
         return redirect("home")
     school = get_object_or_404(CustomUser, id=user_id)
     school.delete()

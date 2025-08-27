@@ -78,14 +78,13 @@ WSGI_APPLICATION = "myproject.wsgi.application"
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'mydb',
-        'USER': 'root',   # or your MySQL username
-        'PASSWORD': 'abatourab123',  # leave empty if no password
-        'HOST': '127.0.0.1',  # or 'localhost'
-        'PORT': '3306',
-
-}}
-
+        'NAME': os.environ.get('MYSQL_DB', 'mydb'),
+        'USER': os.environ.get('MYSQL_USER', 'root'),
+        'PASSWORD': os.environ.get('MYSQL_PASSWORD', 'abatourab123'),
+        'HOST': os.environ.get('MYSQL_HOST', 'db'),
+        'PORT': os.environ.get('MYSQL_PORT', '3306'),
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
@@ -150,14 +149,7 @@ AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
 ]
 
-# Lockout settings
-AXES_FAILURE_LIMIT = 5                 # Max failed attempts
-AXES_COOLOFF_TIME = 1                  # Lockout duration in hours
-AXES_LOCKOUT_TEMPLATE = 'registration/lockout.html'
 
 # Replacement for deprecated settings:
-AXES_LOCK_OUT_BY_COMBINATION = True    # Track per username + IP
-AXES_LOCK_OUT_BY_USER_AGENT = True     # Track per device/browser
 
-AXES_RESET_ON_SUCCESS = True           # Reset counter on successful login
 

@@ -7,158 +7,158 @@
     <!-- Page Header -->
     <div class="page-header">
         <button class="btn btn-secondary" onclick="window.history.back()">
-            <i class="fas fa-arrow-left"></i> Back
+            <i class="fas fa-arrow-left"></i> Retour
         </button>
-        <h1><i class="fas fa-edit"></i> Edit School</h1>
+        <h1><i class="fas fa-edit"></i> Modifier l'École</h1>
         <button class="btn btn-primary" onclick="document.getElementById('SchoolForm').submit()">
-            <i class="fas fa-save"></i> Save Changes
+            <i class="fas fa-save"></i> Enregistrer les modifications
         </button>
     </div>
 
     <!-- Edit Form -->
-    <div class="form-container">
-        <form id="SchoolForm" method="POST" enctype="multipart/form-data">
-            {% csrf_token %}
+<!-- Formulaire de modification -->
+<div class="form-container">
+    <form id="SchoolForm" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
 
-            {% if form.errors %}
-            <div class="alert alert-danger">
-                <strong>Please correct the following errors:</strong>
-                <ul>
-                    {% for field in form %}
-                        {% for error in field.errors %}
-                            <li>{{ field.label }}: {{ error }}</li>
-                        {% endfor %}
+        {% if form.errors %}
+        <div class="alert alert-danger">
+            <strong>Veuillez corriger les erreurs suivantes :</strong>
+            <ul>
+                {% for field in form %}
+                    {% for error in field.errors %}
+                        <li>{{ field.label }} : {{ error }}</li>
                     {% endfor %}
-                    {% for error in form.non_field_errors %}
-                        <li>{{ error }}</li>
-                    {% endfor %}
-                </ul>
-            </div>
-            {% endif %}
+                {% endfor %}
+                {% for error in form.non_field_errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
 
-            <!-- Basic Information Section -->
-            <div class="form-section">
-                <h2 class="section-title"><i class="fas fa-school"></i> School Information</h2>
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label for="{{ form.nomEcole.id_for_label }}">School Name *</label>
-                        {{ form.nomEcole }}
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="{{ form.code.id_for_label }}">School Code</label>
-                        {{ form.code }}
-                    </div>
-            
-                    <div class="form-group">
-                        <label>Code LR</label>
-                        <p class="form-control-plaintext">{{ school.codeLR }}</p>
-                    </div>
-                    <div class="form-group">
-                        <label for="{{ form.dateLettreWaly.id_for_label }}">Letter Date (Waly) *</label>
-                        {{ form.dateLettreWaly }}
-                    </div>
-                    <div class="form-group">
-                        <label for="{{ form.numLettreWaly.id_for_label }}">Letter Number (Waly)</label>
-                        {{ form.numLettreWaly }}
-                    </div>
-                </div>
-            </div>
-
-            <!-- Contact Information Section -->
-            <div class="form-section">
-                <h2 class="section-title"><i class="fas fa-phone"></i> Contact Information</h2>
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label for="{{ form.numTel.id_for_label }}">Phone Number</label>
-                        {{ form.numTel }}
-                    </div>
-            
-                </div>
-            </div>
-
-            <!-- Location Section -->
-            <div class="form-section">
-                <h2 class="section-title"><i class="fas fa-map-marker-alt"></i> Location</h2>
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label for="{{ form.wilaya.id_for_label }}">Wilaya</label>
-                        {{ form.wilaya }}
-                    </div>
-                    <div class="form-group">
-                        <label for="{{ form.nomMoughatta.id_for_label }}">Moughataa</label>
-                        {{ form.nomMoughatta }}
-                    </div>
-                    <div class="form-group">
-                        <label for="{{ form.idMoughatta.id_for_label }}">Moughataa ID</label>
-                        {{ form.idMoughatta }}
-                    </div>
-                </div>
-            </div>
-
-            <!-- Personal / Identity Section -->
-            <div class="form-section">
-                <h2 class="section-title"><i class="fas fa-id-card"></i> Personal / Identity</h2>
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label for="{{ form.nni.id_for_label }}">NNI</label>
-                        {{ form.nni }}
-                    </div>
-                    <div class="form-group">
-                        <label for="{{ form.nom.id_for_label }}">Principal Name</label>
-                        {{ form.nom }}
-                    </div>
-                    <div class="form-group">
-                        <label for="{{ form.nationalite.id_for_label }}">Nationality</label>
-                        {{ form.nationalite }}
-                    </div>
-                </div>
-            </div>
-
-            <!-- Diploma / Level Section -->
-            <div class="form-section">
-                <h2 class="section-title"><i class="fas fa-graduation-cap"></i> Diploma / Level</h2>
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label for="{{ form.diplome.id_for_label }}">Diploma</label>
-                        {{ form.diplome }}
-                    </div>
-                    <div class="form-group">
-                        <label for="{{ form.niveau.id_for_label }}">Level</label>
-                        {{ form.niveau }}
-                    </div>
-                </div>
-            </div>
-
-            <!-- PDF Upload Section -->
-            <div class="form-section">
-                <h2 class="section-title"><i class="fas fa-file-pdf"></i> PDF File</h2>
+        <!-- Informations de base -->
+        <div class="form-section">
+            <h2 class="section-title"><i class="fas fa-school"></i> Informations sur l'école</h2>
+            <div class="form-grid">
                 <div class="form-group">
-                    {% if form.instance.pdf_file %}
-                        <p>Current file: <a href="{{ form.instance.pdf_file.url }}" target="_blank">{{ form.instance.pdf_file.name }}</a></p>
-                    {% endif %}
-
+                    <label for="{{ form.nomEcole.id_for_label }}">Nom de l'école *</label>
+                    {{ form.nomEcole }}
                 </div>
-            </div>
-
-            <!-- Date Added (readonly) -->
-            <div class="form-section">
+                
                 <div class="form-group">
-                    <label>Date Added</label>
-                    <p class="form-control-plaintext">{{ form.instance.dateAjout }}</p>
+                    <label for="{{ form.code.id_for_label }}">Code de l'école</label>
+                    {{ form.code }}
+                </div>
+        
+                <div class="form-group">
+                    <label>Code LR</label>
+                    <p class="form-control-plaintext">{{ school.codeLR }}</p>
+                </div>
+                <div class="form-group">
+                    <label for="{{ form.dateLettreWaly.id_for_label }}">Date de la lettre (Waly) *</label>
+                    {{ form.dateLettreWaly }}
+                </div>
+                <div class="form-group">
+                    <label for="{{ form.numLettreWaly.id_for_label }}">Numéro de la lettre (Waly)</label>
+                    {{ form.numLettreWaly }}
                 </div>
             </div>
+        </div>
 
-            <!-- Form Actions -->
-            <div class="form-actions">
-                <button type="button" class="btn btn-cancel" onclick="window.history.back()">Cancel</button>
-                <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-save"></i> Save Changes
-                </button>
+        <!-- Informations de contact -->
+        <div class="form-section">
+            <h2 class="section-title"><i class="fas fa-phone"></i> Informations de contact</h2>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="{{ form.numTel.id_for_label }}">Numéro de téléphone</label>
+                    {{ form.numTel }}
+                </div>
             </div>
+        </div>
 
-        </form>
-    </div>
+        <!-- Localisation -->
+        <div class="form-section">
+            <h2 class="section-title"><i class="fas fa-map-marker-alt"></i> Localisation</h2>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="{{ form.wilaya.id_for_label }}">Wilaya</label>
+                    {{ form.wilaya }}
+                </div>
+                <div class="form-group">
+                    <label for="{{ form.nomMoughatta.id_for_label }}">Moughataa</label>
+                    {{ form.nomMoughatta }}
+                </div>
+                <div class="form-group">
+                    <label for="{{ form.idMoughatta.id_for_label }}">ID Moughataa</label>
+                    {{ form.idMoughatta }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Identité / Responsable -->
+        <div class="form-section">
+            <h2 class="section-title"><i class="fas fa-id-card"></i> Identité / Responsable</h2>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="{{ form.nni.id_for_label }}">NNI</label>
+                    {{ form.nni }}
+                </div>
+                <div class="form-group">
+                    <label for="{{ form.nom.id_for_label }}">Nom du directeur</label>
+                    {{ form.nom }}
+                </div>
+                <div class="form-group">
+                    <label for="{{ form.nationalite.id_for_label }}">Nationalité</label>
+                    {{ form.nationalite }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Diplôme / Niveau -->
+        <div class="form-section">
+            <h2 class="section-title"><i class="fas fa-graduation-cap"></i> Diplôme / Niveau</h2>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="{{ form.diplome.id_for_label }}">Diplôme</label>
+                    {{ form.diplome }}
+                </div>
+                <div class="form-group">
+                    <label for="{{ form.niveau.id_for_label }}">Niveau</label>
+                    {{ form.niveau }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Fichier PDF -->
+        <div class="form-section">
+            <h2 class="section-title"><i class="fas fa-file-pdf"></i> Fichier PDF</h2>
+            <div class="form-group">
+                {% if form.instance.pdf_file %}
+                    <p>Fichier actuel : <a href="{{ form.instance.pdf_file.url }}" target="_blank">{{ form.instance.pdf_file.name }}</a></p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Date d'ajout -->
+        <div class="form-section">
+            <div class="form-group">
+                <label>Date d'ajout</label>
+                <p class="form-control-plaintext">{{ form.instance.dateAjout }}</p>
+            </div>
+        </div>
+
+        <!-- Actions du formulaire -->
+        <div class="form-actions">
+            <button type="button" class="btn btn-cancel" onclick="window.history.back()">Annuler</button>
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save"></i> Enregistrer les modifications
+            </button>
+        </div>
+
+    </form>
+</div>
+
 </div>
 
 

@@ -6,26 +6,27 @@
 <div class="success-container">
     <div class="success-icon"></div>
 
-    <h1 class="success-title"> Added Successfully!</h1>
+    <h1 class="success-title">Ajouté avec succès !</h1>
 
     {% if object.pdf_file %}
         <a href="{{ object.pdf_file.url }}" class="download-btn" download id="downloadBtn">
             <svg class="download-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-4-4m4 4l4-4M12 2v8" />
             </svg>
-            <span class="download-text">Download PDF</span>
+            <span class="download-text">Télécharger le PDF</span>
         </a>
     {% else %}
-        <p class="no-pdf-message">📄 No PDF available at this time</p>
+        <p class="no-pdf-message">📄 Aucun PDF disponible pour le moment</p>
     {% endif %}
 
     <a href="{% url 'home' %}" class="home-link">
         <svg class="home-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
         </svg>
-        Return to Home
+        Retour à l'accueil
     </a>
 </div>
+ 
 
 <style>
 /* Container */

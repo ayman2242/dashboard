@@ -521,19 +521,19 @@
                 <div class="nav-menu">
                     {% if user.is_superuser %}
                         <a href="{% url 'user_list' %}" class="nav-item">
-                            <i class="icon-cog"></i> Add User
+                            <i class="icon-cog"></i> Ajouter Utilisateur
                         </a>
                     {% endif %}
 
                     {% if request.user|has_group:"Director" %}
                         <a href="{% url 'directors_list' %}" class="nav-item">
-                            <i class="icon-project"></i> Director Authorization
+                            <i class="icon-project"></i> Autorisation Diriger
                         </a>
                     {% endif %}
 
                     {% if request.user|has_group:"Teacher" %}
                         <a href="{% url 'teacher_list' %}" class="nav-item">
-                            <i class="icon-users"></i> Teacher Authorization
+                            <i class="icon-users"></i> Autorisation Enseignant
                         </a>
                     {% endif %}
 
@@ -549,11 +549,11 @@
             <div class="nav-right">
                 {% if user.is_authenticated %}
                     <span class="welcome-text">
-                        Welcome: <span class="username">{{ user.username }}</span>
+                        Bienvenue: <span class="username">{{ user.username }}</span>
                     </span>
                     <a href="{% url 'logout' %}" class="auth-link logout">
                         <i class="icon-logout"></i>
-                        <span>Logout</span>
+                        <span>Déconnexion</span>
                     </a>
                 {% else %}
                     <a href="{% url 'login' %}" class="auth-link login">
@@ -561,7 +561,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M15 12H3m12 0l-4-4m4 4l-4 4m6 4V4a2 2 0 00-2-2H5a2 2 0 00-2 2v16a2 2 0 002 2h10a2 2 0 002-2z"/>
                         </svg>
-                        <span>Login</span>
+                        <span>Connexion</span>
                     </a>
                 {% endif %}
 
@@ -581,7 +581,7 @@
             {% if user.is_authenticated %}
                 <div class="mobile-welcome">
                     <span class="welcome-text">
-                        Welcome: <span class="username">{{ user.username }}</span>
+                        Bienvenue: <span class="username">{{ user.username }}</span>
                     </span>
                 </div>
             {% endif %}
@@ -589,19 +589,19 @@
             <div class="mobile-nav-menu">
                 {% if user.is_superuser %}
                     <a href="{% url 'user_list' %}" class="mobile-nav-item">
-                        <i class="icon-cog"></i> Add User
+                        <i class="icon-cog"></i> Ajouter utilisateur
                     </a>
                 {% endif %}
 
                 {% if request.user|has_group:"Director" %}
                     <a href="{% url 'directors_list' %}" class="mobile-nav-item">
-                        <i class="icon-project"></i> Director Authorization
+                        <i class="icon-project"></i> Autorisation diriger
                     </a>
                 {% endif %}
 
                 {% if request.user|has_group:"Teacher" %}
                     <a href="{% url 'teacher_list' %}" class="mobile-nav-item">
-                        <i class="icon-users"></i> Teacher Authorization
+                        <i class="icon-users"></i> Autorisation Enseignant
                     </a>
                 {% endif %}
 

@@ -7,11 +7,11 @@
     <!-- Page Header -->
     <div class="page-header">
         <button class="btn btn-secondary" onclick="window.history.back()">
-            <i class="fas fa-arrow-left"></i> Back
+            <i class="fas fa-arrow-left"></i> Retour
         </button>
-        <h1><i class="fas fa-school"></i> School Information</h1>
+        <h1><i class="fas fa-school"></i> Informations sur l'École</h1>
         <button class="btn btn-primary" onclick="document.getElementById('schoolForm').submit()">
-            <i class="fas fa-save"></i> Save School
+            <i class="fas fa-save"></i> Enregistrer l'École
         </button>
     </div>
 
@@ -23,11 +23,11 @@
             <!-- Display form errors at the top -->
             {% if form.errors %}
             <div class="alert alert-danger">
-                <strong>Please correct the following errors:</strong>
+                <strong>Veuillez corriger les erreurs suivantes :</strong>
                 <ul>
                     {% for field in form %}
                         {% for error in field.errors %}
-                            <li>{{ field.label }}: {{ error }}</li>
+                            <li>{{ field.label }} : {{ error }}</li>
                         {% endfor %}
                     {% endfor %}
                     {% for error in form.non_field_errors %}
@@ -40,25 +40,25 @@
             <!-- General Information Section -->
             <div class="form-section">
                 <h2 class="section-title">
-                    <i class="fas fa-school"></i> General Information
+                    <i class="fas fa-school"></i> Informations Générales
                 </h2>
                 <div class="form-grid">
                     <div class="form-group">
-                        <label for="{{ form.nomEcole.id_for_label }}">School Name *</label>
+                        <label for="{{ form.nomEcole.id_for_label }}">Nom de l'École *</label>
                         {{ form.nomEcole }}
                         {% if form.nomEcole.errors %}
                             <div class="error-text">{{ form.nomEcole.errors }}</div>
                         {% endif %}
                     </div>
                     <div class="form-group">
-                        <label for="{{ form.code.id_for_label }}">School Code</label>
+                        <label for="{{ form.code.id_for_label }}">Code de l'École</label>
                         {{ form.code }}
                         {% if form.code.errors %}
                             <div class="error-text">{{ form.code.errors }}</div>
                         {% endif %}
                     </div>
                     <div class="form-group">
-                        <label for="{{ form.niveau.id_for_label }}">School Level</label>
+                        <label for="{{ form.niveau.id_for_label }}">Niveau de l'École</label>
                         {{ form.niveau }}
                         {% if form.niveau.errors %}
                             <div class="error-text">{{ form.niveau.errors }}</div>
@@ -70,7 +70,7 @@
             <!-- Location Section -->
             <div class="form-section">
                 <h2 class="section-title">
-                    <i class="fas fa-map-marker-alt"></i> Location
+                    <i class="fas fa-map-marker-alt"></i> Localisation
                 </h2>
                 <div class="form-grid">
                     <div class="form-group">
@@ -81,7 +81,7 @@
                         {% endif %}
                     </div>
                     <div class="form-group">
-                        <label for="{{ form.idMoughatta.id_for_label }}">Moughataa ID</label>
+                        <label for="{{ form.idMoughatta.id_for_label }}">ID de Moughataa</label>
                         {{ form.idMoughatta }}
                         {% if form.idMoughatta.errors %}
                             <div class="error-text">{{ form.idMoughatta.errors }}</div>
@@ -100,11 +100,11 @@
             <!-- Contact & Identity Section -->
             <div class="form-section">
                 <h2 class="section-title">
-                    <i class="fas fa-phone"></i> Contact & Identity
+                    <i class="fas fa-phone"></i> Contact & Identité
                 </h2>
                 <div class="form-grid">
                     <div class="form-group">
-                        <label for="{{ form.numTel.id_for_label }}">Phone Number</label>
+                        <label for="{{ form.numTel.id_for_label }}">Numéro de Téléphone</label>
                         {{ form.numTel }}
                         {% if form.numTel.errors %}
                             <div class="error-text">{{ form.numTel.errors }}</div>
@@ -118,14 +118,14 @@
                         {% endif %}
                     </div>
                     <div class="form-group">
-                        <label for="{{ form.nom.id_for_label }}">Name</label>
+                        <label for="{{ form.nom.id_for_label }}">Nom</label>
                         {{ form.nom }}
                         {% if form.nom.errors %}
                             <div class="error-text">{{ form.nom.errors }}</div>
                         {% endif %}
                     </div>
                     <div class="form-group">
-                        <label for="{{ form.nationalite.id_for_label }}">Nationality</label>
+                        <label for="{{ form.nationalite.id_for_label }}">Nationalité</label>
                         {{ form.nationalite }}
                         {% if form.nationalite.errors %}
                             <div class="error-text">{{ form.nationalite.errors }}</div>
@@ -137,25 +137,25 @@
             <!-- Diploma & Authorization Section -->
             <div class="form-section">
                 <h2 class="section-title">
-                    <i class="fas fa-certificate"></i> Diploma & Authorization
+                    <i class="fas fa-certificate"></i> Diplôme & Autorisation
                 </h2>
                 <div class="form-grid">
                     <div class="form-group">
-                        <label for="{{ form.diplome.id_for_label }}">Diploma</label>
+                        <label for="{{ form.diplome.id_for_label }}">Diplôme</label>
                         {{ form.diplome }}
                         {% if form.diplome.errors %}
                             <div class="error-text">{{ form.diplome.errors }}</div>
                         {% endif %}
                     </div>
                     <div class="form-group">
-                        <label for="{{ form.dateLettreWaly.id_for_label }}">Waly Letter Date</label>
+                        <label for="{{ form.dateLettreWaly.id_for_label }}">Date de la Lettre du Waly</label>
                         {{ form.dateLettreWaly }}
                         {% if form.dateLettreWaly.errors %}
                             <div class="error-text">{{ form.dateLettreWaly.errors }}</div>
                         {% endif %}
                     </div>
                     <div class="form-group">
-                        <label for="{{ form.numLettreWaly.id_for_label }}">Waly Letter Number</label>
+                        <label for="{{ form.numLettreWaly.id_for_label }}">Numéro de la Lettre du Waly</label>
                         {{ form.numLettreWaly }}
                         {% if form.numLettreWaly.errors %}
                             <div class="error-text">{{ form.numLettreWaly.errors }}</div>
@@ -164,13 +164,11 @@
                 </div>
             </div>
 
-        
-
             <!-- Form Actions -->
             <div class="form-actions">
-                <button type="button" class="btn btn-cancel" onclick="window.history.back()">Cancel</button>
+                <button type="button" class="btn btn-cancel" onclick="window.history.back()">Annuler</button>
                 <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-save"></i> Save School
+                    <i class="fas fa-save"></i> Enregistrer l'École
                 </button>
             </div>
         </form>
