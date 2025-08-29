@@ -1,20 +1,23 @@
-# استخدم صورة بايثون الرسمية
-FROM python:3.11-slim
+FROM python:3.12-slim
 
-# تحديد مجلد العمل داخل الحاوية
 WORKDIR /app
 
-# نسخ ملفات المشروع
-COPY . /app/
+# Install system dependencies for mysqlclient
+RUN apt-get update && apt-get install -y \
+    default-libmysqlclient-dev \
+    gcc \
+    pkg-config \
+    && rm -rf /var/lib/apt/lists/*
 
-# تثبيت الاعتماديات
-RUN pip install --upgrade pip
-RUN pip install wheel
-RUN pip install -r requirements.txt
+# Copy requirements and install Python packages
+COPY requirements.txt .
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
 
-# تعيين متغير البيئة
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
+# Copy project
+COPY . .
 
-# تشغيل السيرفر (يمكن تغييره حسب الحاجة)
-CMD ["python", "manage.py", "runserver"]
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]

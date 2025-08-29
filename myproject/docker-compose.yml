@@ -1,34 +1,13 @@
-version: '3.9'
-
 services:
-  db:
-    image: mysql:8.0
-    restart: always
-    environment:
-      MYSQL_DATABASE: mydb
-      MYSQL_USER: root
-      MYSQL_PASSWORD: abatourab123
-      MYSQL_ROOT_PASSWORD: abatourab123
-    ports:
-      - "3306:3306"
-    volumes:
-      - db_data:/var/lib/mysql
-
   web:
-    build: .
-    command: python manage.py runserver 
+    build: .  # هذا السطر مهم لإعادة البناء
+    command: python manage.py runserver 0.0.0.0:8000
     volumes:
       - .:/app
     ports:
       - "8000:8000"
-    depends_on:
-      - db
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     environment:
-      MYSQL_HOST: db
-      MYSQL_PORT: 3306
-      MYSQL_DB: mydb
-      MYSQL_USER: root
-      MYSQL_PASSWORD: abatourab123
-
-volumes:
-  db_data:
+      - PYTHONDONTWRITEBYTECODE=1
+      - PYTHONUNBUFFERED=1
