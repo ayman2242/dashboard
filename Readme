@@ -1,0 +1,21 @@
+✅ Project Description (English / French Mix — Easy to Understand)
+
+This Django application is a management system for private education institutions, allowing the administration to:
+
+Register private schools (School Authorization Letter)
+
+Register directors of schools
+
+Register teachers of private institutions
+
+Generate official authorization PDFs for each record
+
+Automatically generate and embed QR Codes inside the PDFs
+
+Allow verification of documents online by scanning the QR code
+
+Restrict access based on user roles and groups
+
+Manage system users and permissions
+
+The system ensures digital tracking and verification of administrative authorizations.

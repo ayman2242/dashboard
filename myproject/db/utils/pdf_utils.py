@@ -1,4 +1,4 @@
-import fitz  # PyMuPDF
+import fitz
 import os
 import tempfile
 import shutil
@@ -17,7 +17,7 @@ def fill_pdf(template_filename, output_filename, replacements, qr_image_path=Non
     os.makedirs(output_dir, exist_ok=True)
 
     with tempfile.TemporaryDirectory() as temp_dir:
-        pdf = fitz.open(template_path)
+        pdf = fitz.open(template_path) # type: ignore
 
         # مسار الخط العربي (Amiri أو غيره)
         
@@ -34,7 +34,7 @@ def fill_pdf(template_filename, output_filename, replacements, qr_image_path=Non
                     page.add_redact_annot(inst, fill=(1, 1, 1))
                     page.apply_redactions()
 
-                    rect = fitz.Rect(inst.x0, inst.y0, inst.x0 + 300, inst.y1 + 20)
+                    rect = fitz.Rect(inst.x0, inst.y0, inst.x0 + 300, inst.y1 + 20) # type: ignore
                     page.insert_textbox(
                         rect,
                         str(replacement),
@@ -75,10 +75,10 @@ def fill_pdf(template_filename, output_filename, replacements, qr_image_path=Non
 
                 page.insert_textbox(
                     rect,
-                    bidi_text,
+                    bidi_text,  
                     fontsize=14,
                     fontname="Amiri",
-                    align=1,  # وسط
+                    align=1,  
         
                 )
 

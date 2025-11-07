@@ -1,0 +1,3 @@
+import fitz
+print(fitz.__file__)
+print(fitz.__doc__)

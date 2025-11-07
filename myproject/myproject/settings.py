@@ -43,7 +43,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
-    'django.middleware.locale.LocaleMiddleware',  # ✅ add this
+    'django.middleware.locale.LocaleMiddleware', 
     
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -83,6 +83,8 @@ DATABASES = {
         'NAME': 'mydb',
         'USER': 'root',
         'PASSWORD': 'abatourab123',
+        'HOST': '127.0.0.1',  # Add this line
+
         'PORT': '3306',
     }
 }
@@ -137,18 +139,14 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 INSTALLED_APPS += [
-    'axes',
 ]
 
 MIDDLEWARE += [
-    'axes.middleware.AxesMiddleware',
 ]
 
 AUTHENTICATION_BACKENDS = [
-    'axes.backends.AxesStandaloneBackend',
     'django.contrib.auth.backends.ModelBackend',
 ]
-
 
 # Replacement for deprecated settings:
 
